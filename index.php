@@ -57,6 +57,7 @@ function crop_text(string $text, int $quantity = 300) {
 
     foreach ($text_parts as $part) {
         if ($sum >= $quantity) {
+            array_push($collected_proposal, '...');
             break;
         }
 
@@ -64,8 +65,6 @@ function crop_text(string $text, int $quantity = 300) {
         $sum += $chars_in_part;
         array_push($collected_proposal, $part);
     }
-
-    array_push($collected_proposal, '...');
 
     $text = implode(' ', $collected_proposal);
 
