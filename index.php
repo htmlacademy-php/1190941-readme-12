@@ -39,7 +39,38 @@ $post = [
         'user-name' => 'Владик',
         'avatar' => 'userpic.jpg',
     ],
-]
+    [
+        'header' => 'Крайне длинный текст',
+        'type' => 'post-text',
+        'content' => 'Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала!Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала!Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала!',
+        'user-name' => 'Девелопер',
+        'avatar' => 'userpic.jpg',
+    ],
+];
+
+$max_chars = 300; //Вопрос, как добавить переменную в значение по умолчанию для $quantity (пример $quantity = $max_chars)?
+
+function crop_text(string $text, int $quantity = 300) {
+    $text_parts = explode(' ', $text);
+    $sum = 0;
+    $collected_proposal = array();
+
+    foreach ($text_parts as $part) {
+        if ($sum >= $quantity) {
+            break;
+        }
+
+        $chars_in_part = strlen($part);
+        $sum += $chars_in_part;
+        array_push($collected_proposal, $part);
+    }
+
+    array_push($collected_proposal, '...');
+
+    $text = implode(' ', $collected_proposal);
+
+    return $text;
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -255,7 +286,10 @@ $post = [
                             <cite>Неизвестный Автор</cite>
                         </blockquote>
                     <?php elseif ($value['type'] === 'post-text'):  ?>
-                        <p><?=$value['content']; ?></p>
+                        <p><?=crop_text($value['content']); ?></p>
+                        <?php if (strlen($value['content']) > $max_chars): ?>
+                        <a class="post-text__more-link" href="#">Читать далее</a>
+                        <?php endif; ?>
                     <?php elseif ($value['type'] === 'post-photo'):  ?>
                         <div class="post-photo__image-wrapper">
                             <img src="img/<?=$value['content']; ?>" alt="Фото от пользователя" width="360" height="240">
