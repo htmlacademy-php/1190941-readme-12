@@ -55,8 +55,6 @@ function crop_text (string $text, int $quantity = 300) {
 
     foreach ($text_parts as $part) {
         if ($sum > $quantity) {
-            array_pop($collected_proposal);
-            array_push($collected_proposal, '...');
             break;
         }
 
@@ -65,9 +63,19 @@ function crop_text (string $text, int $quantity = 300) {
         array_push($collected_proposal, $part);
     }
 
-    $text = implode(' ', $collected_proposal);
+    if ($sum > $quantity) {
+        array_pop($collected_proposal);
+        array_push($collected_proposal, '...');
+    }
 
-    return $text;
+    $text = implode(' ', $collected_proposal);
+    $content_element = '<p>' . $text . '</p>';
+
+    if ($sum > $quantity) {
+        $content_element .= '<a class="post-text__more-link" href="#">Читать далее</a>';
+    }
+
+    return $content_element;
 }
 ?>
 <!DOCTYPE html>
@@ -284,10 +292,7 @@ function crop_text (string $text, int $quantity = 300) {
                             <cite>Неизвестный Автор</cite>
                         </blockquote>
                     <?php elseif ($value['type'] === 'post-text'):  ?>
-                        <p><?=crop_text($value['content']); ?></p>
-                        <?php if (mb_strlen($value['content']) > 300): ?>
-                        <a class="post-text__more-link" href="#">Читать далее</a>
-                        <?php endif; ?>
+                        <?=crop_text($value['content']); ?>
                     <?php elseif ($value['type'] === 'post-photo'):  ?>
                         <div class="post-photo__image-wrapper">
                             <img src="img/<?=$value['content']; ?>" alt="Фото от пользователя" width="360" height="240">
