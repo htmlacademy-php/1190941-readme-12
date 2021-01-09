@@ -48,20 +48,19 @@ $post = [
     ],
 ];
 
-$max_chars = 300; //Вопрос, как добавить переменную в значение по умолчанию для $quantity (пример $quantity = $max_chars)?
-
-function crop_text(string $text, int $quantity = 300) {
+function crop_text (string $text, int $quantity = 300) {
     $text_parts = explode(' ', $text);
     $sum = 0;
     $collected_proposal = array();
 
     foreach ($text_parts as $part) {
-        if ($sum >= $quantity) {
+        if ($sum > $quantity) {
+            array_pop($collected_proposal);
             array_push($collected_proposal, '...');
             break;
         }
 
-        $chars_in_part = strlen($part);
+        $chars_in_part = mb_strlen($part);
         $sum += $chars_in_part;
         array_push($collected_proposal, $part);
     }
@@ -286,7 +285,7 @@ function crop_text(string $text, int $quantity = 300) {
                         </blockquote>
                     <?php elseif ($value['type'] === 'post-text'):  ?>
                         <p><?=crop_text($value['content']); ?></p>
-                        <?php if (strlen($value['content']) > $max_chars): ?>
+                        <?php if (strlen($value['content']) > 300): ?>
                         <a class="post-text__more-link" href="#">Читать далее</a>
                         <?php endif; ?>
                     <?php elseif ($value['type'] === 'post-photo'):  ?>
