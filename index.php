@@ -46,36 +46,36 @@ $post = [
         'user-name' => 'Девелопер',
         'avatar' => 'userpic.jpg',
     ],
+    [
+        'header' => 'Ровно 300 символов',
+        'type' => 'post-text',
+        'content' => 'Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться началаааа!',
+        'user-name' => 'Девелопер',
+        'avatar' => 'userpic.jpg',
+    ],
 ];
 
 function crop_text (string $text, int $quantity = 300) {
     $text_parts = explode(' ', $text);
     $sum = 0;
+    $spaces_in_text = (count($text_parts) - 1);
     $collected_proposal = array();
 
     foreach ($text_parts as $part) {
-        if ($sum > $quantity) {
+        $chars_in_part = mb_strlen($part);
+        $sum += $chars_in_part;
+
+        if (($sum + $spaces_in_text) > $quantity) {
+            array_push($collected_proposal, '...');
             break;
         }
 
-        $chars_in_part = mb_strlen($part);
-        $sum += $chars_in_part;
         array_push($collected_proposal, $part);
     }
 
-    if ($sum > $quantity) {
-        array_pop($collected_proposal);
-        array_push($collected_proposal, '...');
-    }
-
     $text = implode(' ', $collected_proposal);
-    $content_element = '<p>' . $text . '</p>';
 
-    if ($sum > $quantity) {
-        $content_element .= '<a class="post-text__more-link" href="#">Читать далее</a>';
-    }
-
-    return $content_element;
+    return $text;
 }
 ?>
 <!DOCTYPE html>
@@ -292,7 +292,10 @@ function crop_text (string $text, int $quantity = 300) {
                             <cite>Неизвестный Автор</cite>
                         </blockquote>
                     <?php elseif ($value['type'] === 'post-text'):  ?>
-                        <?=crop_text($value['content']); ?>
+                        <p><?=crop_text($value['content']); ?></p>
+                        <?php if (mb_strlen($value['content']) > 300): ?>
+                        <a class="post-text__more-link" href="#">Читать далее</a>
+                        <?php endif; ?>
                     <?php elseif ($value['type'] === 'post-photo'):  ?>
                         <div class="post-photo__image-wrapper">
                             <img src="img/<?=$value['content']; ?>" alt="Фото от пользователя" width="360" height="240">
