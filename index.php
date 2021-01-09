@@ -49,7 +49,7 @@ $post = [
     [
         'header' => 'Ровно 300 символов',
         'type' => 'post-text',
-        'content' => 'Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться началаааа!',
+        'content' => 'Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться началааа!',
         'user-name' => 'Девелопер',
         'avatar' => 'userpic.jpg',
     ],
@@ -58,14 +58,14 @@ $post = [
 function crop_text (string $text, int $quantity = 300) {
     $text_parts = explode(' ', $text);
     $sum = 0;
-    $spaces_in_text = (count($text_parts) - 1);
+    $space = 1;
     $collected_proposal = array();
 
     foreach ($text_parts as $part) {
-        $chars_in_part = mb_strlen($part);
+        $chars_in_part = mb_strlen($part) + $space;
         $sum += $chars_in_part;
 
-        if (($sum + $spaces_in_text) >= $quantity) {
+        if (($sum - $space) >= $quantity) {
             array_push($collected_proposal, '...');
             break;
         }
