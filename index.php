@@ -49,31 +49,34 @@ $post = [
     [
         'header' => 'Ровно 300 символов',
         'type' => 'post-text',
-        'content' => 'Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться началааа!',
+        'content' => 'Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться началаааа!',
         'user-name' => 'Девелопер',
         'avatar' => 'userpic.jpg',
     ],
 ];
 
-function crop_text (string $text, int $quantity = 300) {
+function crop_text (string $text, int $max_chars = 300) {
+    if (mb_strlen($text) < $max_chars) {
+        return $text;
+    }
+
     $text_parts = explode(' ', $text);
-    $sum = 0;
-    $space = 1;
-    $collected_proposal = array();
+    $total_chars = 0;
+    $space_value = 1;
+    $verified_text = array();
 
-    foreach ($text_parts as $part) {
-        $chars_in_part = mb_strlen($part) + $space;
-        $sum += $chars_in_part;
+    foreach ($text_parts as $text_part) {
+        $total_chars += mb_strlen($text_part) + $space_value;
 
-        if (($sum - $space) >= $quantity) {
-            array_push($collected_proposal, '...');
+        if (($total_chars - $space_value) >= $max_chars) {
+            $verified_text[array_key_last($verified_text)] .= '...';
             break;
         }
 
-        array_push($collected_proposal, $part);
+        $verified_text[] = $text_part;
     }
 
-    $text = implode(' ', $collected_proposal);
+    $text = implode(' ', $verified_text);
 
     return $text;
 }
