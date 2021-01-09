@@ -285,7 +285,7 @@ function crop_text (string $text, int $quantity = 300) {
                         </blockquote>
                     <?php elseif ($value['type'] === 'post-text'):  ?>
                         <p><?=crop_text($value['content']); ?></p>
-                        <?php if (strlen($value['content']) > 300): ?>
+                        <?php if (mb_strlen($value['content']) > 300): ?>
                         <a class="post-text__more-link" href="#">Читать далее</a>
                         <?php endif; ?>
                     <?php elseif ($value['type'] === 'post-photo'):  ?>
