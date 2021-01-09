@@ -69,7 +69,6 @@ function crop_text (string $text, int $max_chars = 300) {
         $total_chars += mb_strlen($text_part) + $space_value;
 
         if (($total_chars - $space_value) >= $max_chars) {
-            $verified_text[array_key_last($verified_text)] .= '...';
             break;
         }
 
@@ -78,7 +77,7 @@ function crop_text (string $text, int $max_chars = 300) {
 
     $text = implode(' ', $verified_text);
 
-    return $text;
+    return $text . '...';
 }
 ?>
 <!DOCTYPE html>
