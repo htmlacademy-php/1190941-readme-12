@@ -294,8 +294,8 @@ function crop_text (string $text, int $max_chars = 300) {
                             <cite>Неизвестный Автор</cite>
                         </blockquote>
                     <?php elseif ($value['type'] === 'post-text'):  ?>
-                        <p><?=crop_text($value['content']); ?></p>
-                        <?php if (mb_strlen($value['content']) >= 300): ?>
+                        <p><?= $received_text = crop_text($value['content']); ?></p>
+                        <?php if ($received_text !== $value['content']): ?>
                         <a class="post-text__more-link" href="#">Читать далее</a>
                         <?php endif; ?>
                     <?php elseif ($value['type'] === 'post-photo'):  ?>
