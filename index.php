@@ -39,7 +39,46 @@ $post = [
         'user-name' => 'Владик',
         'avatar' => 'userpic.jpg',
     ],
-]
+    [
+        'header' => 'Крайне длинный текст',
+        'type' => 'post-text',
+        'content' => 'Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала!Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала!Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала!',
+        'user-name' => 'Девелопер',
+        'avatar' => 'userpic.jpg',
+    ],
+    [
+        'header' => 'Ровно 300 символов',
+        'type' => 'post-text',
+        'content' => 'Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться начала финального сезона своего любимого сериала! Не могу дождаться началаааа!',
+        'user-name' => 'Девелопер',
+        'avatar' => 'userpic.jpg',
+    ],
+];
+
+function crop_text (string $text, int $max_chars = 300) {
+    if (mb_strlen($text) < $max_chars) {
+        return $text;
+    }
+
+    $text_parts = explode(' ', $text);
+    $total_chars = 0;
+    $space_value = 1;
+    $verified_text = array();
+
+    foreach ($text_parts as $text_part) {
+        $total_chars += mb_strlen($text_part) + $space_value;
+
+        if (($total_chars - $space_value) >= $max_chars) {
+            break;
+        }
+
+        $verified_text[] = $text_part;
+    }
+
+    $text = implode(' ', $verified_text);
+
+    return $text . '...';
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -255,7 +294,10 @@ $post = [
                             <cite>Неизвестный Автор</cite>
                         </blockquote>
                     <?php elseif ($value['type'] === 'post-text'):  ?>
-                        <p><?=$value['content']; ?></p>
+                        <p><?= $received_text = crop_text($value['content']); ?></p>
+                        <?php if ($received_text !== $value['content']): ?>
+                        <a class="post-text__more-link" href="#">Читать далее</a>
+                        <?php endif; ?>
                     <?php elseif ($value['type'] === 'post-photo'):  ?>
                         <div class="post-photo__image-wrapper">
                             <img src="img/<?=$value['content']; ?>" alt="Фото от пользователя" width="360" height="240">
