@@ -65,7 +65,7 @@ function crop_text (string $text, int $quantity = 300) {
         $chars_in_part = mb_strlen($part);
         $sum += $chars_in_part;
 
-        if (($sum + $spaces_in_text) > $quantity) {
+        if (($sum + $spaces_in_text) >= $quantity) {
             array_push($collected_proposal, '...');
             break;
         }
@@ -293,7 +293,7 @@ function crop_text (string $text, int $quantity = 300) {
                         </blockquote>
                     <?php elseif ($value['type'] === 'post-text'):  ?>
                         <p><?=crop_text($value['content']); ?></p>
-                        <?php if (mb_strlen($value['content']) > 300): ?>
+                        <?php if (mb_strlen($value['content']) >= 300): ?>
                         <a class="post-text__more-link" href="#">Читать далее</a>
                         <?php endif; ?>
                     <?php elseif ($value['type'] === 'post-photo'):  ?>
