@@ -135,9 +135,9 @@ function include_template($name, array $data = [])
     $name = 'templates/' . $name;
     $result = '';
 
-    if (!is_readable($name)) {
+    /* if (!is_readable($name)) {
         return $result;
-    }
+    } */
 
     ob_start();
     extract($data);
@@ -261,4 +261,8 @@ function generate_random_date($index)
     $dt = date('Y-m-d H:i:s', $ts);
 
     return $dt;
+}
+
+function get_verified_output ($content) {
+    return htmlspecialchars($content, ENT_QUOTES);
 }
