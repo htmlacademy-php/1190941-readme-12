@@ -143,7 +143,7 @@
                             </div>
                             <div class="post__info">
                                 <b class="post__author-name"><?= htmlspecialchars($value['user-name']); ?></b>
-                                <time class="post__time" datetime="">дата</time>
+                                <time class="post__time" datetime="<?= $value['date']; ?>"><?= $value['date']; ?></time>
                             </div>
                         </a>
                     </div>

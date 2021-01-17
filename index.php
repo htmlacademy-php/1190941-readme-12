@@ -57,6 +57,27 @@ $posts = [
     ],
 ];
 
+$current_date = new DateTime('now', new DateTimeZone('Europe/Kiev'));
+$current_date = $current_date->format('Y-m-d h:i:s');
+
+function get_date_time_diff (string $current_date, string $post_date) {
+    $cur_date = new DateTime($current_date);
+    $p_date = new DateTime($post_date);
+
+    $date_diff = $cur_date->diff($p_date);
+    $date_diff->format('h часов');
+
+    return $date_diff;
+}
+
+foreach ($posts as $post_key => &$post_value) {
+    $post_date = generate_random_date($post_key);
+    $to_date_time = new DateTime($post_date);
+    $to_date_time->format('Y-m-d h:i:s');
+    $time_ago = get_date_time_diff($current_date, $to_date_time);
+    $post_value['date'] = $time_ago;
+}
+
 function crop_text (string $text, int $max_chars = 300) {
     if (mb_strlen($text) < $max_chars) {
         return $text;
@@ -85,6 +106,7 @@ function crop_text (string $text, int $max_chars = 300) {
 $page_main_content = include_template('main.php', ['posts' => $posts]);
 $page_layout = include_template('layout.php', [
     'page_title' => 'Readme - популярное',
+    'current_date' => $current_date,
     'is_auth' => $is_auth,
     'user_name' => $user_name,
     'page_main_content' => $page_main_content,
