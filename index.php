@@ -88,8 +88,6 @@ $page_layout = include_template('layout.php', [
     'is_auth' => $is_auth,
     'user_name' => $user_name,
     'page_main_content' => $page_main_content,
-
 ]);
 
 print($page_layout);
-

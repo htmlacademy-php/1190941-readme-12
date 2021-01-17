@@ -262,3 +262,7 @@ function generate_random_date($index)
 
     return $dt;
 }
+
+function get_verified_output ($content) {
+    return htmlspecialchars($content, ENT_QUOTES);
+}

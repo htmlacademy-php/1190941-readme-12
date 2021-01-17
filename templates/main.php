@@ -84,46 +84,46 @@
         </div>
     </div>
     <div class="popular__posts">
-        <?php foreach ($posts as $key => $value): ?>
-            <article class="popular__post <?= $value['type']; ?> post">
+        <?php foreach ($posts as $post): ?>
+            <article class="popular__post <?= get_verified_output($post['type']); ?> post">
                 <header class="post__header">
-                    <h2><?= htmlspecialchars($value['header']); ?></h2>
+                    <h2><?= get_verified_output($post['header']); ?></h2>
                 </header>
                 <div class="post__main">
-                    <?php if ($value['type'] === 'post-quote'): ?>
+                    <?php if ($post['type'] === 'post-quote'): ?>
                         <blockquote>
                             <p>
-                                <?= htmlspecialchars($value['content']); ?>
+                                <?= get_verified_output($post['content']); ?>
                             </p>
                             <cite>Неизвестный Автор</cite>
                         </blockquote>
-                    <?php elseif ($value['type'] === 'post-text'):  ?>
-                        <p><?= $received_text = htmlspecialchars(crop_text($value['content'])); ?></p>
-                        <?php if ($received_text !== htmlspecialchars($value['content'])): ?>
+                    <?php elseif ($post['type'] === 'post-text'):  ?>
+                        <p><?= $received_text = get_verified_output(crop_text($post['content'])); ?></p>
+                        <?php if ($received_text !== get_verified_output($post['content'])): ?>
                             <a class="post-text__more-link" href="#">Читать далее</a>
                         <?php endif; ?>
-                    <?php elseif ($value['type'] === 'post-photo'):  ?>
+                    <?php elseif ($post['type'] === 'post-photo'):  ?>
                         <div class="post-photo__image-wrapper">
-                            <img src="img/<?= $value['content']; ?>" alt="Фото от пользователя" width="360" height="240">
+                            <img src="img/<?= get_verified_output($post['content']); ?>" alt="Фото от пользователя" width="360" height="240">
                         </div>
-                    <?php elseif ($value['type'] === 'post-link'):  ?>
+                    <?php elseif ($post['type'] === 'post-link'):  ?>
                         <div class="post-link__wrapper">
-                            <a class="post-link__external" href="http://<?= htmlspecialchars($value['content']); ?>" title="Перейти по ссылке">
+                            <a class="post-link__external" href="http://<?= get_verified_output($post['content']); ?>" title="Перейти по ссылке">
                                 <div class="post-link__info-wrapper">
                                     <div class="post-link__icon-wrapper">
                                         <img src="https://www.google.com/s2/favicons?domain=vitadental.ru" alt="Иконка">
                                     </div>
                                     <div class="post-link__info">
-                                        <h3><?= htmlspecialchars($value['header']); ?></h3>
+                                        <h3><?= get_verified_output($post['header']); ?></h3>
                                     </div>
                                 </div>
-                                <span><?= htmlspecialchars($value['content']); ?></span>
+                                <span><?= get_verified_output($post['content']); ?></span>
                             </a>
                         </div>
-                    <?php elseif ($value['type'] === 'post-video'):  ?>
+                    <?php elseif ($post['type'] === 'post-video'):  ?>
                         <div class="post-video__block">
                             <div class="post-video__preview">
-                                <?= embed_youtube_cover($value['content']); ?>
+                                <?= embed_youtube_cover(get_verified_output($post['content'])); ?>
                                 <img src="img/coast-medium.jpg" alt="Превью к видео" width="360" height="188">
                             </div>
                             <a href="post-details.html" class="post-video__play-big button">
@@ -139,10 +139,10 @@
                     <div class="post__author">
                         <a class="post__author-link" href="#" title="Автор">
                             <div class="post__avatar-wrapper">
-                                <img class="post__author-avatar" src="img/<?= $value['avatar']; ?>" alt="Аватар пользователя">
+                                <img class="post__author-avatar" src="img/<?= get_verified_output($post['avatar']); ?>" alt="Аватар пользователя">
                             </div>
                             <div class="post__info">
-                                <b class="post__author-name"><?= htmlspecialchars($value['user-name']); ?></b>
+                                <b class="post__author-name"><?= get_verified_output($post['user-name']); ?></b>
                                 <time class="post__time" datetime="">дата</time>
                             </div>
                         </a>
