@@ -258,9 +258,9 @@ function generate_random_date($index)
     $timename = key($delta);
 
     $ts = strtotime("$timeval $timename ago");
-    $dt = date('Y-m-d H:i:s', $ts);
+    $dt = date('c', $ts);
 
-    return $dt = new DateTime($dt);
+    return $dt;
 }
 
 function esc ($content) {

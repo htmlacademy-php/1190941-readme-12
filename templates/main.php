@@ -143,7 +143,7 @@
                             </div>
                             <div class="post__info">
                                 <b class="post__author-name"><?= esc($post['user-name']); ?></b>
-                                <time class="post__time" datetime="<?= esc(show_iso_date_format($post['date'])); ?>" title="<?= esc(show_title_date_format($post['date'])); ?>"><?= esc(get_relative_date_format($post['date'])); ?></time>
+                                <time class="post__time" datetime="<?= esc($post['date']); ?>" title="<?= esc(show_title_date_format($post['date'])); ?>"><?= esc(get_relative_date_format($post['date'])); ?></time>
                             </div>
                         </a>
                     </div>
