@@ -55,27 +55,27 @@ function get_relative_date_format (string $post_date): string {
 
     if ($date_time_diff->m !== 0) {
         $months = $date_time_diff->m;
-        return $date_time_diff->format("{$months} " . get_noun_plural_form($months, 'месяц', 'месяца', 'месяцев') . " назад");
+        return "{$months} " . get_noun_plural_form($months, 'месяц', 'месяца', 'месяцев') . " назад";
     }
 
     if ($date_time_diff->d >= 7) {
         $weeks = floor($date_time_diff->d / 7);
-        return $date_time_diff->format("{$weeks} " . get_noun_plural_form($weeks, 'неделю', 'недели', 'недели') . " назад");
+        return "{$weeks} " . get_noun_plural_form($weeks, 'неделю', 'недели', 'недели') . " назад";
     }
 
     if ($date_time_diff->d < 7 && $date_time_diff->d !== 0) {
         $days = $date_time_diff->d;
-        return $date_time_diff->format("{$days} " . get_noun_plural_form($days, 'день', 'дня', 'дней') . " назад");
+        return "{$days} " . get_noun_plural_form($days, 'день', 'дня', 'дней') . " назад";
     }
 
     if ($date_time_diff->h !== 0) {
         $hours = $date_time_diff->h;
-        return $date_time_diff->format("{$hours} " . get_noun_plural_form($hours, 'час', 'часа', 'часов') . " назад");
+        return "{$hours} " . get_noun_plural_form($hours, 'час', 'часа', 'часов') . " назад";
     }
 
     if ($date_time_diff->i !== 0) {
         $minutes = $date_time_diff->i;
-        return $date_time_diff->format("{$minutes} " . get_noun_plural_form($minutes, 'минуту', 'минуты', 'минут') . " назад");
+        return "{$minutes} " . get_noun_plural_form($minutes, 'минуту', 'минуты', 'минут') . " назад";
     }
 }
 
