@@ -85,45 +85,45 @@
     </div>
     <div class="popular__posts">
         <?php foreach ($posts as $post): ?>
-            <article class="popular__post <?= get_verified_output($post['type']); ?> post">
+            <article class="popular__post <?= esc($post['type']); ?> post">
                 <header class="post__header">
-                    <h2><?= get_verified_output($post['header']); ?></h2>
+                    <h2><?= esc($post['header']); ?></h2>
                 </header>
                 <div class="post__main">
                     <?php if ($post['type'] === 'post-quote'): ?>
                         <blockquote>
                             <p>
-                                <?= get_verified_output($post['content']); ?>
+                                <?= esc($post['content']); ?>
                             </p>
                             <cite>Неизвестный Автор</cite>
                         </blockquote>
                     <?php elseif ($post['type'] === 'post-text'):  ?>
-                        <p><?= $received_text = get_verified_output(crop_text($post['content'])); ?></p>
-                        <?php if ($received_text !== get_verified_output($post['content'])): ?>
+                        <p><?= $received_text = esc(crop_text($post['content'])); ?></p>
+                        <?php if ($received_text !== esc($post['content'])): ?>
                             <a class="post-text__more-link" href="#">Читать далее</a>
                         <?php endif; ?>
                     <?php elseif ($post['type'] === 'post-photo'):  ?>
                         <div class="post-photo__image-wrapper">
-                            <img src="img/<?= get_verified_output($post['content']); ?>" alt="Фото от пользователя" width="360" height="240">
+                            <img src="img/<?= esc($post['content']); ?>" alt="Фото от пользователя" width="360" height="240">
                         </div>
                     <?php elseif ($post['type'] === 'post-link'):  ?>
                         <div class="post-link__wrapper">
-                            <a class="post-link__external" href="http://<?= get_verified_output($post['content']); ?>" title="Перейти по ссылке">
+                            <a class="post-link__external" href="http://<?= esc($post['content']); ?>" title="Перейти по ссылке">
                                 <div class="post-link__info-wrapper">
                                     <div class="post-link__icon-wrapper">
                                         <img src="https://www.google.com/s2/favicons?domain=vitadental.ru" alt="Иконка">
                                     </div>
                                     <div class="post-link__info">
-                                        <h3><?= get_verified_output($post['header']); ?></h3>
+                                        <h3><?= esc($post['header']); ?></h3>
                                     </div>
                                 </div>
-                                <span><?= get_verified_output($post['content']); ?></span>
+                                <span><?= esc($post['content']); ?></span>
                             </a>
                         </div>
                     <?php elseif ($post['type'] === 'post-video'):  ?>
                         <div class="post-video__block">
                             <div class="post-video__preview">
-                                <?= embed_youtube_cover(get_verified_output($post['content'])); ?>
+                                <?= embed_youtube_cover(esc($post['content'])); ?>
                                 <img src="img/coast-medium.jpg" alt="Превью к видео" width="360" height="188">
                             </div>
                             <a href="post-details.html" class="post-video__play-big button">
@@ -139,11 +139,11 @@
                     <div class="post__author">
                         <a class="post__author-link" href="#" title="Автор">
                             <div class="post__avatar-wrapper">
-                                <img class="post__author-avatar" src="img/<?= get_verified_output($post['avatar']); ?>" alt="Аватар пользователя">
+                                <img class="post__author-avatar" src="img/<?= esc($post['avatar']); ?>" alt="Аватар пользователя">
                             </div>
                             <div class="post__info">
-                                <b class="post__author-name"><?= get_verified_output($post['user-name']); ?></b>
-                                <time class="post__time" datetime="<?= get_verified_output(show_iso_date_format($post['date'])); ?>" title="<?= get_verified_output(show_title_date_format($post['date'])); ?>"><?= get_verified_output(get_relative_date_format($post['date'])); ?></time>
+                                <b class="post__author-name"><?= esc($post['user-name']); ?></b>
+                                <time class="post__time" datetime="<?= esc(show_iso_date_format($post['date'])); ?>" title="<?= esc(show_title_date_format($post['date'])); ?>"><?= esc(get_relative_date_format($post['date'])); ?></time>
                             </div>
                         </a>
                     </div>

@@ -263,6 +263,6 @@ function generate_random_date($index)
     return $dt = new DateTime($dt);
 }
 
-function get_verified_output ($content) {
+function esc ($content) {
     return htmlspecialchars($content, ENT_QUOTES);
 }
