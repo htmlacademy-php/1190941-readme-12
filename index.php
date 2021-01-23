@@ -41,23 +41,50 @@ $posts = [
         'user-name' => 'Владик',
         'avatar' => 'userpic.jpg',
     ],
-    [
-        'header' => '<script>alert("XSS");</script>',
-        'type' => 'post-text',
-        'content' => '<script>alert("XSS");</script>',
-        'user-name' => '<script>alert("XSS");</script>',
-        'avatar' => 'userpic.jpg',
-    ],
-    [
-        'header' => '<script>alert("XSS");</script>',
-        'type' => 'post-link',
-        'content' => '"/><script>alert("XSS");</script>',
-        'user-name' => 'Бандит02',
-        'avatar' => 'userpic.jpg',
-    ],
 ];
 
-function crop_text (string $text, int $max_chars = 300) {
+function show_title_date_format (string $date_time): string {
+    $date_time = new DateTime($date_time, new DateTimeZone('Europe/Moscow'));
+    return $date_time->format('d-m-Y H:i');
+}
+
+function get_relative_date_format (string $post_date): string {
+    $post_date = new DateTime($post_date, new DateTimeZone('Europe/Moscow'));
+    $current_date = new DateTime('now', new DateTimeZone('Europe/Moscow'));
+    $date_time_diff = $post_date->diff($current_date);
+
+    if ($date_time_diff->m !== 0) {
+        $months = $date_time_diff->m;
+        return "{$months} " . get_noun_plural_form($months, 'месяц', 'месяца', 'месяцев') . " назад";
+    }
+
+    if ($date_time_diff->d >= 7) {
+        $weeks = floor($date_time_diff->d / 7);
+        return "{$weeks} " . get_noun_plural_form($weeks, 'неделю', 'недели', 'недели') . " назад";
+    }
+
+    if ($date_time_diff->d < 7 && $date_time_diff->d !== 0) {
+        $days = $date_time_diff->d;
+        return "{$days} " . get_noun_plural_form($days, 'день', 'дня', 'дней') . " назад";
+    }
+
+    if ($date_time_diff->h !== 0) {
+        $hours = $date_time_diff->h;
+        return "{$hours} " . get_noun_plural_form($hours, 'час', 'часа', 'часов') . " назад";
+    }
+
+    if ($date_time_diff->i !== 0) {
+        $minutes = $date_time_diff->i;
+        return "{$minutes} " . get_noun_plural_form($minutes, 'минуту', 'минуты', 'минут') . " назад";
+    }
+}
+
+foreach ($posts as $post_key => &$post_value) {
+    $post_date = generate_random_date($post_key);
+    $post_value['date'] = $post_date;
+}
+
+function crop_text (string $text, int $max_chars = 300): string {
     if (mb_strlen($text) < $max_chars) {
         return $text;
     }

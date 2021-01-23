@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><?= get_verified_output($page_title) ?></title>
+        <title><?= esc($page_title) ?></title>
         <link rel="stylesheet" href="css/main.css">
     </head>
 
@@ -65,7 +65,7 @@
                                     </div>
                                     <div class="header__profile-name">
                                         <span>
-                                            <?= get_verified_output($user_name) ?>
+                                            <?= esc($user_name) ?>
                                         </span>
                                         <svg class="header__link-arrow" width="10" height="6">
                                             <use xlink:href="#icon-arrow-right-ad"></use>
