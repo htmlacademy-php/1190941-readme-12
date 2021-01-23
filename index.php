@@ -43,15 +43,15 @@ $posts = [
     ],
 ];
 
-function show_iso_date_format (DateTime $date_time) {
+function show_iso_date_format (DateTime $date_time): string {
     return $date_time->format('c');
 }
 
-function show_title_date_format (DateTime $date_time) {
+function show_title_date_format (DateTime $date_time): string {
     return $date_time->format('d-m-Y H:i');
 }
 
-function get_relative_date_format (DateTime $post_date) {
+function get_relative_date_format (DateTime $post_date): string {
     $current_date = new DateTime('now', new DateTimeZone('Europe/Moscow'));
     $date_time_diff = $post_date->diff($current_date);
 
@@ -78,7 +78,7 @@ foreach ($posts as $post_key => &$post_value) {
     $post_value['date'] = $post_date;
 }
 
-function crop_text (string $text, int $max_chars = 300) {
+function crop_text (string $text, int $max_chars = 300): string {
     if (mb_strlen($text) < $max_chars) {
         return $text;
     }
