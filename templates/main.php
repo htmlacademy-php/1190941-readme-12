@@ -143,7 +143,7 @@
                             </div>
                             <div class="post__info">
                                 <b class="post__author-name"><?= get_verified_output($post['user-name']); ?></b>
-                                <time class="post__time" datetime="">дата</time>
+                                <time class="post__time" datetime="<?= get_verified_output(show_iso_date_format($post['date'])); ?>" title="<?= get_verified_output(show_title_date_format($post['date'])); ?>"><?= get_verified_output(get_relative_date_format($post['date'])); ?></time>
                             </div>
                         </a>
                     </div>

@@ -41,41 +41,41 @@ $posts = [
         'user-name' => 'Владик',
         'avatar' => 'userpic.jpg',
     ],
-    [
-        'header' => '<script>alert("XSS");</script>',
-        'type' => 'post-text',
-        'content' => '<script>alert("XSS");</script>',
-        'user-name' => '<script>alert("XSS");</script>',
-        'avatar' => 'userpic.jpg',
-    ],
-    [
-        'header' => '<script>alert("XSS");</script>',
-        'type' => 'post-link',
-        'content' => '"/><script>alert("XSS");</script>',
-        'user-name' => 'Бандит02',
-        'avatar' => 'userpic.jpg',
-    ],
 ];
 
-$current_date = new DateTime('now', new DateTimeZone('Europe/Kiev'));
-$current_date = $current_date->format('Y-m-d h:i:s');
+function show_iso_date_format (DateTime $date_time) {
+    return $date_time->format('c');
+}
 
-function get_date_time_diff (string $current_date, string $post_date) {
-    $cur_date = new DateTime($current_date);
-    $p_date = new DateTime($post_date);
+function show_title_date_format (DateTime $date_time) {
+    return $date_time->format('d-m-Y H:i');
+}
 
-    $date_diff = $cur_date->diff($p_date);
-    $date_diff->format('h часов');
+function get_relative_date_format (DateTime $post_date) {
+    $current_date = new DateTime('now', new DateTimeZone('Europe/Moscow'));
+    $date_time_diff = $post_date->diff($current_date);
 
-    return $date_diff;
+    if ($date_time_diff->m !== 0) {
+        $months = $date_time_diff->m;
+        return $date_time_diff->format("{$months} " . get_noun_plural_form($months, 'месяц', 'месяца', 'месяцев') . " назад");
+    } else if ($date_time_diff->d >= 7) {
+        $weeks = floor($date_time_diff->d / 7);
+        return $date_time_diff->format("{$weeks} " . get_noun_plural_form($weeks, 'неделю', 'недели', 'недели') . " назад");
+    } else if ($date_time_diff->d < 7 && $date_time_diff->d !== 0) {
+        $days = $date_time_diff->d;
+        return $date_time_diff->format("{$days} " . get_noun_plural_form($days, 'день', 'дня', 'дней') . " назад");
+    } else if ($date_time_diff->h !== 0) {
+        $hours = $date_time_diff->h;
+        return $date_time_diff->format("{$hours} " . get_noun_plural_form($hours, 'час', 'часа', 'часов') . " назад");
+    } else if ($date_time_diff->i !== 0) {
+        $minutes = $date_time_diff->i;
+        return $date_time_diff->format("{$minutes} " . get_noun_plural_form($minutes, 'минуту', 'минуты', 'минут') . " назад");
+    }
 }
 
 foreach ($posts as $post_key => &$post_value) {
     $post_date = generate_random_date($post_key);
-    $to_date_time = new DateTime($post_date);
-    $to_date_time->format('Y-m-d h:i:s');
-    $time_ago = get_date_time_diff($current_date, $to_date_time);
-    $post_value['date'] = $time_ago;
+    $post_value['date'] = $post_date;
 }
 
 function crop_text (string $text, int $max_chars = 300) {
@@ -106,7 +106,6 @@ function crop_text (string $text, int $max_chars = 300) {
 $page_main_content = include_template('main.php', ['posts' => $posts]);
 $page_layout = include_template('layout.php', [
     'page_title' => 'Readme - популярное',
-    'current_date' => $current_date,
     'is_auth' => $is_auth,
     'user_name' => $user_name,
     'page_main_content' => $page_main_content,

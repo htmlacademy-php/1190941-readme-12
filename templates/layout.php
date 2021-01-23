@@ -20,8 +20,7 @@
                         <img class="header__logo" src="img/logo.svg" alt="Логотип readme" width="128" height="24">
                     </a>
                     <p class="header__topic">
-                        <!--micro blogging-->
-                        <?= $current_date ?>
+                        micro blogging
                     </p>
                 </div>
                 <form class="header__search-form form" action="#" method="get">

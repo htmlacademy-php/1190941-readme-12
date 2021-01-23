@@ -260,7 +260,7 @@ function generate_random_date($index)
     $ts = strtotime("$timeval $timename ago");
     $dt = date('Y-m-d H:i:s', $ts);
 
-    return $dt;
+    return $dt = new DateTime($dt);
 }
 
 function get_verified_output ($content) {
