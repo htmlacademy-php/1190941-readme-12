@@ -9,7 +9,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(64) NOT NULL,
     avatar_path VARCHAR(255) NOT NULL UNIQUE,
-    registration_date DATETIME NOT NULL
+    registration_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE types (
@@ -21,7 +21,7 @@ CREATE TABLE types (
 CREATE TABLE posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    creation_date DATETIME NOT NULL,
+    creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     type_id INT NOT NULL,
     author_id INT NOT NULL,
     text_content TEXT,
@@ -30,6 +30,7 @@ CREATE TABLE posts (
     youtube_link VARCHAR(255),
     link VARCHAR(255),
     views_count INT,
+    repost INT NOT NULL,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE CASCADE
 );
@@ -58,7 +59,7 @@ CREATE TABLE likes (
 CREATE TABLE comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     comment TEXT NOT NULL,
-    date DATETIME NOT NULL,
+    date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     post_id INT NOT NULL,
     author_id INT NOT NULL,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
@@ -68,7 +69,7 @@ CREATE TABLE comments (
 CREATE TABLE messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     message TEXT NOT NULL,
-    date DATETIME NOT NULL,
+    date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     recipient_id INT NOT NULL,
     sender_id INT NOT NULL,
     FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -80,13 +81,5 @@ CREATE TABLE subscriptions (
     follower_id INT NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE reposts (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    post_id INT NOT NULL,
-    user_id INT NOT NULL,
-    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
