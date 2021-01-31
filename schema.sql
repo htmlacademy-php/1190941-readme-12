@@ -30,7 +30,7 @@ CREATE TABLE posts (
     youtube_link VARCHAR(255),
     link VARCHAR(255),
     views_count INT,
-    repost INT NOT NULL,
+    repost INT,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE CASCADE
 );
