@@ -13,8 +13,7 @@ $db = new mysqli($db_host, $db_username, $db_password, $db_database, $db_port);
 $db->set_charset($db_charset);
 
 $select_post_types = "SELECT * FROM types";
-$selected_post_types = $db->query($select_post_types);
-$post_types = $selected_post_types->fetch_all(MYSQLI_ASSOC);
+$post_types = get_data($select_post_types);
 
 $select_posts = "SELECT p.*,
        u.name AS author,
@@ -28,8 +27,7 @@ FROM posts p
        LEFT JOIN likes l ON p.id = l.post_id
 GROUP BY p.id
 ORDER BY likes_count DESC;";
-$selected_posts = $db->query($select_posts);
-$posts = $selected_posts->fetch_all(MYSQLI_ASSOC);
+$posts = get_data($select_posts);
 
 $is_auth = rand(0, 1);
 
