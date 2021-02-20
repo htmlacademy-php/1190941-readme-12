@@ -55,8 +55,8 @@ SELECT title,
 FROM posts p
        JOIN users u ON p.author_id = u.id
        JOIN types t ON p.type_id = t.id
-       JOIN likes l on p.id = l.post_id
-GROUP BY l.post_id
+       LEFT JOIN likes l ON p.id = l.post_id
+GROUP BY p.id
 ORDER BY likes_count DESC;
 
 /* Получить список постов для конкретного пользователя; */
