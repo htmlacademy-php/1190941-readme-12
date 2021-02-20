@@ -9,6 +9,9 @@ if (!file_exists('config.php'))
 
 require 'config.php';
 
+$db = new mysqli($db_host, $db_username, $db_password, $db_database, $db_port);
+$db->set_charset($db_charset);
+
 $select_post_types = "SELECT * FROM types";
 $selected_post_types = $db->query($select_post_types);
 $post_types = $selected_post_types->fetch_all(MYSQLI_ASSOC);
