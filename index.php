@@ -7,10 +7,18 @@ if (!file_exists('config.php'))
     trigger_error($msg,E_USER_ERROR);
 }
 
-require 'config.php';
+$config = require 'config.php';
 
-$db = new mysqli($db_host, $db_username, $db_password, $db_database, $db_port);
-$db->set_charset($db_charset);
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+$db = new mysqli(
+    $config['db']['host'],
+    $config['db']['username'],
+    $config['db']['password'],
+    $config['db']['name'],
+    $config['db']['port']
+);
+$db->set_charset($config['db']['charset']);
 
 $select_post_types = "SELECT * FROM types";
 $post_types = get_data($select_post_types);
