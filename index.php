@@ -1,47 +1,45 @@
 <?php
 require 'helpers.php';
 
+if (!file_exists('config.php'))
+{
+    $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
+    trigger_error($msg,E_USER_ERROR);
+}
+
+$config = require 'config.php';
+
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+$db = new mysqli(
+    $config['db']['host'],
+    $config['db']['username'],
+    $config['db']['password'],
+    $config['db']['name'],
+    $config['db']['port']
+);
+$db->set_charset($config['db']['charset']);
+
+$select_post_types = "SELECT * FROM types";
+$post_types = get_data($select_post_types);
+
+$select_posts = "SELECT p.*,
+       u.name AS author,
+       u.avatar_path AS avatar,
+       t.name AS type_name,
+       t.class_name AS type,
+       COUNT(l.post_id) AS likes_count
+FROM posts p
+       JOIN users u ON p.author_id = u.id
+       JOIN types t ON p.type_id = t.id
+       LEFT JOIN likes l ON p.id = l.post_id
+GROUP BY p.id
+ORDER BY likes_count DESC;";
+$posts = get_data($select_posts);
+
 $is_auth = rand(0, 1);
 
 $user_name = 'Богдан';
-
-$posts = [
-    [
-        'header' => 'Цитата',
-        'type' => 'post-quote',
-        'content' => 'Мы в жизни любим только раз, а после ищем лишь похожих',
-        'user-name' => 'Лариса',
-        'avatar' => 'userpic-larisa-small.jpg',
-    ],
-    [
-        'header' => 'Игра престолов',
-        'type' => 'post-text',
-        'content' => 'Не могу дождаться начала финального сезона своего любимого сериала!',
-        'user-name' => 'Владик',
-        'avatar' => 'userpic.jpg',
-    ],
-    [
-        'header' => 'Наконец, обработал фотки!',
-        'type' => 'post-photo',
-        'content' => 'rock-medium.jpg',
-        'user-name' => 'Виктор',
-        'avatar' => 'userpic-mark.jpg',
-    ],
-    [
-        'header' => 'Моя мечта',
-        'type' => 'post-photo',
-        'content' => 'coast-medium.jpg',
-        'user-name' => 'Лариса',
-        'avatar' => 'userpic-larisa-small.jpg',
-    ],
-    [
-        'header' => 'Лучшие курсы',
-        'type' => 'post-link',
-        'content' => 'www.htmlacademy.ru',
-        'user-name' => 'Владик',
-        'avatar' => 'userpic.jpg',
-    ],
-];
 
 function show_title_date_format (string $date_time): string {
     $date_time = new DateTime($date_time, new DateTimeZone('Europe/Moscow'));
@@ -79,11 +77,6 @@ function get_relative_date_format (string $post_date): string {
     }
 }
 
-foreach ($posts as $post_key => &$post_value) {
-    $post_date = generate_random_date($post_key);
-    $post_value['date'] = $post_date;
-}
-
 function crop_text (string $text, int $max_chars = 300): string {
     if (mb_strlen($text) < $max_chars) {
         return $text;
@@ -109,7 +102,10 @@ function crop_text (string $text, int $max_chars = 300): string {
     return $text . '...';
 }
 
-$page_main_content = include_template('main.php', ['posts' => $posts]);
+$page_main_content = include_template('main.php', [
+    'posts' => $posts,
+    'post_types' => $post_types]);
+
 $page_layout = include_template('layout.php', [
     'page_title' => 'Readme - популярное',
     'is_auth' => $is_auth,

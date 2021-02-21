@@ -266,3 +266,10 @@ function generate_random_date($index)
 function esc ($content) {
     return htmlspecialchars($content, ENT_QUOTES);
 }
+
+function get_data (string $sql) {
+    global $db;
+
+    $query = $db->query($sql);
+    return $array = $query->fetch_all(MYSQLI_ASSOC);
+}
