@@ -1,3 +1,4 @@
+<section class="page__main page__main--popular">
 <div class="container">
     <h1 class="page__title page__title--popular">Популярное</h1>
 </div>
@@ -36,13 +37,13 @@
             <b class="popular__filters-caption filters__caption">Тип контента:</b>
             <ul class="popular__filters-list filters__list">
                 <li class="popular__filters-item popular__filters-item--all filters__item filters__item--all">
-                    <a class="filters__button filters__button--ellipse filters__button--all filters__button--active" href="#">
+                    <a class="filters__button filters__button--ellipse filters__button--all <?= !isset($_GET['post-type']) ? 'filters__button--active' : '' ?>" href="/index.php">
                         <span>Все</span>
                     </a>
                 </li>
                 <?php foreach ($post_types as $post_type): ?>
                 <li class="popular__filters-item filters__item">
-                    <a class="filters__button filters__button--<?= $post_type['class_name'] ?> button" href="#">
+                    <a class="filters__button filters__button--<?= $post_type['class_name'] ?> button <?= isset($_GET['post-type']) && $_GET['post-type'] === $post_type['id'] ? 'filters__button--active' : '' ?>" href="/index.php?post-type=<?= $post_type['id'] ?>">
                         <span class="visually-hidden"><?= $post_type['name'] ?></span>
                         <svg class="filters__icon" width="22" height="18">
                             <use xlink:href="#icon-filter-<?= $post_type['class_name'] ?>"></use>
@@ -57,7 +58,9 @@
         <?php foreach ($posts as $post): ?>
             <article class="popular__post post-<?= esc($post['type']); ?> post">
                 <header class="post__header">
-                    <h2><?= esc($post['title']); ?></h2>
+                    <h2>
+                        <a href="/post.php?id=<?= esc($post['id']); ?>"><?= esc($post['title']); ?></a>
+                    </h2>
                 </header>
                 <div class="post__main">
                     <?php if ($post['type'] === 'quote'): ?>
@@ -143,3 +146,4 @@
         <?php endforeach; ?>
     </div>
 </div>
+</section>
