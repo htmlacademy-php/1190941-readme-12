@@ -290,38 +290,36 @@ function crop_text (string $text, int $max_chars = 300): string {
 
 function show_title_date_format (string $date_time): string {
     $date_time = new DateTime($date_time, new DateTimeZone('Europe/Moscow'));
-    return $date_time->format('d-m-Y H:i');
+    return esc($date_time->format('d-m-Y H:i'));
 }
 
-function get_relative_date_format (string $post_date): string {
+function get_relative_date_format (string $post_date, string $string_end): string {
     $post_date = new DateTime($post_date, new DateTimeZone('Europe/Moscow'));
     $current_date = new DateTime('now', new DateTimeZone('Europe/Moscow'));
     $date_time_diff = $post_date->diff($current_date);
+    $correct_date_format = '';
 
-    if ($date_time_diff->m !== 0) {
+    if ($date_time_diff->y !== 0) {
+        $years = $date_time_diff->y;
+        $correct_date_format = "{$years} " . get_noun_plural_form($years, 'год', 'года', 'лет') . " $string_end";
+    } elseif ($date_time_diff->m !== 0) {
         $months = $date_time_diff->m;
-        return "{$months} " . get_noun_plural_form($months, 'месяц', 'месяца', 'месяцев') . " назад";
-    }
-
-    if ($date_time_diff->d >= 7) {
+        $correct_date_format = "{$months} " . get_noun_plural_form($months, 'месяц', 'месяца', 'месяцев') . " $string_end";
+    } elseif ($date_time_diff->d >= 7) {
         $weeks = floor($date_time_diff->d / 7);
-        return "{$weeks} " . get_noun_plural_form($weeks, 'неделю', 'недели', 'недели') . " назад";
-    }
-
-    if ($date_time_diff->d < 7 && $date_time_diff->d !== 0) {
+        $correct_date_format = "{$weeks} " . get_noun_plural_form($weeks, 'неделю', 'недели', 'недели') . " $string_end";
+    } elseif ($date_time_diff->d < 7 && $date_time_diff->d !== 0) {
         $days = $date_time_diff->d;
-        return "{$days} " . get_noun_plural_form($days, 'день', 'дня', 'дней') . " назад";
-    }
-
-    if ($date_time_diff->h !== 0) {
+        $correct_date_format = "{$days} " . get_noun_plural_form($days, 'день', 'дня', 'дней') . " $string_end";
+    } elseif ($date_time_diff->h !== 0) {
         $hours = $date_time_diff->h;
-        return "{$hours} " . get_noun_plural_form($hours, 'час', 'часа', 'часов') . " назад";
+        $correct_date_format = "{$hours} " . get_noun_plural_form($hours, 'час', 'часа', 'часов') . " $string_end";
+    } elseif ($date_time_diff->i !== 0) {
+        $minutes = $date_time_diff->i;
+        $correct_date_format = "{$minutes} " . get_noun_plural_form($minutes, 'минуту', 'минуты', 'минут') . " $string_end";
     }
 
-    if ($date_time_diff->i !== 0) {
-        $minutes = $date_time_diff->i;
-        return "{$minutes} " . get_noun_plural_form($minutes, 'минуту', 'минуты', 'минут') . " назад";
-    }
+    return esc($correct_date_format);
 }
 
 function esc ($content) {
@@ -332,15 +330,158 @@ function get_data (string $sql) {
     global $db;
 
     $query = $db->query($sql);
-    return $array = $query->fetch_all(MYSQLI_ASSOC);
+    return $query->fetch_all(MYSQLI_ASSOC);
 }
 
-function get_prepared_data (string $sql, string $types, $param, ) {
+function get_prepared_data (string $sql, string $types, bool $is_single = false, ...$params) {
     global $db;
 
     $stmt = $db->prepare($sql);
-    $stmt->bind_param($types, $param);
+    $stmt->bind_param($types, ...$params);
     $stmt->execute();
     $result = $stmt->get_result();
-    return $result->fetch_all(MYSQLI_ASSOC);
+    return !$is_single ? $result->fetch_all(MYSQLI_ASSOC) : $result->fetch_assoc();
+}
+
+function get_path (bool $isphoto, $file_name) {
+
+    return !$isphoto
+        ? "/img" . "/users/" . $file_name
+        : "/img" . "/photos/" . $file_name;
+}
+
+function connect_db () {
+    if (!file_exists('config.php'))
+    {
+        $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
+        trigger_error($msg,E_USER_ERROR);
+    }
+
+    $config = require 'config.php';
+
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    $db = new mysqli(
+        $config['db']['host'],
+        $config['db']['username'],
+        $config['db']['password'],
+        $config['db']['name'],
+        $config['db']['port']
+    );
+
+    $db->set_charset($config['db']['charset']);
+
+    return $db;
+}
+
+function build_link (string $file, string $param, string $value) {
+    return "$file?$param=" . esc($value);
+}
+
+function set_page_link (int $total_pages, bool $is_prev = false) {
+    $param = !$_GET['page'] ? 1 : $_GET['page'];
+
+    if (empty($_GET) || $_GET['page'] && !$_GET['sort'] && !$_GET['post-type']) {
+        $page_link = $_SERVER['SCRIPT_NAME'] . '?page=' . (($is_prev) ? $param - 1 : $param + 1);
+    } elseif ($_GET['page'] && $_GET['sort'] || $_GET['page'] && $_GET['post-type']) {
+        $page_link = mb_substr($_SERVER['REQUEST_URI'], 0, -mb_strlen($_GET['page'])) . (($is_prev) ? $param - 1 : $param + 1);
+    } else {
+        $page_link = $_SERVER['REQUEST_URI'] . '&page=' . (($is_prev) ? $param - 1 : $param + 1);
+    }
+
+    if ($is_prev) {
+        return $param !== 1 ? esc($page_link) : '';
+    }
+
+    return ($param >= $total_pages) ? '' : esc($page_link);
+}
+
+function pagination_button_toggler () {
+    global $total_pages;
+
+    if (intval($_GET['page']) === $total_pages) {
+        return '<a class="popular__page-link popular__page-link--prev button button--gray" href="'
+                . set_page_link($total_pages, true)
+                . '">Предыдущая страница</a>';
+    } elseif (!$_GET['page'] || $_GET['post-type'] && !$_GET['page']) {
+        return '<a class="popular__page-link popular__page-link--next button button--gray" href="'
+                . set_page_link($total_pages)
+                . '">Следующая страница</a>';
+    }
+
+    return '<a class="popular__page-link popular__page-link--prev button button--gray" href="'
+            . set_page_link($total_pages, true)
+            . '">Предыдущая страница</a>
+            <a class="popular__page-link popular__page-link--next button button--gray" href="'
+            . set_page_link($total_pages)
+            . '">Следующая страница</a>';
+}
+
+function get_sorted_posts () {
+    global $query;
+    $data = '';
+
+    if ($_GET['post-type']) {
+        $query_alias = 'type_' . $_GET['sort'] . '_' . $_GET['order'];
+        $data = get_prepared_data($query['posts'][$query_alias], "i", false, intval($_GET['post-type']));
+    } else {
+        $query_alias = $_GET['sort'] . '_' . $_GET['order'];
+        $data = get_data($query['posts'][$query_alias]);
+    }
+
+    return $data;
+}
+
+function get_sort_classes (string $for) {
+    $correct_class = '';
+
+    if ($_GET['sort'] === $for) {
+        $correct_class = ' sorting__link--active';
+
+        if ($_GET['order'] === 'asc') {
+            $correct_class .= ' sorting__link--reverse';
+        }
+    }
+
+    return esc($correct_class);
+}
+
+function get_type_link (string $id) {
+    return esc($_SERVER['SCRIPT_NAME'] . '?post-type=' . $id);
+}
+
+function get_post_link (string $id) {
+    return esc('/post.php?id=' . $id);
+}
+
+function get_sort_link (string $for) {
+    $sort_link = $_SERVER['SCRIPT_NAME'] . '?sort=' . $for . '&order=desc';
+
+    if (!empty($_GET)) {
+        if ($_GET['sort'] === $for) {
+            if ($_GET['post-type']) {
+                $sort_link = $_SERVER['SCRIPT_NAME'] . '?post-type=' . $_GET['post-type'] . '&sort=' . $for . '&order=desc';
+
+                if ($_GET['order'] === 'desc') {
+                    $sort_link = mb_substr($_SERVER['REQUEST_URI'], 0, -mb_strlen($_GET['order'])) . 'asc';
+
+                    if ($_GET['page']) {
+                        $sort_link = mb_substr($_SERVER['REQUEST_URI'], 0, -mb_strlen($_GET['order'] . '&page=' . $_GET['page'])) . 'asc';
+                    }
+                } elseif ($_GET['order'] === 'asc') {
+                    $sort_link = $_SERVER['SCRIPT_NAME'] . '?post-type=' . $_GET['post-type'];
+                }
+            } else {
+                if ($_GET['order'] === 'desc') {
+                    $sort_link = mb_substr($_SERVER['SCRIPT_NAME'] . '?sort=' . $for . '&order=' . $_GET['order'], 0, -mb_strlen($_GET['order'])) . 'asc';
+                } elseif ($_GET['order'] === 'asc') {
+                    $sort_link = '/';
+                }
+            }
+        } elseif ($_GET['post-type']) {
+            $sort_link = $_SERVER['SCRIPT_NAME'] . '?post-type=' . $_GET['post-type'] . '&sort=' . $for . '&order=desc';
+        }
+    }
+
+    return esc($sort_link);
 }

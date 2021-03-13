@@ -6,6 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?= esc($page_title) ?></title>
         <link rel="stylesheet" href="css/main.css">
+        <link rel="icon" href="/favicon.svg" type="image/x-icon">
+        <link rel="shortcut icon" href="/favicon.svg" type="image/x-icon">
     </head>
 
     <body class="page">
@@ -16,7 +18,7 @@
         <header class="header">
             <div class="header__wrapper container">
                 <div class="header__logo-wrapper">
-                    <a class="header__logo-link" href="main.html">
+                    <a class="header__logo-link" href="/">
                         <img class="header__logo" src="img/logo.svg" alt="Логотип readme" width="128" height="24">
                     </a>
                     <p class="header__topic">
@@ -61,7 +63,7 @@
                             <li class="header__profile">
                                 <a class="header__profile-link" href="#">
                                     <div class="header__avatar-wrapper">
-                                        <img class="header__profile-avatar" src="img/userpic-medium.jpg" alt="Аватар профиля">
+                                        <img class="header__profile-avatar" src="img/users/userpic-anton.jpg" alt="Аватар профиля">
                                     </div>
                                     <div class="header__profile-name">
                                         <span>

@@ -1,73 +1,67 @@
 <?php
+$query = require 'queries.php';
 require 'functions.php';
 
-if (!file_exists('config.php'))
-{
-    $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
-    trigger_error($msg,E_USER_ERROR);
-}
-
-$config = require 'config.php';
-
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-$db = new mysqli(
-    $config['db']['host'],
-    $config['db']['username'],
-    $config['db']['password'],
-    $config['db']['name'],
-    $config['db']['port']
-);
-$db->set_charset($config['db']['charset']);
-
-$select_post_types = "SELECT * FROM types";
-$post_types = get_data($select_post_types);
-
-if (isset($_GET['post-type'])) {
-    $select_posts = "SELECT p.*,
-       u.name AS author,
-       u.avatar_path AS avatar,
-       t.name AS type_name,
-       t.class_name AS type,
-       COUNT(l.post_id) AS likes_count
-FROM posts p
-       JOIN users u ON p.author_id = u.id
-       JOIN types t ON p.type_id = t.id
-       LEFT JOIN likes l ON p.id = l.post_id
-WHERE t.id = ?
-GROUP BY p.id
-ORDER BY likes_count DESC;";
-    $posts = get_prepared_data($select_posts, "i", intval($_GET['post-type']));
-
-} else {
-    $select_posts = "SELECT p.*,
-       u.name AS author,
-       u.avatar_path AS avatar,
-       t.name AS type_name,
-       t.class_name AS type,
-       COUNT(l.post_id) AS likes_count
-FROM posts p
-       JOIN users u ON p.author_id = u.id
-       JOIN types t ON p.type_id = t.id
-       LEFT JOIN likes l ON p.id = l.post_id
-GROUP BY p.id
-ORDER BY likes_count DESC;";
-    $posts = get_data($select_posts);
-}
+$db = connect_db();
 
 $is_auth = 1;
-$user_name = 'Богдан';
+$user_name = 'Кто-то там';
+$posts = '';
 
-$page_main_content = include_template('popular.php', [
-    'posts' => $posts,
-    'post_types' => $post_types
+$post_types = get_data($query['post']['types']);
+
+if ($_GET['post-type']) {
+    if ($_GET['sort']) {
+        $posts = get_sorted_posts();
+    } else {
+        $posts = get_prepared_data($query['posts']['by_types'], "i", false, intval($_GET['post-type']));
+    }
+} elseif ($_GET['sort']) {
+    $posts = get_sorted_posts();
+} else {
+    $posts = get_data($query['posts']['default']);
+}
+
+$page = intval($_GET['page']);
+$limit = 6;
+$offset = (!$page ? 0 : $page - 1) * $limit;
+$total_pages = intval(ceil(count($posts) / $limit));
+
+$max_posts_on_page = array_slice($posts, $offset, $limit, true);
+
+if ($page > $total_pages || $page < 0 || $_GET['page'] === '0') {
+    http_response_code(404);
+} elseif ($_GET['post-type'] || $_GET['post-type'] === '0') {
+    $id_arr = array();
+
+    foreach ($post_types as $post_type) {
+        $id_arr[] = $post_type['id'];
+    }
+
+    if (!in_array($_GET['post-type'], $id_arr)) {
+        http_response_code(404);
+    }
+}
+
+$page_main_content = include_template((http_response_code()) !== 404 ? 'popular.php' : '404.php', [
+    'posts_all' => $posts,
+    'posts' => $max_posts_on_page,
+    'post_types' => $post_types,
 ]);
 
 $page_layout = include_template('layout.php', [
-    'page_title' => 'Readme - популярное',
+    'page_title' => 'Readme ▶️ Популярные посты',
     'is_auth' => $is_auth,
     'user_name' => $user_name,
     'page_main_content' => $page_main_content,
 ]);
+
+if ($page === 1 || $_SERVER['REQUEST_URI'] == '/index.php') {
+    if ($_GET['post-type']) {
+        header('Location: ' . mb_substr($_SERVER['REQUEST_URI'], 0, -mb_strlen('&page=' . $_GET['page'])));
+    } else {
+        header('Location: /');
+    }
+}
 
 print($page_layout);

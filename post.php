@@ -1,39 +1,29 @@
 <?php
+$query = require 'queries.php';
 require 'functions.php';
 
-if (!file_exists('config.php'))
-{
-    $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
-    trigger_error($msg,E_USER_ERROR);
-}
-
-require 'config.php';
-
-$db = new mysqli($db_host, $db_username, $db_password, $db_database, $db_port);
-$db->set_charset($db_charset);
+$db = connect_db();
 
 $is_auth = 1;
 $user_name = 'Богдан';
 
-$select_post = "SELECT p.*,
-       u.name AS author,
-       u.avatar_path AS avatar,
-       t.name AS type_name,
-       t.class_name AS type,
-       COUNT(l.post_id) AS likes_count
-FROM posts p
-       JOIN users u ON p.author_id = u.id
-       JOIN types t ON p.type_id = t.id
-       LEFT JOIN likes l ON p.id = l.post_id
-WHERE p.id = ?
-GROUP BY p.id
-ORDER BY likes_count DESC;";
-$post = get_prepared_data($select_post, "i", intval($_GET['id']));
+if (isset($_GET['id'])) {
+    $post = get_prepared_data($query['post']['single'], "ii", true, intval($_GET['id']), intval($_GET['id']));
+    $comments = get_prepared_data($query['post']['comments'], "i", false, intval($_GET['id']));
 
-$page_main_content = include_template('post.php', ['post' => $post]);
+    if (intval($_GET['id']) !== $post['id']) {
+        http_response_code(404);
+    }
+}
+
+$page_main_content = include_template(
+    (http_response_code()) !== 404 ? 'post.php' : '404.php', [
+        'post' => $post,
+        'comments' => $comments,
+]);
 
 $page_layout = include_template('layout.php', [
-    'page_title' => 'Readme - популярное',
+    'page_title' => $post['title'] . ' ▶️ Пост на Readme',
     'is_auth' => $is_auth,
     'user_name' => $user_name,
     'page_main_content' => $page_main_content,
