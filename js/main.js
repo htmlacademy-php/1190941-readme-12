@@ -28,7 +28,7 @@ window.util = {
             c = t
           }
         };
-      return r(), { init: r, goToTab: a }
+      return r(), {init: r, goToTab: a}
     }, e = document.querySelector(".adding-post__tabs-wrapper"), r = document.querySelector(".profile__tabs-wrapper"),
     i = document.querySelector(".messages");
   if (e) t(e);

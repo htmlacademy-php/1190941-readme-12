@@ -21,6 +21,7 @@
         text-decoration: underline;
     }
 </style>
+
 <main class="error__container">
     <p class="error__status-code">404</p>
     <p class="error__text">

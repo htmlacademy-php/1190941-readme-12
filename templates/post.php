@@ -1,3 +1,10 @@
+<?php
+/**
+ * @var array $post
+ * @var array $comments
+ */
+?>
+
 <main class="page__main page__main--publication">
     <div class="container">
         <h1 class="page__title page__title--publication"><?= esc($post['title']); ?></h1>
@@ -111,8 +118,8 @@
                                 <img class="comments__picture" src="../img/users/userpic-anton.jpg" alt="Аватар пользователя" width="40" height="40">
                             </div>
                             <div class="form__input-section form__input-section--error">
-                                <textarea class="comments__textarea form__textarea form__input" placeholder="Ваш комментарий"></textarea>
-                                <label class="visually-hidden">Ваш комментарий</label>
+                                <textarea class="comments__textarea form__textarea form__input" id="comments__textarea" placeholder="Ваш комментарий"></textarea>
+                                <label class="visually-hidden" for="comments__textarea">Ваш комментарий</label>
                                 <button class="form__error-button button" type="button">!</button>
                                 <div class="form__error-text">
                                     <h3 class="form__error-title">Ошибка валидации</h3>

@@ -1,3 +1,12 @@
+<?php
+/**
+ * @var $page_title
+ * @var $is_auth
+ * @var $user_name
+ * @var $page_main_content
+*/
+?>
+
 <!DOCTYPE html>
 <html lang="ru">
     <head>
@@ -5,7 +14,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?= esc($page_title) ?></title>
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="/css/main.css">
         <link rel="icon" href="/favicon.svg" type="image/x-icon">
         <link rel="shortcut icon" href="/favicon.svg" type="image/x-icon">
     </head>
@@ -19,7 +28,7 @@
             <div class="header__wrapper container">
                 <div class="header__logo-wrapper">
                     <a class="header__logo-link" href="/">
-                        <img class="header__logo" src="img/logo.svg" alt="Логотип readme" width="128" height="24">
+                        <img class="header__logo" src="/img/logo.svg" alt="Логотип readme" width="128" height="24">
                     </a>
                     <p class="header__topic">
                         micro blogging
@@ -48,12 +57,12 @@
                                 </a>
                             </li>
                             <li class="header__my-page header__my-page--feed">
-                                <a class="header__page-link" href="feed.html" title="Моя лента">
+                                <a class="header__page-link" href="/markup/feed.html" title="Моя лента">
                                     <span class="visually-hidden">Моя лента</span>
                                 </a>
                             </li>
                             <li class="header__my-page header__my-page--messages">
-                                <a class="header__page-link" href="messages.html" title="Личные сообщения">
+                                <a class="header__page-link" href="/markup/messages.html" title="Личные сообщения">
                                     <span class="visually-hidden">Личные сообщения</span>
                                 </a>
                             </li>
@@ -63,7 +72,7 @@
                             <li class="header__profile">
                                 <a class="header__profile-link" href="#">
                                     <div class="header__avatar-wrapper">
-                                        <img class="header__profile-avatar" src="img/users/userpic-anton.jpg" alt="Аватар профиля">
+                                        <img class="header__profile-avatar" src="/img/users/userpic-anton.jpg" alt="Аватар профиля">
                                     </div>
                                     <div class="header__profile-name">
                                         <span>
@@ -105,7 +114,7 @@
                                 </div>
                             </li>
                             <li>
-                                <a class="header__post-button button button--transparent" href="adding-post.html">Пост</a>
+                                <a class="header__post-button button button--transparent" href="/markup/adding-post.html">Пост</a>
                             </li>
                         </ul>
                     </nav>
@@ -149,13 +158,13 @@
                     <div class="footer__my-info">
                         <ul class="footer__my-pages">
                             <li class="footer__my-page footer__my-page--feed">
-                                <a class="footer__page-link" href="feed.html">Моя лента</a>
+                                <a class="footer__page-link" href="/markup/feed.html">Моя лента</a>
                             </li>
                             <li class="footer__my-page footer__my-page--popular">
-                                <a class="footer__page-link" href="popular.html">Популярный контент</a>
+                                <a class="footer__page-link" href="/markup/popular.html">Популярный контент</a>
                             </li>
                             <li class="footer__my-page footer__my-page--messages">
-                                <a class="footer__page-link" href="messages.html">Личные сообщения</a>
+                                <a class="footer__page-link" href="/markup/messages.html">Личные сообщения</a>
                             </li>
                         </ul>
                         <div class="footer__copyright">
@@ -171,8 +180,8 @@
             </div>
         </footer>
 
-        <script src="libs/dropzone.js"></script>
-        <script src="js/dropzone-settings.js"></script>
-        <script src="js/main.js"></script>
+        <script src="/libs/dropzone.js"></script>
+        <script src="/js/dropzone-settings.js"></script>
+        <script src="/js/main.js"></script>
     </body>
 </html>

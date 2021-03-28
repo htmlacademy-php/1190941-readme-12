@@ -1,33 +1,40 @@
 <?php
-$query = require 'queries.php';
-require 'functions.php';
+/**
+ * @var $db
+ * @var $query
+ * @var $is_auth
+ * @var $user_name
+ */
 
-$db = connect_db();
+require 'bootstrap.php';
+require 'functions/index.php';
 
-$is_auth = 1;
-$user_name = 'Кто-то там';
 $posts = '';
-
-$post_types = get_data($query['post']['types']);
-
-if ($_GET['post-type']) {
-    if ($_GET['sort']) {
-        $posts = get_sorted_posts();
-    } else {
-        $posts = get_prepared_data($query['posts']['by_types'], "i", false, intval($_GET['post-type']));
-    }
-} elseif ($_GET['sort']) {
-    $posts = get_sorted_posts();
-} else {
-    $posts = get_data($query['posts']['default']);
-}
+$pages_count = '';
 
 $page = intval($_GET['page']);
 $limit = 6;
 $offset = (!$page ? 0 : $page - 1) * $limit;
-$total_pages = intval(ceil(count($posts) / $limit));
 
-$max_posts_on_page = array_slice($posts, $offset, $limit, true);
+$post_types = get_post_types($db);
+
+if ($_GET['post-type']) {
+    if ($_GET['sort']) {
+        $pages_count = get_pages_count($db, true);
+        $posts = get_sorted_posts($db, $offset);
+    } else {
+        $pages_count = get_pages_count($db, true);
+        $posts = get_posts($db, $offset, true);
+    }
+} elseif ($_GET['sort']) {
+    $pages_count = get_pages_count($db);
+    $posts = get_sorted_posts($db, $offset);
+} else {
+    $pages_count = get_pages_count($db);
+    $posts = get_posts($db, $offset);
+}
+
+$total_pages = intval(ceil($pages_count / $limit));
 
 if ($page > $total_pages || $page < 0 || $_GET['page'] === '0') {
     http_response_code(404);
@@ -43,25 +50,31 @@ if ($page > $total_pages || $page < 0 || $_GET['page'] === '0') {
     }
 }
 
-$page_main_content = include_template((http_response_code()) !== 404 ? 'popular.php' : '404.php', [
-    'posts_all' => $posts,
-    'posts' => $max_posts_on_page,
-    'post_types' => $post_types,
-]);
+if (http_response_code() === 404) {
+    require '404.php';
+} else {
+    $page_main_content = include_template('index.php', [
+        'total_pages' => $total_pages,
+        'posts' => $posts,
+        'post_types' => $post_types,
+    ]);
 
-$page_layout = include_template('layout.php', [
-    'page_title' => 'Readme ▶️ Популярные посты',
-    'is_auth' => $is_auth,
-    'user_name' => $user_name,
-    'page_main_content' => $page_main_content,
-]);
+    $page_layout = include_template('layout.php', [
+        'page_title' => 'Readme ▶️ Популярные посты',
+        'is_auth' => $is_auth,
+        'user_name' => $user_name,
+        'page_main_content' => $page_main_content,
+    ]);
 
-if ($page === 1 || $_SERVER['REQUEST_URI'] == '/index.php') {
-    if ($_GET['post-type']) {
-        header('Location: ' . mb_substr($_SERVER['REQUEST_URI'], 0, -mb_strlen('&page=' . $_GET['page'])));
-    } else {
-        header('Location: /');
+    if ($page === 1 || $_SERVER['REQUEST_URI'] == '/index.php') {
+        if ($_GET['post-type']) {
+            header('Location: ' . mb_substr($_SERVER['REQUEST_URI'], 0, -mb_strlen('&page=' . $_GET['page'])));
+        } else {
+            header('Location: /');
+        }
     }
+
+    print($page_layout);
 }
 
-print($page_layout);
+

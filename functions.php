@@ -30,7 +30,7 @@ function is_date_valid(string $date): bool
  *
  * @return mysqli_stmt Подготовленное выражение
  */
-function db_get_prepare_stmt($link, $sql, $data = [])
+function db_get_prepare_stmt(string $link, string $sql, $data = [])
 {
     $stmt = mysqli_prepare($link, $sql);
 
@@ -130,22 +130,15 @@ function get_noun_plural_form(int $number, string $one, string $two, string $man
  * @param array $data Ассоциативный массив с данными для шаблона
  * @return string Итоговый HTML
  */
-function include_template($name, array $data = [])
+function include_template (string $name, array $data = []): string
 {
     $name = 'templates/' . $name;
-    $result = '';
-
-    /* if (!is_readable($name)) {
-        return $result;
-    } */
 
     ob_start();
     extract($data);
     require $name;
 
-    $result = ob_get_clean();
-
-    return $result;
+    return ob_get_clean();
 }
 
 /**
@@ -154,7 +147,7 @@ function include_template($name, array $data = [])
  *
  * @return string Ошибку если валидация не прошла
  */
-function check_youtube_url($url)
+function check_youtube_url(string $url)
 {
     $id = extract_youtube_id($url);
 
@@ -180,7 +173,7 @@ function check_youtube_url($url)
  * @param string $youtube_url Ссылка на youtube видео
  * @return string
  */
-function embed_youtube_video($youtube_url)
+function embed_youtube_video (string $youtube_url): string
 {
     $res = "";
     $id = extract_youtube_id($youtube_url);
@@ -198,7 +191,7 @@ function embed_youtube_video($youtube_url)
  * @param string $youtube_url Ссылка на youtube видео
  * @return string
  */
-function embed_youtube_cover($youtube_url)
+function embed_youtube_cover (string $youtube_url): string
 {
     $res = "";
     $id = extract_youtube_id($youtube_url);
@@ -216,7 +209,7 @@ function embed_youtube_cover($youtube_url)
  * @param string $youtube_url Ссылка на youtube видео
  * @return array
  */
-function extract_youtube_id($youtube_url)
+function extract_youtube_id (string $youtube_url)
 {
     $id = false;
 
@@ -258,9 +251,8 @@ function generate_random_date($index)
     $timename = key($delta);
 
     $ts = strtotime("$timeval $timename ago");
-    $dt = date('Y-m-d H:i:s', $ts);
 
-    return $dt;
+    return $dt = date('Y-m-d H:i:s', $ts);
 }
 
 function crop_text (string $text, int $max_chars = 300): string {
@@ -322,166 +314,47 @@ function get_relative_date_format (string $post_date, string $string_end): strin
     return esc($correct_date_format);
 }
 
-function esc ($content) {
+function esc ($content): string {
     return htmlspecialchars($content, ENT_QUOTES);
 }
 
-function get_data (string $sql) {
-    global $db;
+function prepare_query ($db, $sql, $params, $types) {
+    $stmt = $db->prepare($sql);
 
-    $query = $db->query($sql);
+    if (is_array($params)) {
+        $stmt->bind_param($types, ...$params);
+    } else {
+        $stmt->bind_param($types, $params);
+    }
+
+    $stmt->execute();
+
+    return $stmt->get_result();
+}
+
+function sql_select ($db, $sql, $params = [], $types = 's') {
+    if (!empty($params) || $params === 0) {
+        return prepare_query($db, $sql, $params, $types);
+    }
+
+    return $db->query($sql);
+}
+
+function sql_get_single ($db, $sql, $params = [], $types = 's') {
+    $query = sql_select($db, $sql, $params, $types);
+
+    return $query->fetch_assoc();
+}
+
+function sql_get_many ($db, $sql, $params = [], $types = 's') {
+    $query = sql_select($db, $sql, $params, $types);
+
     return $query->fetch_all(MYSQLI_ASSOC);
 }
 
-function get_prepared_data (string $sql, string $types, bool $is_single = false, ...$params) {
-    global $db;
+function get_path (bool $is_photo, $file_name): string {
 
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param($types, ...$params);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    return !$is_single ? $result->fetch_all(MYSQLI_ASSOC) : $result->fetch_assoc();
-}
-
-function get_path (bool $isphoto, $file_name) {
-
-    return !$isphoto
+    return !$is_photo
         ? "/img" . "/users/" . $file_name
         : "/img" . "/photos/" . $file_name;
-}
-
-function connect_db () {
-    if (!file_exists('config.php'))
-    {
-        $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
-        trigger_error($msg,E_USER_ERROR);
-    }
-
-    $config = require 'config.php';
-
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-    $db = new mysqli(
-        $config['db']['host'],
-        $config['db']['username'],
-        $config['db']['password'],
-        $config['db']['name'],
-        $config['db']['port']
-    );
-
-    $db->set_charset($config['db']['charset']);
-
-    return $db;
-}
-
-function build_link (string $file, string $param, string $value) {
-    return "$file?$param=" . esc($value);
-}
-
-function set_page_link (int $total_pages, bool $is_prev = false) {
-    $param = !$_GET['page'] ? 1 : $_GET['page'];
-
-    if (empty($_GET) || $_GET['page'] && !$_GET['sort'] && !$_GET['post-type']) {
-        $page_link = $_SERVER['SCRIPT_NAME'] . '?page=' . (($is_prev) ? $param - 1 : $param + 1);
-    } elseif ($_GET['page'] && $_GET['sort'] || $_GET['page'] && $_GET['post-type']) {
-        $page_link = mb_substr($_SERVER['REQUEST_URI'], 0, -mb_strlen($_GET['page'])) . (($is_prev) ? $param - 1 : $param + 1);
-    } else {
-        $page_link = $_SERVER['REQUEST_URI'] . '&page=' . (($is_prev) ? $param - 1 : $param + 1);
-    }
-
-    if ($is_prev) {
-        return $param !== 1 ? esc($page_link) : '';
-    }
-
-    return ($param >= $total_pages) ? '' : esc($page_link);
-}
-
-function pagination_button_toggler () {
-    global $total_pages;
-
-    if (intval($_GET['page']) === $total_pages) {
-        return '<a class="popular__page-link popular__page-link--prev button button--gray" href="'
-                . set_page_link($total_pages, true)
-                . '">Предыдущая страница</a>';
-    } elseif (!$_GET['page'] || $_GET['post-type'] && !$_GET['page']) {
-        return '<a class="popular__page-link popular__page-link--next button button--gray" href="'
-                . set_page_link($total_pages)
-                . '">Следующая страница</a>';
-    }
-
-    return '<a class="popular__page-link popular__page-link--prev button button--gray" href="'
-            . set_page_link($total_pages, true)
-            . '">Предыдущая страница</a>
-            <a class="popular__page-link popular__page-link--next button button--gray" href="'
-            . set_page_link($total_pages)
-            . '">Следующая страница</a>';
-}
-
-function get_sorted_posts () {
-    global $query;
-    $data = '';
-
-    if ($_GET['post-type']) {
-        $query_alias = 'type_' . $_GET['sort'] . '_' . $_GET['order'];
-        $data = get_prepared_data($query['posts'][$query_alias], "i", false, intval($_GET['post-type']));
-    } else {
-        $query_alias = $_GET['sort'] . '_' . $_GET['order'];
-        $data = get_data($query['posts'][$query_alias]);
-    }
-
-    return $data;
-}
-
-function get_sort_classes (string $for) {
-    $correct_class = '';
-
-    if ($_GET['sort'] === $for) {
-        $correct_class = ' sorting__link--active';
-
-        if ($_GET['order'] === 'asc') {
-            $correct_class .= ' sorting__link--reverse';
-        }
-    }
-
-    return esc($correct_class);
-}
-
-function get_type_link (string $id) {
-    return esc($_SERVER['SCRIPT_NAME'] . '?post-type=' . $id);
-}
-
-function get_post_link (string $id) {
-    return esc('/post.php?id=' . $id);
-}
-
-function get_sort_link (string $for) {
-    $sort_link = $_SERVER['SCRIPT_NAME'] . '?sort=' . $for . '&order=desc';
-
-    if (!empty($_GET)) {
-        if ($_GET['sort'] === $for) {
-            if ($_GET['post-type']) {
-                $sort_link = $_SERVER['SCRIPT_NAME'] . '?post-type=' . $_GET['post-type'] . '&sort=' . $for . '&order=desc';
-
-                if ($_GET['order'] === 'desc') {
-                    $sort_link = mb_substr($_SERVER['REQUEST_URI'], 0, -mb_strlen($_GET['order'])) . 'asc';
-
-                    if ($_GET['page']) {
-                        $sort_link = mb_substr($_SERVER['REQUEST_URI'], 0, -mb_strlen($_GET['order'] . '&page=' . $_GET['page'])) . 'asc';
-                    }
-                } elseif ($_GET['order'] === 'asc') {
-                    $sort_link = $_SERVER['SCRIPT_NAME'] . '?post-type=' . $_GET['post-type'];
-                }
-            } else {
-                if ($_GET['order'] === 'desc') {
-                    $sort_link = mb_substr($_SERVER['SCRIPT_NAME'] . '?sort=' . $for . '&order=' . $_GET['order'], 0, -mb_strlen($_GET['order'])) . 'asc';
-                } elseif ($_GET['order'] === 'asc') {
-                    $sort_link = '/';
-                }
-            }
-        } elseif ($_GET['post-type']) {
-            $sort_link = $_SERVER['SCRIPT_NAME'] . '?post-type=' . $_GET['post-type'] . '&sort=' . $for . '&order=desc';
-        }
-    }
-
-    return esc($sort_link);
 }

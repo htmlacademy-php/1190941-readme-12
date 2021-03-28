@@ -1,3 +1,12 @@
+<?php
+/**
+ * @var $post_types
+ * @var array $posts
+ * @var $total_pages
+ * @var $page_main_content
+ */
+?>
+
 <section class="page__main page__main--popular">
     <div class="container">
     <h1 class="page__title page__title--popular">Популярное</h1>
@@ -143,9 +152,9 @@
             </article>
         <?php endforeach; ?>
     </div>
-    <?php if (count($posts_all) > 6): ?>
+    <?php if ($total_pages > 1): ?>
     <div class="popular__page-links">
-        <?= pagination_button_toggler(); ?>
+        <?= pagination_button_toggler($total_pages); ?>
     </div>
     <?php endif; ?>
 </div>

@@ -1,32 +1,40 @@
 <?php
-$query = require 'queries.php';
-require 'functions.php';
+/**
+ * @var $db
+ * @var $query
+ * @var $is_auth
+ * @var $user_name
+ */
 
-$db = connect_db();
+require 'bootstrap.php';
+require 'functions/post.php';
 
-$is_auth = 1;
-$user_name = 'Богдан';
+$post = [];
+$comments = '';
 
 if (isset($_GET['id'])) {
-    $post = get_prepared_data($query['post']['single'], "ii", true, intval($_GET['id']), intval($_GET['id']));
-    $comments = get_prepared_data($query['post']['comments'], "i", false, intval($_GET['id']));
+    $post = get_post_by_id($db);
+    $comments = get_post_comments($db);
 
     if (intval($_GET['id']) !== $post['id']) {
         http_response_code(404);
     }
 }
 
-$page_main_content = include_template(
-    (http_response_code()) !== 404 ? 'post.php' : '404.php', [
+if (http_response_code() === 404) {
+    require '404.php';
+} else {
+    $page_main_content = include_template('post.php', [
         'post' => $post,
         'comments' => $comments,
-]);
+    ]);
 
-$page_layout = include_template('layout.php', [
-    'page_title' => $post['title'] . ' ▶️ Пост на Readme',
-    'is_auth' => $is_auth,
-    'user_name' => $user_name,
-    'page_main_content' => $page_main_content,
-]);
+    $page_layout = include_template('layout.php', [
+        'page_title' => $post['title'] . ' ▶️ Пост на Readme',
+        'is_auth' => $is_auth,
+        'user_name' => $user_name,
+        'page_main_content' => $page_main_content,
+    ]);
 
-print($page_layout);
+    print($page_layout);
+}
