@@ -52,7 +52,7 @@
                 </li>
                 <?php foreach ($post_types as $post_type): ?>
                 <li class="popular__filters-item filters__item">
-                    <a class="filters__button filters__button--<?= esc($post_type['class_name']); ?> button<?= $_GET['post-type'] !== $post_type['id'] ?: ' filters__button--active' ?>" href="<?= get_type_link($post_type['id']); ?>">
+                    <a class="filters__button filters__button--<?= esc($post_type['class_name']); ?> button<?= !isset($_GET['post-type']) || isset($_GET['post-type']) && $_GET['post-type'] !== $post_type['id'] ?: ' filters__button--active' ?>" href="<?= get_type_link($post_type['id']); ?>">
                         <span class="visually-hidden"><?= esc($post_type['name']); ?></span>
                         <svg class="filters__icon" width="22" height="18">
                             <use xlink:href="#icon-filter-<?= esc($post_type['class_name']); ?>"></use>

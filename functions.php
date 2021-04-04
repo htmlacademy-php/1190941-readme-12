@@ -358,3 +358,17 @@ function get_path (bool $is_photo, $file_name): string {
         ? "/img" . "/users/" . $file_name
         : "/img" . "/photos/" . $file_name;
 }
+
+function get_404_page ($is_auth, $user_name): string {
+    http_response_code(404);
+
+    $page_layout = include_template('layout.php', [
+        'page_title' => 'Readme ▶️ 404',
+        'is_auth' => $is_auth,
+        'user_name' => $user_name,
+        'page_main_content' => include_template('404.php'),
+    ]);
+
+    return print $page_layout;
+}
+
