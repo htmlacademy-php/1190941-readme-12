@@ -9,12 +9,33 @@
 require 'bootstrap.php';
 require 'functions/index.php';
 
+define('SCRIPT_NAME', $_SERVER['SCRIPT_NAME']);
+define('REQUEST_URI', $_SERVER['REQUEST_URI']);
+
 $posts = '';
 $page = '';
-$pages_count = get_pages_count($db);
+$sort = '';
+$sort_order = '';
+$param_type = '';
+$has_param = false;
+
+$pages_count = get_pages_count($db, $param_type);
 
 if (isset($_GET['page'])) {
     $page = intval($_GET['page']);
+}
+
+if (isset($_GET['sort']) && isset($_GET['order'])) {
+    $sort = $_GET['sort'];
+    $sort_order = $_GET['order'];
+}
+
+if (isset($_GET['post-type'])) {
+    $param_type = $_GET['post-type'];
+}
+
+if (!empty($_GET)) {
+    $has_param = true;
 }
 
 $limit = 6;
@@ -23,15 +44,15 @@ $offset = (!$page ? 0 : $page - 1) * $limit;
 $post_types = get_post_types($db);
 
 if (isset($_GET['post-type']) && $_GET['post-type'] !== '0') {
-    $pages_count = get_pages_count($db, true);
+    $pages_count = get_pages_count($db, $param_type, true);
 
     if (isset($_GET['sort'])) {
-        $posts = get_posts($db, $offset, true, true);
+        $posts = get_posts($db, $offset, $_GET['post-type'], $_GET['sort'], $_GET['order']);
     } else {
-        $posts = get_posts($db, $offset, true);
+        $posts = get_posts($db, $offset, $_GET['post-type']);
     }
 } elseif (isset($_GET['sort'])) {
-    $posts = get_posts($db, $offset, false, true);
+    $posts = get_posts($db, $offset, '', $_GET['sort'], $_GET['order']);
 } else {
     $posts = get_posts($db, $offset);
 }
@@ -58,6 +79,11 @@ $page_main_content = include_template('index.php', [
     'total_pages' => $total_pages,
     'posts' => $posts,
     'post_types' => $post_types,
+    'param_type' => $param_type,
+    'has_param' => $has_param,
+    'page' => $page,
+    'sort' => $sort,
+    'sort_order' => $sort_order,
 ]);
 
 $page_layout = include_template('layout.php', [

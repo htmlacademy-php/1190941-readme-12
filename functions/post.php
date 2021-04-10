@@ -1,6 +1,6 @@
 <?php
 
-function get_post_by_id ($db) {
+function get_post_by_id ($db, $id) {
     return sql_get_single($db, '
     SELECT p.id, title,
         text_content AS text,
@@ -30,10 +30,10 @@ function get_post_by_id ($db) {
             LEFT JOIN comments c ON p.id = c.post_id
         WHERE p.id = ?
         GROUP BY p.id, c.id;',
-        array($_GET['id'], $_GET['id']), 'ss');
+        array($id, $id), 'ss');
 }
 
-function get_post_comments ($db) {
+function get_post_comments ($db, $id) {
     return sql_get_many($db, '
     SELECT comment AS text,
         date AS date,
@@ -43,5 +43,5 @@ function get_post_comments ($db) {
         JOIN users u on comments.author_id = u.id
     WHERE post_id = ?
     ORDER BY date DESC;',
-    $_GET['id']);
+    $id);
 }
