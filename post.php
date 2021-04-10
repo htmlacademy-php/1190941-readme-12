@@ -17,15 +17,15 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 }
 
-if (isset($_GET['id'])) {
-    if ($_GET['id'] === '0') {
+if ($id) {
+    if ($id === '0') {
         get_404_page($is_auth, $user_name);
         exit();
     } else {
         $post = get_post_by_id($db, $id);
         $comments = get_post_comments($db, $id);
 
-        if (intval($_GET['id']) !== $post['id']) {
+        if (intval($id) !== $post['id']) {
             get_404_page($is_auth, $user_name);
             exit();
         }

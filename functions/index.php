@@ -125,13 +125,14 @@ function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_order = '',
              t.name AS type_name,
              t.class_name AS type,
              COUNT(l.post_id) AS likes_count,
-             COUNT(DISTINCT c.post_id) AS comments_count
+             COUNT(c.post_id) AS comments_count
          FROM posts p
              JOIN users u ON p.author_id = u.id
              JOIN types t ON p.type_id = t.id
              LEFT JOIN likes l ON p.id = l.post_id
              LEFT JOIN comments c ON p.id = c.post_id
          " . (($post_type) ? 'WHERE t.id = ?' : '') . "
+         /* TODO Додумать с GROUP BY */
          GROUP BY " . (($sort) ? 'p.id' : 'p.id, p.views_count') . "
          ORDER BY " . (($sort) ? $order_by : 'p.views_count DESC') . "
          LIMIT ?
@@ -146,9 +147,9 @@ function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_order = '',
     return $data;
 }
 
-function get_pages_count ($db, $post_type, $is_typed = false) {
+function get_pages_count ($db, $post_type = '') {
 
-    if ($is_typed) {
+    if ($post_type) {
         return current(sql_get_single($db, '
         SELECT COUNT(*)
         FROM posts

@@ -7,9 +7,9 @@
  * @var $page
  * @var $sort
  * @var $sort_order
- * @var $post_type
+ * @var $type
  * @var $has_param
- * @var $param_type
+ * @var $post_type
  */
 ?>
 
@@ -23,7 +23,7 @@
             <b class="popular__sorting-caption sorting__caption">Сортировка:</b>
             <ul class="popular__sorting-list sorting__list">
                 <li class="sorting__item sorting__item--popular">
-                    <a class="sorting__link <?= get_sort_classes('popularity', $sort, $sort_order); ?>" href="<?= get_sort_link('popularity', $page, $param_type, $sort, $sort_order, SCRIPT_NAME, REQUEST_URI, $has_param); ?>">
+                    <a class="sorting__link <?= get_sort_classes('popularity', $sort, $sort_order); ?>" href="<?= get_sort_link('popularity', $page, $post_type, $sort, $sort_order, SCRIPT_NAME, REQUEST_URI, $has_param); ?>">
                         <span>Популярность</span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
@@ -31,7 +31,7 @@
                     </a>
                 </li>
                 <li class="sorting__item">
-                    <a class="sorting__link <?= get_sort_classes('likes', $sort, $sort_order); ?>" href="<?= get_sort_link('likes', $page, $param_type, $sort, $sort_order, SCRIPT_NAME, REQUEST_URI, $has_param); ?>">
+                    <a class="sorting__link <?= get_sort_classes('likes', $sort, $sort_order); ?>" href="<?= get_sort_link('likes', $page, $post_type, $sort, $sort_order, SCRIPT_NAME, REQUEST_URI, $has_param); ?>">
                         <span>Лайки</span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
@@ -39,7 +39,7 @@
                     </a>
                 </li>
                 <li class="sorting__item">
-                    <a class="sorting__link <?= get_sort_classes('date', $sort, $sort_order); ?>" href="<?= get_sort_link('date', $page, $param_type, $sort, $sort_order, SCRIPT_NAME, REQUEST_URI, $has_param); ?>">
+                    <a class="sorting__link <?= get_sort_classes('date', $sort, $sort_order); ?>" href="<?= get_sort_link('date', $page, $post_type, $sort, $sort_order, SCRIPT_NAME, REQUEST_URI, $has_param); ?>">
                         <span>Дата</span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
@@ -52,16 +52,16 @@
             <b class="popular__filters-caption filters__caption">Тип контента:</b>
             <ul class="popular__filters-list filters__list">
                 <li class="popular__filters-item popular__filters-item--all filters__item filters__item--all">
-                    <a class="filters__button filters__button--ellipse filters__button--all <?= ($param_type) ?: 'filters__button--active' ?>" href="/">
+                    <a class="filters__button filters__button--ellipse filters__button--all <?= ($post_type) ?: 'filters__button--active' ?>" href="/">
                         <span>Все</span>
                     </a>
                 </li>
-                <?php foreach ($post_types as $post_type): ?>
+                <?php foreach ($post_types as $type): ?>
                 <li class="popular__filters-item filters__item">
-                    <a class="filters__button filters__button--<?= esc($post_type['class_name']); ?> button<?= !$param_type || $param_type !== $post_type['id'] ?: ' filters__button--active' ?>" href="<?= get_type_link($post_type['id'], SCRIPT_NAME); ?>">
-                        <span class="visually-hidden"><?= esc($post_type['name']); ?></span>
+                    <a class="filters__button filters__button--<?= esc($type['class_name']); ?> button<?= !$post_type || $post_type !== $type['id'] ?: ' filters__button--active' ?>" href="<?= get_type_link($type['id'], SCRIPT_NAME); ?>">
+                        <span class="visually-hidden"><?= esc($type['name']); ?></span>
                         <svg class="filters__icon" width="22" height="18">
-                            <use xlink:href="#icon-filter-<?= esc($post_type['class_name']); ?>"></use>
+                            <use xlink:href="#icon-filter-<?= esc($type['class_name']); ?>"></use>
                         </svg>
                     </a>
                 </li>

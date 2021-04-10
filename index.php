@@ -16,10 +16,8 @@ $posts = '';
 $page = '';
 $sort = '';
 $sort_order = '';
-$param_type = '';
+$post_type = '';
 $has_param = false;
-
-$pages_count = get_pages_count($db, $param_type);
 
 if (isset($_GET['page'])) {
     $page = intval($_GET['page']);
@@ -31,7 +29,7 @@ if (isset($_GET['sort']) && isset($_GET['order'])) {
 }
 
 if (isset($_GET['post-type'])) {
-    $param_type = $_GET['post-type'];
+    $post_type = $_GET['post-type'];
 }
 
 if (!empty($_GET)) {
@@ -41,35 +39,36 @@ if (!empty($_GET)) {
 $limit = 6;
 $offset = (!$page ? 0 : $page - 1) * $limit;
 
+$pages_count = get_pages_count($db);
 $post_types = get_post_types($db);
 
-if (isset($_GET['post-type']) && $_GET['post-type'] !== '0') {
-    $pages_count = get_pages_count($db, $param_type, true);
+if ($post_type !== '0') {
+    $pages_count = get_pages_count($db, $post_type);
 
-    if (isset($_GET['sort'])) {
-        $posts = get_posts($db, $offset, $_GET['post-type'], $_GET['sort'], $_GET['order']);
+    if ($sort) {
+        $posts = get_posts($db, $offset, $post_type, $sort, $sort_order);
     } else {
-        $posts = get_posts($db, $offset, $_GET['post-type']);
+        $posts = get_posts($db, $offset, $post_type);
     }
-} elseif (isset($_GET['sort'])) {
-    $posts = get_posts($db, $offset, '', $_GET['sort'], $_GET['order']);
+} elseif ($sort) {
+    $posts = get_posts($db, $offset, '', $sort, $sort_order);
 } else {
     $posts = get_posts($db, $offset);
 }
 
 $total_pages = intval(ceil($pages_count / $limit));
 
-if ($page > $total_pages || $page < 0 || isset($_GET['page']) && $_GET['page'] === '0') {
+if ($page > $total_pages || $page < 0 || $page === '0') {
     get_404_page($is_auth, $user_name);
     exit();
-} elseif (isset($_GET['post-type'])) {
+} elseif ($post_type) {
     $id_arr = array();
 
-    foreach ($post_types as $post_type) {
-        $id_arr[] = $post_type['id'];
+    foreach ($post_types as $type) {
+        $id_arr[] = $type['id'];
     }
 
-    if (!in_array($_GET['post-type'], $id_arr) || $_GET['post-type'] === '0') {
+    if (!in_array($post_type, $id_arr) || $post_type === '0') {
         get_404_page($is_auth, $user_name);
         exit();
     }
@@ -79,7 +78,7 @@ $page_main_content = include_template('index.php', [
     'total_pages' => $total_pages,
     'posts' => $posts,
     'post_types' => $post_types,
-    'param_type' => $param_type,
+    'post_type' => $post_type,
     'has_param' => $has_param,
     'page' => $page,
     'sort' => $sort,
@@ -93,9 +92,9 @@ $page_layout = include_template('layout.php', [
     'page_main_content' => $page_main_content,
 ]);
 
-if ($page === 1 || $_SERVER['REQUEST_URI'] == '/index.php') {
-    if (isset($_GET['post-type'])) {
-        header('Location: ' . mb_substr($_SERVER['REQUEST_URI'], 0, -mb_strlen('&page=' . $_GET['page'])));
+if ($page === 1 || REQUEST_URI == '/index.php') {
+    if ($post_type) {
+        header('Location: ' . mb_substr(REQUEST_URI, 0, -mb_strlen('&page=' . $page)));
     } else {
         header('Location: /');
     }
