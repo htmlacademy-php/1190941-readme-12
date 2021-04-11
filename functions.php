@@ -132,7 +132,7 @@ function get_noun_plural_form(int $number, string $one, string $two, string $man
  */
 function include_template (string $name, array $data = []): string
 {
-    $name = 'templates/' . $name;
+    $name = 'view/templates/' . $name;
 
     ob_start();
     extract($data);
@@ -369,6 +369,8 @@ function get_404_page ($is_auth, $user_name): string {
         'page_main_content' => include_template('404.php'),
     ]);
 
-    return print $page_layout;
+    print $page_layout;
+
+    return exit();
 }
 

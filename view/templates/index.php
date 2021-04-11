@@ -23,7 +23,7 @@
             <b class="popular__sorting-caption sorting__caption">Сортировка:</b>
             <ul class="popular__sorting-list sorting__list">
                 <li class="sorting__item sorting__item--popular">
-                    <a class="sorting__link <?= get_sort_classes('popularity', $sort, $sort_order); ?>" href="<?= get_sort_link('popularity', $page, $post_type, $sort, $sort_order, SCRIPT_NAME, REQUEST_URI, $has_param); ?>">
+                    <a class="sorting__link <?= get_sort_classes('popularity', $sort, $sort_order); ?>" href="<?= get_sort_link('popularity', $post_type, $sort, $sort_order, $_SERVER['SCRIPT_NAME']); ?>">
                         <span>Популярность</span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
@@ -31,7 +31,7 @@
                     </a>
                 </li>
                 <li class="sorting__item">
-                    <a class="sorting__link <?= get_sort_classes('likes', $sort, $sort_order); ?>" href="<?= get_sort_link('likes', $page, $post_type, $sort, $sort_order, SCRIPT_NAME, REQUEST_URI, $has_param); ?>">
+                    <a class="sorting__link <?= get_sort_classes('likes', $sort, $sort_order); ?>" href="<?= get_sort_link('likes', $post_type, $sort, $sort_order, $_SERVER['SCRIPT_NAME']); ?>">
                         <span>Лайки</span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
@@ -39,7 +39,7 @@
                     </a>
                 </li>
                 <li class="sorting__item">
-                    <a class="sorting__link <?= get_sort_classes('date', $sort, $sort_order); ?>" href="<?= get_sort_link('date', $page, $post_type, $sort, $sort_order, SCRIPT_NAME, REQUEST_URI, $has_param); ?>">
+                    <a class="sorting__link <?= get_sort_classes('date', $sort, $sort_order); ?>" href="<?= get_sort_link('date', $post_type, $sort, $sort_order, $_SERVER['SCRIPT_NAME']); ?>">
                         <span>Дата</span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
@@ -58,7 +58,7 @@
                 </li>
                 <?php foreach ($post_types as $type): ?>
                 <li class="popular__filters-item filters__item">
-                    <a class="filters__button filters__button--<?= esc($type['class_name']); ?> button<?= !$post_type || $post_type !== $type['id'] ?: ' filters__button--active' ?>" href="<?= get_type_link($type['id'], SCRIPT_NAME); ?>">
+                    <a class="filters__button filters__button--<?= esc($type['class_name']); ?> button<?= !$post_type || $post_type !== $type['id'] ?: ' filters__button--active' ?>" href="<?= get_type_link($type['id'], $_SERVER['SCRIPT_NAME']); ?>">
                         <span class="visually-hidden"><?= esc($type['name']); ?></span>
                         <svg class="filters__icon" width="22" height="18">
                             <use xlink:href="#icon-filter-<?= esc($type['class_name']); ?>"></use>
@@ -160,7 +160,7 @@
     </div>
     <?php if ($total_pages > 1): ?>
     <div class="popular__page-links">
-        <?= pagination_button_toggler($total_pages, $page, $sort, $post_type, $has_param, SCRIPT_NAME, REQUEST_URI); ?>
+        <?= pagination_button_toggler($total_pages, $page, $sort, $post_type, $has_param, $_SERVER['SCRIPT_NAME'], $_SERVER['REQUEST_URI']); ?>
     </div>
     <?php endif; ?>
 </div>
