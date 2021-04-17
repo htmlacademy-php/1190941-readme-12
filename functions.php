@@ -318,9 +318,12 @@ function esc ($content): string {
     return htmlspecialchars($content, ENT_QUOTES);
 }
 
+// TODO додумать переписать prepare_query и всех родственников
+
 function prepare_query ($db, $sql, $params, $types) {
     $stmt = $db->prepare($sql);
 
+    // TODO додумать с is_array, нужно переписать функцию не используя данную оптимизацию
     if (is_array($params)) {
         $stmt->bind_param($types, ...$params);
     } else {
@@ -333,6 +336,7 @@ function prepare_query ($db, $sql, $params, $types) {
 }
 
 function sql_select ($db, $sql, $params = [], $types = 's') {
+    // TODO empty() уже возвращает булево значение, переписать
     if (!empty($params) || $params === 0) {
         return prepare_query($db, $sql, $params, $types);
     }
@@ -355,11 +359,11 @@ function sql_get_many ($db, $sql, $params = [], $types = 's') {
 function get_path (bool $is_photo, $file_name): string {
 
     return !$is_photo
-        ? "/img" . "/users/" . $file_name
-        : "/img" . "/photos/" . $file_name;
+        ? "/view/img" . "/users/" . $file_name
+        : "/view/img" . "/photos/" . $file_name;
 }
 
-function get_404_page ($is_auth, $user_name): string {
+function build_404_page ($is_auth, $user_name): string {
     http_response_code(404);
 
     $page_layout = include_template('layout.php', [
@@ -369,8 +373,12 @@ function get_404_page ($is_auth, $user_name): string {
         'page_main_content' => include_template('404.php'),
     ]);
 
-    print $page_layout;
-
-    return exit();
+    return print $page_layout;
 }
 
+function get_404_page ($is_auth, $user_name) {
+    build_404_page($is_auth, $user_name);
+    exit();
+}
+
+// TODO функция для подсчета параметров в запросе и возврат соответсвующего кол-ва биндов

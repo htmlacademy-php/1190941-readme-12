@@ -14,7 +14,7 @@
                 <div class="post-details__main-block post post--details">
                     <?php if ($post['type'] === 'photo'): ?>
                         <div class="post-details__image-wrapper post-photo__image-wrapper">
-                            <img src="/img/photos/<?= esc($post['photo']); ?>" alt="Фото от пользователя" width="760" height="507">
+                            <img src="/view/img/photos/<?= esc($post['photo']); ?>" alt="Фото от пользователя" width="760" height="507">
                         </div>
                     <?php elseif ($post['type'] === 'text'): ?>
                         <div class="post__main">

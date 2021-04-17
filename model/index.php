@@ -1,38 +1,45 @@
 <?php
 
-function set_page_link ($is_prev, $total_pages, $page, $sort, $post_type, $has_param, $script_name, $request_uri): string {
-    $param = !$page ? 1 : $page;
-    $page_link = $request_uri . '&page=' . (($is_prev) ? $param - 1 : $param + 1);
+function set_page_link ($is_prev, $params): string {
+    $post_type = $params['post-type'] ?? '';
+    $page = $params['page'] ?? '';
 
-    if (!$has_param || $page) {
-        $page_link = $script_name . '?page=' . (($is_prev) ? $param - 1 : $param + 1);
-
-        if ($sort || $post_type) {
-            $page_link = mb_substr($request_uri, 0, -mb_strlen($page)) . (($is_prev) ? $param - 1 : $param + 1);
+    if ($is_prev) {
+        if ($params['page'] === '2') {
+            $page_link = ($post_type) ? '?' . http_build_query(array_filter($params, function ($param) {
+                    return $param !== 'page';
+                }, ARRAY_FILTER_USE_KEY))
+                : '/';
+        } else {
+            $params['page'] = intval($params['page']) - 1;
+            $page_link = '?' . http_build_query($params);
         }
+    } else {
+        $params['page'] = (!$page) ? '2' : intval($params['page']) + 1;
+        $page_link = '?' . http_build_query($params);
     }
 
-    return ($param > $total_pages) ? '' : esc($page_link);
+    return esc($page_link);
 }
 
-function pagination_button_toggler ($total_pages, $page, $sort, $post_type, $has_param, $script_name, $request_uri): string {
-    $args = func_get_args();
+function pagination_button_toggler ($total_pages, $params): string {
+    $page = $params['page'] ?? '';
 
     if (intval($page) === $total_pages) {
         return '<a class="popular__page-link popular__page-link--prev button button--gray" href="'
-            . set_page_link(true, ...$args)
+            . set_page_link(true, $params)
             . '">Предыдущая страница</a>';
     } elseif (!$page) {
         return '<a class="popular__page-link popular__page-link--next button button--gray" href="'
-            . set_page_link(false , ...$args)
+            . set_page_link(false , $params)
             . '">Следующая страница</a>';
     }
 
     return '<a class="popular__page-link popular__page-link--prev button button--gray" href="'
-        . set_page_link(true, ...$args)
+        . set_page_link(true, $params)
         . '">Предыдущая страница</a>
             <a class="popular__page-link popular__page-link--next button button--gray" href="'
-        . set_page_link(false, ...$args)
+        . set_page_link(false, $params)
         . '">Следующая страница</a>';
 }
 
@@ -41,7 +48,6 @@ function get_sort_classes ($by, $sort, $sort_order): string {
 
     if ($sort === $by) {
         $class = ' sorting__link--active';
-
         if ($sort_order === 'asc') {
             $class .= ' sorting__link--reverse';
         }
@@ -50,26 +56,44 @@ function get_sort_classes ($by, $sort, $sort_order): string {
     return esc($class);
 }
 
-function get_type_link ($id, $script_name): string {
-    return esc($script_name . '?post-type=' . $id);
+function set_type_link ($id): string {
+    return esc('?post-type=' . $id);
 }
 
-function get_post_link (string $id): string {
+function set_post_link (string $id): string {
     return esc('/post.php?id=' . $id);
 }
 
-function get_sort_link ($by, $post_type, $sort, $sort_order, $script_name): string {
-    $sort_link = $script_name . '?sort=' . $by . '&order=desc';
-
-    if ($post_type) {
-        $sort_link = get_type_link($post_type, $script_name) . '&sort=' . $by . '&order=desc';
-    }
+function set_sort_link ($by, $params): string {
+    $params = array_filter($params, function ($param) {
+        return $param !== 'page';
+    }, ARRAY_FILTER_USE_KEY);
+    $sort = $params['sort'] ?? '';
+    $order = $params['order'] ?? '';
+    $post_type = $params['post-type'] ?? '';
 
     if ($sort === $by) {
-        if ($sort_order === 'desc') {
-            $sort_link = (($post_type) ? get_type_link($post_type, $script_name) . '&'  : $script_name . '?') . 'sort=' . $by . '&order=asc';
+        if ($order === 'asc') {
+            $params = array_filter($params, function ($param) {
+                return ($param === 'sort' || $param ===  'order') ? '' : $param;
+            }, ARRAY_FILTER_USE_KEY);
+
+            $sort_link = (!$post_type) ? '/' : '?' . http_build_query($params);
         } else {
-            $sort_link = ($post_type) ? get_type_link($post_type, $script_name) : '/';
+            $params['order'] = 'asc';
+            $sort_link = '?' . http_build_query($params);
+        }
+    } else {
+        if ($post_type) {
+            if ($sort) {
+                $params['sort'] = $by;
+                $params['order'] = 'desc';
+                $sort_link = '?' . http_build_query($params);
+            } else {
+                $sort_link = '?' . http_build_query($params) . '&sort=' . $by . '&order=desc';
+            }
+        } else {
+            $sort_link = '?sort=' . $by . '&order=desc';
         }
     }
 
@@ -84,6 +108,7 @@ function get_post_types ($db) {
 
 function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_order = '', $limit = 6) {
     if ($sort) {
+        // TODO додумать есть ли ситуции когда сортировка не установлена?
         $order_by = '';
         $order = 'DESC';
 
@@ -91,6 +116,7 @@ function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_order = '',
             $order = 'ASC';
         }
 
+        // TODO оператор switch так не работает, нужно перечитать и переписать +все присвоения делать тут
         switch ($sort) {
             case ($sort === 'popularity'):
                 $order_by = "likes_count $order, comments_count $order, p.views_count $order";

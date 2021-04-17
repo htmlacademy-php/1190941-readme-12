@@ -4,11 +4,9 @@
  * @var array $posts
  * @var $total_pages
  * @var $page_main_content
- * @var $page
+ * @var $params
  * @var $sort
- * @var $sort_order
- * @var $type
- * @var $has_param
+ * @var $order
  * @var $post_type
  */
 ?>
@@ -23,7 +21,7 @@
             <b class="popular__sorting-caption sorting__caption">Сортировка:</b>
             <ul class="popular__sorting-list sorting__list">
                 <li class="sorting__item sorting__item--popular">
-                    <a class="sorting__link <?= get_sort_classes('popularity', $sort, $sort_order); ?>" href="<?= get_sort_link('popularity', $post_type, $sort, $sort_order, $_SERVER['SCRIPT_NAME']); ?>">
+                    <a class="sorting__link <?= get_sort_classes('popularity', $sort, $order); ?>" href="<?= set_sort_link('popularity', $params); ?>">
                         <span>Популярность</span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
@@ -31,7 +29,7 @@
                     </a>
                 </li>
                 <li class="sorting__item">
-                    <a class="sorting__link <?= get_sort_classes('likes', $sort, $sort_order); ?>" href="<?= get_sort_link('likes', $post_type, $sort, $sort_order, $_SERVER['SCRIPT_NAME']); ?>">
+                    <a class="sorting__link <?= get_sort_classes('likes', $sort, $order); ?>" href="<?= set_sort_link('likes', $params); ?>">
                         <span>Лайки</span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
@@ -39,7 +37,7 @@
                     </a>
                 </li>
                 <li class="sorting__item">
-                    <a class="sorting__link <?= get_sort_classes('date', $sort, $sort_order); ?>" href="<?= get_sort_link('date', $post_type, $sort, $sort_order, $_SERVER['SCRIPT_NAME']); ?>">
+                    <a class="sorting__link <?= get_sort_classes('date', $sort, $order); ?>" href="<?= set_sort_link('date', $params); ?>">
                         <span>Дата</span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
@@ -58,7 +56,7 @@
                 </li>
                 <?php foreach ($post_types as $type): ?>
                 <li class="popular__filters-item filters__item">
-                    <a class="filters__button filters__button--<?= esc($type['class_name']); ?> button<?= !$post_type || $post_type !== $type['id'] ?: ' filters__button--active' ?>" href="<?= get_type_link($type['id'], $_SERVER['SCRIPT_NAME']); ?>">
+                    <a class="filters__button filters__button--<?= esc($type['class_name']); ?> button<?= !$post_type || $post_type !== $type['id'] ?: ' filters__button--active' ?>" href="<?= set_type_link($type['id']); ?>">
                         <span class="visually-hidden"><?= esc($type['name']); ?></span>
                         <svg class="filters__icon" width="22" height="18">
                             <use xlink:href="#icon-filter-<?= esc($type['class_name']); ?>"></use>
@@ -74,7 +72,7 @@
             <article class="popular__post post-<?= esc($post['type']); ?> post">
                 <header class="post__header">
                     <h2>
-                        <a href="<?= get_post_link($post['id']); ?>"><?= esc($post['title']); ?></a>
+                        <a href="<?= set_post_link($post['id']); ?>"><?= esc($post['title']); ?></a>
                     </h2>
                 </header>
                 <div class="post__main">
@@ -86,11 +84,11 @@
                     <?php elseif ($post['type'] === 'text'):  ?>
                         <p><?= $received_text = esc(crop_text($post['text_content'])); ?></p>
                         <?php if ($received_text !== esc($post['text_content'])): ?>
-                            <a class="post-text__more-link" href="<?= get_post_link($post['id']); ?>">Читать далее</a>
+                            <a class="post-text__more-link" href="<?= set_post_link($post['id']); ?>">Читать далее</a>
                         <?php endif; ?>
                     <?php elseif ($post['type'] === 'photo'):  ?>
                         <div class="post-photo__image-wrapper">
-                            <img src="/img/photos/<?= esc($post['img_name']); ?>" alt="Фото от пользователя" width="360" height="240">
+                            <img src="/view/img/photos/<?= esc($post['img_name']); ?>" alt="Фото от пользователя" width="360" height="240">
                         </div>
                     <?php elseif ($post['type'] === 'link'):  ?>
                         <div class="post-link__wrapper">
@@ -111,7 +109,7 @@
                             <div class="post-video__preview">
                                 <?= embed_youtube_cover(esc($post['youtube_link'])); ?>
                             </div>
-                            <a href="<?= get_post_link($post['id']); ?>" class="post-video__play-big button">
+                            <a href="<?= set_post_link($post['id']); ?>" class="post-video__play-big button">
                                 <svg class="post-video__play-big-icon" width="14" height="14">
                                     <use xlink:href="#icon-video-play-big"></use>
                                 </svg>
@@ -124,7 +122,7 @@
                     <div class="post__author">
                         <a class="post__author-link" href="#" title="Автор">
                             <div class="post__avatar-wrapper">
-                                <img class="post__author-avatar" src="/img/users/<?= esc($post['avatar']); ?>" alt="Аватар пользователя">
+                                <img class="post__author-avatar" src="/view/img/users/<?= esc($post['avatar']); ?>" alt="Аватар пользователя">
                             </div>
                             <div class="post__info">
                                 <b class="post__author-name"><?= esc($post['author']); ?></b>
@@ -160,7 +158,7 @@
     </div>
     <?php if ($total_pages > 1): ?>
     <div class="popular__page-links">
-        <?= pagination_button_toggler($total_pages, $page, $sort, $post_type, $has_param, $_SERVER['SCRIPT_NAME'], $_SERVER['REQUEST_URI']); ?>
+        <?= pagination_button_toggler($total_pages, $params); ?>
     </div>
     <?php endif; ?>
 </div>
