@@ -27,7 +27,7 @@ function get_post_by_id ($db, $id) {
                  JOIN users u ON author_id = u.id
                  JOIN types t ON type_id = t.id
         WHERE p.id = ?;',
-        $id);
+        [$id]);
 }
 
 function get_post_comments ($db, $id) {
@@ -40,5 +40,5 @@ function get_post_comments ($db, $id) {
         JOIN users u on comments.author_id = u.id
     WHERE post_id = ?
     ORDER BY date DESC;',
-    $id);
+    [$id]);
 }

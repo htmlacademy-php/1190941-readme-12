@@ -9,22 +9,11 @@
 require 'bootstrap.php';
 require 'model/post.php';
 
-$post = [];
-$comments = '';
-$id = '';
+$id = $_GET['id'] ?? '';
+$post = get_post_by_id($db, $id);
 
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-
-    if ($id === '0') {
-        get_404_page($is_auth, $user_name);
-    }
-
-    $post = get_post_by_id($db, $id);
-
-    if (intval($id) !== $post['id']) {
-        get_404_page($is_auth, $user_name);
-    }
+if (intval($id) !== $post['id']) {
+    get_404_page($is_auth, $user_name);
 }
 
 $comments = get_post_comments($db, $id);

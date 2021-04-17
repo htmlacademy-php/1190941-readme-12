@@ -158,7 +158,7 @@
     </div>
     <?php if ($total_pages > 1): ?>
     <div class="popular__page-links">
-        <?= pagination_button_toggler($total_pages, $params); ?>
+        <?= pagination_button_toggle($total_pages, $params); ?>
     </div>
     <?php endif; ?>
 </div>

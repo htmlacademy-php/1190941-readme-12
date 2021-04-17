@@ -22,7 +22,7 @@ function set_page_link ($is_prev, $params): string {
     return esc($page_link);
 }
 
-function pagination_button_toggler ($total_pages, $params): string {
+function pagination_button_toggle ($total_pages, $params): string {
     $page = $params['page'] ?? '';
 
     if (intval($page) === $total_pages) {
@@ -98,76 +98,4 @@ function set_sort_link ($by, $params): string {
     }
 
     return esc($sort_link);
-}
-
-/* Queries */
-
-function get_post_types ($db) {
-    return sql_get_many($db, 'SELECT * FROM types;');
-}
-
-function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_order = '', $limit = 6) {
-    if ($sort) {
-        // TODO додумать есть ли ситуции когда сортировка не установлена?
-        $order_by = '';
-        $order = 'DESC';
-
-        if ($sort_order === 'asc') {
-            $order = 'ASC';
-        }
-
-        // TODO оператор switch так не работает, нужно перечитать и переписать +все присвоения делать тут
-        switch ($sort) {
-            case ($sort === 'popularity'):
-                $order_by = "likes_count $order, comments_count $order, p.views_count $order";
-                break;
-            case ($sort === 'likes'):
-                $order_by = "likes_count $order";
-                break;
-            case ($sort === 'date'):
-                $order_by = "p.creation_date $order";
-                break;
-        }
-    }
-
-    $sql = "SELECT p.*,
-             u.name AS author,
-             u.avatar_name AS avatar,
-             t.name AS type_name,
-             t.class_name AS type,
-             (SELECT COUNT(post_id)
-             FROM likes l
-             WHERE p.id = l.post_id) AS likes_count,
-             (SELECT COUNT(post_id)
-             FROM comments c
-             WHERE p.id = c.post_id) AS comments_count
-         FROM posts p
-             JOIN users u ON p.author_id = u.id
-             JOIN types t ON p.type_id = t.id
-         " . (($post_type) ? 'WHERE t.id = ?' : '') . "
-         ORDER BY " . (($sort) ? $order_by : 'p.views_count DESC') . "
-         LIMIT ?
-         OFFSET ?;";
-
-    if ($post_type) {
-        $data = sql_get_many($db, $sql, [$post_type, $limit, $offset], 'sss');
-    } else {
-        $data = sql_get_many($db, $sql, [$limit, $offset], 'ss');
-    }
-
-    return $data;
-}
-
-function get_pages_count ($db, $post_type = '') {
-
-    if ($post_type) {
-        return current(sql_get_single($db, '
-        SELECT COUNT(*)
-        FROM posts
-        JOIN types t ON t.id = posts.type_id
-        WHERE t.id = ?;',
-        $post_type));
-    }
-
-    return current(sql_get_single($db, 'SELECT COUNT(*) FROM posts'));
 }

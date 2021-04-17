@@ -318,46 +318,31 @@ function esc ($content): string {
     return htmlspecialchars($content, ENT_QUOTES);
 }
 
-// TODO додумать переписать prepare_query и всех родственников
-
-function prepare_query ($db, $sql, $params, $types) {
+function prepared_query ($db, $sql, $params) {
+    $types = str_repeat('s', count($params));
     $stmt = $db->prepare($sql);
-
-    // TODO додумать с is_array, нужно переписать функцию не используя данную оптимизацию
-    if (is_array($params)) {
-        $stmt->bind_param($types, ...$params);
-    } else {
-        $stmt->bind_param($types, $params);
-    }
-
+    $stmt->bind_param($types, ...$params);
     $stmt->execute();
 
-    return $stmt->get_result();
+    return $stmt;
 }
 
-function sql_select ($db, $sql, $params = [], $types = 's') {
-    // TODO empty() уже возвращает булево значение, переписать
-    if (!empty($params) || $params === 0) {
-        return prepare_query($db, $sql, $params, $types);
+function sql_select ($db, $sql, $params = []) {
+    if (!$params) {
+        return $db->query($sql);
     }
-
-    return $db->query($sql);
+    return prepared_query($db, $sql, $params)->get_result();
 }
 
-function sql_get_single ($db, $sql, $params = [], $types = 's') {
-    $query = sql_select($db, $sql, $params, $types);
-
-    return $query->fetch_assoc();
+function sql_get_single ($db, $sql, $params = []) {
+    return sql_select($db, $sql, $params)->fetch_assoc();
 }
 
-function sql_get_many ($db, $sql, $params = [], $types = 's') {
-    $query = sql_select($db, $sql, $params, $types);
-
-    return $query->fetch_all(MYSQLI_ASSOC);
+function sql_get_many ($db, $sql, $params = []) {
+    return sql_select($db, $sql, $params)->fetch_all(MYSQLI_ASSOC);
 }
 
 function get_path (bool $is_photo, $file_name): string {
-
     return !$is_photo
         ? "/view/img" . "/users/" . $file_name
         : "/view/img" . "/photos/" . $file_name;
@@ -380,5 +365,3 @@ function get_404_page ($is_auth, $user_name) {
     build_404_page($is_auth, $user_name);
     exit();
 }
-
-// TODO функция для подсчета параметров в запросе и возврат соответсвующего кол-ва биндов
