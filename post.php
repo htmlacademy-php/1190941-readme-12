@@ -7,12 +7,13 @@
  */
 
 require 'bootstrap.php';
-require 'model/post.php';
+require 'model/posts.php';
+require 'model/comments.php';
 
-$id = $_GET['id'] ?? '';
+$id = intval($_GET['id'] ?? 0);
 $post = get_post_by_id($db, $id);
 
-if (intval($id) !== $post['id']) {
+if ($id !== $post['id']) {
     get_404_page($is_auth, $user_name);
 }
 

@@ -61,7 +61,7 @@
                             <div class="post-link__wrapper">
                                 <a class="post-link__external" href="//<?= esc($post['link']); ?>" title="Перейти по ссылке">
                                     <div class="post-link__icon-wrapper">
-                                        <img src="../img/logo-vita.jpg" alt="Иконка">
+                                        <img src="/view/img/logo-vita.jpg" alt="Иконка">
                                     </div>
                                     <div class="post-link__info">
                                         <h3><?= esc($post['title']); ?></h3>
@@ -115,7 +115,7 @@
                     <div class="comments">
                         <form class="comments__form form" action="#" method="post">
                             <div class="comments__my-avatar">
-                                <img class="comments__picture" src="../img/users/userpic-anton.jpg" alt="Аватар пользователя" width="40" height="40">
+                                <img class="comments__picture" src="/view/img/users/userpic-anton.jpg" alt="Аватар пользователя" width="40" height="40">
                             </div>
                             <div class="form__input-section form__input-section--error">
                                 <textarea class="comments__textarea form__textarea form__input" id="comments__textarea" placeholder="Ваш комментарий"></textarea>
@@ -134,7 +134,7 @@
                                 <li class="comments__item user">
                                     <div class="comments__avatar">
                                         <a class="user__avatar-link" href="#">
-                                            <img class="comments__picture" src="../img/users/<?= esc($comment['author_avatar']); ?>" alt="Аватар пользователя" width="40" height="40">
+                                            <img class="comments__picture" src="/view/img/users/<?= esc($comment['author_avatar']); ?>" alt="Аватар пользователя" width="40" height="40">
                                         </a>
                                     </div>
                                     <div class="comments__info">

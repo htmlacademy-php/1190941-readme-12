@@ -5,8 +5,7 @@ require 'functions.php';
 $is_auth = 1;
 $user_name = 'Кто-то там';
 
-if (!file_exists('config.php'))
-{
+if (!file_exists('config.php')) {
     $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
     trigger_error($msg,E_USER_ERROR);
 }

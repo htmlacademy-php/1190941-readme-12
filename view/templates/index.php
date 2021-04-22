@@ -3,6 +3,7 @@
  * @var $post_types
  * @var array $posts
  * @var $total_pages
+ * @var $current_page
  * @var $page_main_content
  * @var $params
  * @var $sort
@@ -101,7 +102,7 @@
                                         <h3><?= esc($post['title']); ?></h3>
                                     </div>
                                 </div>
-                                <span>http://<?= esc($post['link']); ?></span>
+                                <span>https://<?= esc($post['link']); ?></span>
                             </a>
                         </div>
                     <?php elseif ($post['type'] === 'video'):  ?>
