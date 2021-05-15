@@ -3,12 +3,10 @@
  * @var $post_types
  * @var array $posts
  * @var $total_pages
- * @var $current_page
  * @var $page_main_content
- * @var $params
- * @var $sort
- * @var $order
- * @var $post_type
+ * @var array $query_string
+ * @var array $pagination
+ * @var array $sort
  */
 ?>
 
@@ -21,43 +19,52 @@
         <div class="popular__sorting sorting">
             <b class="popular__sorting-caption sorting__caption">Сортировка:</b>
             <ul class="popular__sorting-list sorting__list">
-                <li class="sorting__item sorting__item--popular">
-                    <a class="sorting__link <?= get_sort_classes('popularity', $sort, $order); ?>" href="<?= set_sort_link('popularity', $params); ?>">
-                        <span>Популярность</span>
-                        <svg class="sorting__icon" width="10" height="12">
-                            <use xlink:href="#icon-sort"></use>
-                        </svg>
-                    </a>
-                </li>
+                <?php foreach ($sort as $name => $sort_name): ?>
                 <li class="sorting__item">
-                    <a class="sorting__link <?= get_sort_classes('likes', $sort, $order); ?>" href="<?= set_sort_link('likes', $params); ?>">
-                        <span>Лайки</span>
+                    <a class="sorting__link<?= ($query_string['sort'] === $sort_name) ? ' sorting__link--active'
+                        . (($query_string['order'] === 'asc') ? ' sorting__link--reverse' : '') : '' ?>" href="<?php
+
+                        $sort_link = $query_string;
+
+                        unset($sort_link['page']);
+                        $sort_link['sort'] = $sort_name;
+                        $sort_link['order'] = ($query_string['sort'] === $sort_name) ? 'asc' : 'desc';
+
+                        if ($query_string['sort'] === $sort_name && $query_string['order'] === 'asc') {
+                            unset($sort_link['sort'], $sort_link['order']);
+                        }
+
+                        if ($sort_link['type'] === '') {
+                            unset($sort_link['type']);
+                        }
+
+                        if ($sort_link) {
+                            print '?' . esc(http_build_query($sort_link));
+                        } else {
+                            print '/';
+                        }
+                       ?>">
+                        <span><?= $name; ?></span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
                         </svg>
                     </a>
                 </li>
-                <li class="sorting__item">
-                    <a class="sorting__link <?= get_sort_classes('date', $sort, $order); ?>" href="<?= set_sort_link('date', $params); ?>">
-                        <span>Дата</span>
-                        <svg class="sorting__icon" width="10" height="12">
-                            <use xlink:href="#icon-sort"></use>
-                        </svg>
-                    </a>
-                </li>
+                <?php endforeach; ?>
             </ul>
         </div>
+
         <div class="popular__filters filters">
             <b class="popular__filters-caption filters__caption">Тип контента:</b>
             <ul class="popular__filters-list filters__list">
                 <li class="popular__filters-item popular__filters-item--all filters__item filters__item--all">
-                    <a class="filters__button filters__button--ellipse filters__button--all <?= ($post_type) ?: 'filters__button--active' ?>" href="/">
+                    <a class="filters__button filters__button--ellipse filters__button--all <?= ($query_string['type']) ?: 'filters__button--active' ?>" href="/">
                         <span>Все</span>
                     </a>
                 </li>
                 <?php foreach ($post_types as $type): ?>
                 <li class="popular__filters-item filters__item">
-                    <a class="filters__button filters__button--<?= esc($type['class_name']); ?> button<?= !$post_type || $post_type !== $type['id'] ?: ' filters__button--active' ?>" href="<?= set_type_link($type['id']); ?>">
+                    <a class="filters__button filters__button--<?= esc($type['class_name']); ?> button<?= !$query_string['type'] || $query_string['type'] !== $type['id'] ?: ' filters__button--active' ?>" href="<?= '?type=' . esc($type['id']); ?>">
                         <span class="visually-hidden"><?= esc($type['name']); ?></span>
                         <svg class="filters__icon" width="22" height="18">
                             <use xlink:href="#icon-filter-<?= esc($type['class_name']); ?>"></use>
@@ -73,7 +80,7 @@
             <article class="popular__post post-<?= esc($post['type']); ?> post">
                 <header class="post__header">
                     <h2>
-                        <a href="<?= set_post_link($post['id']); ?>"><?= esc($post['title']); ?></a>
+                        <a href="<?= '/post.php?id=' . esc($post['id']); ?>"><?= esc($post['title']); ?></a>
                     </h2>
                 </header>
                 <div class="post__main">
@@ -85,7 +92,7 @@
                     <?php elseif ($post['type'] === 'text'):  ?>
                         <p><?= $received_text = esc(crop_text($post['text_content'])); ?></p>
                         <?php if ($received_text !== esc($post['text_content'])): ?>
-                            <a class="post-text__more-link" href="<?= set_post_link($post['id']); ?>">Читать далее</a>
+                            <a class="post-text__more-link" href="<?= '/post.php?id=' . esc($post['id']); ?>">Читать далее</a>
                         <?php endif; ?>
                     <?php elseif ($post['type'] === 'photo'):  ?>
                         <div class="post-photo__image-wrapper">
@@ -110,7 +117,7 @@
                             <div class="post-video__preview">
                                 <?= embed_youtube_cover(esc($post['youtube_link'])); ?>
                             </div>
-                            <a href="<?= set_post_link($post['id']); ?>" class="post-video__play-big button">
+                            <a href="<?= '/post.php?id=' . esc($post['id']); ?>" class="post-video__play-big button">
                                 <svg class="post-video__play-big-icon" width="14" height="14">
                                     <use xlink:href="#icon-video-play-big"></use>
                                 </svg>
@@ -159,7 +166,28 @@
     </div>
     <?php if ($total_pages > 1): ?>
     <div class="popular__page-links">
-        <?= pagination_button_toggle($total_pages, $params); ?>
+        <!-- TODO додумать с isset(), решить проблему с page=0 -->
+        <?php
+
+        $pagination_link = $query_string;
+
+        if ($query_string['sort'] === '' && $query_string['order'] === '') {
+            unset($pagination_link['sort'], $pagination_link['order']);
+        }
+
+        if ($query_string['type'] === '') {
+            unset($pagination_link['type']);
+        }
+
+        ?>
+        <?php if (isset($query_string['page']) && $query_string['page'] === $total_pages): ?>
+        <a class="popular__page-link popular__page-link--prev button button--gray" href="?<?= esc(http_build_query($pagination_link)); ?>">Предыдущая страница</a>
+        <?php elseif (isset($query_string['page']) && $query_string['page'] === 1): ?>
+        <a class="popular__page-link popular__page-link--next button button--gray" href="?<?= esc(http_build_query($pagination_link)); ?>">Следующая страница</a>
+        <?php else: ?>
+        <a class="popular__page-link popular__page-link--prev button button--gray" href="<?= esc(http_build_query($pagination_link)); ?>">Предыдущая страница</a>
+        <a class="popular__page-link popular__page-link--next button button--gray" href="?<?= esc(http_build_query($pagination_link)); ?>">Следующая страница</a>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
 </div>
