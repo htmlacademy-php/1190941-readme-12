@@ -1,9 +1,9 @@
 <?php
 /**
- * @var $post_types
+ * @var array $post_types
  * @var array $posts
- * @var $total_pages
- * @var $page_main_content
+ * @var int $total_pages
+ * @var string $page_main_content
  * @var array $query_string
  * @var array $pagination
  * @var array $sort
@@ -20,30 +20,12 @@
             <b class="popular__sorting-caption sorting__caption">Сортировка:</b>
             <ul class="popular__sorting-list sorting__list">
                 <?php foreach ($sort as $name => $sort_name): ?>
+                    <?php $class_active = $query_string['sort'] === $sort_name ? ' sorting__link--active' : '' ?>
+                    <?php $sort_direction = $class_active && $query_string['direction'] === 'desc' ? 'asc' : 'desc' ?>
+                    <?php $class_reverse = $sort_direction === 'desc' ? ' sorting__link--reverse' : '' ?>
+                    <?php $href = get_query_string($query_string, ['sort' => $sort_name, 'page' => null, 'direction' => $sort_direction]) ?>
                 <li class="sorting__item">
-                    <a class="sorting__link<?= ($query_string['sort'] === $sort_name) ? ' sorting__link--active'
-                        . (($query_string['order'] === 'asc') ? ' sorting__link--reverse' : '') : '' ?>" href="<?php
-
-                        $sort_link = $query_string;
-
-                        unset($sort_link['page']);
-                        $sort_link['sort'] = $sort_name;
-                        $sort_link['order'] = ($query_string['sort'] === $sort_name) ? 'asc' : 'desc';
-
-                        if ($query_string['sort'] === $sort_name && $query_string['order'] === 'asc') {
-                            unset($sort_link['sort'], $sort_link['order']);
-                        }
-
-                        if ($sort_link['type'] === '') {
-                            unset($sort_link['type']);
-                        }
-
-                        if ($sort_link) {
-                            print '?' . esc(http_build_query($sort_link));
-                        } else {
-                            print '/';
-                        }
-                       ?>">
+                    <a class="sorting__link<?= $class_active ?><?= $class_reverse ?>" href="<?= esc($href) ?>">
                         <span><?= $name; ?></span>
                         <svg class="sorting__icon" width="10" height="12">
                             <use xlink:href="#icon-sort"></use>
@@ -164,29 +146,15 @@
             </article>
         <?php endforeach; ?>
     </div>
-    <?php if ($total_pages > 1): ?>
+    <?php if ($pagination['next'] || $pagination['prev']): ?>
     <div class="popular__page-links">
-        <!-- TODO додумать с isset(), решить проблему с page=0 -->
-        <?php
-
-        $pagination_link = $query_string;
-
-        if ($query_string['sort'] === '' && $query_string['order'] === '') {
-            unset($pagination_link['sort'], $pagination_link['order']);
-        }
-
-        if ($query_string['type'] === '') {
-            unset($pagination_link['type']);
-        }
-
-        ?>
-        <?php if (isset($query_string['page']) && $query_string['page'] === $total_pages): ?>
-        <a class="popular__page-link popular__page-link--prev button button--gray" href="?<?= esc(http_build_query($pagination_link)); ?>">Предыдущая страница</a>
-        <?php elseif (isset($query_string['page']) && $query_string['page'] === 1): ?>
-        <a class="popular__page-link popular__page-link--next button button--gray" href="?<?= esc(http_build_query($pagination_link)); ?>">Следующая страница</a>
-        <?php else: ?>
-        <a class="popular__page-link popular__page-link--prev button button--gray" href="<?= esc(http_build_query($pagination_link)); ?>">Предыдущая страница</a>
-        <a class="popular__page-link popular__page-link--next button button--gray" href="?<?= esc(http_build_query($pagination_link)); ?>">Следующая страница</a>
+        <?php if ($pagination['prev']): ?>
+            <?php $prev_link = get_query_string($query_string, ['page' => $pagination['prev'] === 1 ? null : $pagination['prev']]) ?>
+            <a class="popular__page-link popular__page-link--prev button button--gray" href="<?= $prev_link ?>">Предыдущая страница</a>
+        <?php endif; ?>
+        <?php if ($pagination['next']): ?>
+            <?php $next_link = get_query_string($query_string, ['page' => $pagination['next']]) ?>
+            <a class="popular__page-link popular__page-link--next button button--gray" href="<?= $next_link ?>">Следующая страница</a>
         <?php endif; ?>
     </div>
     <?php endif; ?>

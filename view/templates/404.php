@@ -17,6 +17,7 @@
         font-size: 30px;
         margin: 0;
     }
+
     .error__link {
         text-decoration: underline;
     }

@@ -15,13 +15,12 @@ require 'model/types.php';
 require 'model/posts.php';
 
 $query_string = $_GET ?? [];
-$query_string['type'] = $_GET['type'] ?? '';
+$query_string['type'] = $query_string['type'] ?? null;
 $post_types = get_post_types($db);
 
-// TODO проверить по итогу всех правок
-//if ($query_string['type']  && !in_array($query_string['type'], array_column($post_types, 'id')) || $query_string['type'] === '0' || $query_string['type'] === '') {
-//	get_404_page($is_auth, $user_name);
-//}
+if ($query_string['type'] && !in_array($query_string['type'], array_column($post_types, 'id')) || $query_string['type'] === '0' || $query_string['type'] === '') {
+	get_404_page($is_auth, $user_name);
+}
 
 $pages_count = get_pages_count($db, $query_string['type']);
 $limit = 6;
@@ -33,45 +32,29 @@ if ($query_string['page'] > $total_pages || $query_string['page'] <= 0) {
 }
 
 $offset = ($query_string['page'] - 1) * $limit;
-$query_string['sort'] = $query_string['sort'] ?? '';
-$query_string['order'] = $query_string['order'] ?? '';
-$posts = get_posts($db, $offset, $query_string['type'] , $query_string['sort'], $query_string['order']);
+$query_string['sort'] = $query_string['sort'] ?? null;
+$query_string['direction'] = $query_string['direction'] ?? null;
+$posts = get_posts($db, $offset, $query_string['type'] , $query_string['sort'], $query_string['direction']);
 
 $pagination['prev'] = $query_string['page'] - 1;
 $pagination['next'] = $query_string['page'] + 1;
-
-// TODO по итогу доработок удалить комментарий
-//function set_link ($pagination, $query_string, $set_sort = []): string {
-//    $query_params = [];
-//    !$post_type ?: $query_params['post-type'] = $post_type;
-//
-//    if ($sort) {
-//        $query_params['sort'] = $sort;
-//        $query_params['order'] = $order;
-//    }
-//
-//    if ($set_sort) {
-//        if ($set_sort === $sort) {
-//            if ($order === 'asc') {
-//                unset($query_params['sort'], $query_params['order']);
-//            } else {
-//                $query_params['order'] = 'asc';
-//            }
-//        } else {
-//            $query_params['sort'] = $set_sort;
-//            $query_params['order'] = 'desc';
-//        }
-//        unset($query_params['page']);
-//    }
-//
-//    return $query_params ? '?' . http_build_query($query_params) : '/';
-//}
+$pagination['next'] = $pagination['next'] <= $total_pages ? $pagination['next'] : null;
 
 $sort = [
     'Популярность' => 'popularity',
     'Лайки' => 'likes',
     'Дата' => 'date',
 ];
+
+function get_query_string (array $query_string, array $modifier):string {
+    $merged_array = array_merge($query_string, $modifier);
+    foreach ($merged_array as $key => $value) {
+        if ($value === null) {
+            unset($merged_array[$key]);
+        }
+    }
+    return $merged_array ? '?' . http_build_query($merged_array) : '/';
+}
 
 $page_main_content = include_template('index.php', [
 	'total_pages' => $total_pages,

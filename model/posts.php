@@ -30,18 +30,18 @@ function get_post_by_id ($db, $id) {
         [$id]);
 }
 
-function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_order = '', $limit = 6) {
-    $order = $sort_order ?? 'desc';
+function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_direction = '', $limit = 6) {
+    $direction = $sort_direction ?? 'desc';
 
     switch ($sort) {
         case 'popularity':
-            $order_by = "likes_count $order, comments_count $order, p.views_count $order";
+            $order_by = "likes_count $direction, comments_count $direction, p.views_count $direction";
             break;
         case 'likes':
-            $order_by = "likes_count $order";
+            $order_by = "likes_count $direction";
             break;
         case 'date':
-            $order_by = "p.creation_date $order";
+            $order_by = "p.creation_date $direction";
             break;
     }
 
