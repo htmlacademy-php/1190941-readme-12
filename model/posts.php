@@ -31,6 +31,8 @@ function get_post_by_id ($db, $id) {
 }
 
 function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_direction = '', $limit = 6) {
+
+    // TODO валидация параметров перед запросом http://readme.loc/?sort=popularity&direction=gnflg
     $direction = $sort_direction ?? 'desc';
 
     switch ($sort) {
@@ -69,13 +71,12 @@ function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_direction =
         : sql_get_many($db, $sql, [$limit, $offset]);
 }
 
-function get_pages_count ($db, $post_type = []) {
+function get_pages_count ($db, $post_type = '') {
     return ($post_type)
         ? current(sql_get_single($db, '
         SELECT COUNT(*)
         FROM posts
-        JOIN types t ON t.id = posts.type_id
-        WHERE t.id = ?;',
+        WHERE type_id = ?;',
         [$post_type]))
         : current(sql_get_single($db, 'SELECT COUNT(*) FROM posts'));
 }

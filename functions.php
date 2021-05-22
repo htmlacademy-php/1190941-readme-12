@@ -348,6 +348,7 @@ function get_path (bool $is_photo, $file_name): string {
         : "/view/img" . "/photos/" . $file_name;
 }
 
+// TODO попробовать скомпоновать в 1 с get_404_page
 function build_404_page ($is_auth, $user_name): string {
     http_response_code(404);
 
@@ -364,4 +365,16 @@ function build_404_page ($is_auth, $user_name): string {
 function get_404_page ($is_auth, $user_name) {
     build_404_page($is_auth, $user_name);
     exit();
+}
+
+
+function get_query_string (array $query_string, array $modifier):string {
+    // TODO избавится от $merged_array
+    $merged_array = array_merge($query_string, $modifier);
+    foreach ($merged_array as $key => $value) {
+        if ($value === null) {
+            unset($merged_array[$key]);
+        }
+    }
+    return $merged_array ? '?' . http_build_query($merged_array) : '/';
 }

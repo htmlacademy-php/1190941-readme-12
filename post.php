@@ -10,10 +10,12 @@ require 'bootstrap.php';
 require 'model/posts.php';
 require 'model/comments.php';
 
+// TODO додумать с 0, не передавать в get_post_by_id()
 $id = intval($_GET['id'] ?? 0);
 $post = get_post_by_id($db, $id);
 
-if ($id !== $post['id']) {
+// TODO додумать с ?id[]=343 и undefined index
+if (!$post) {
     get_404_page($is_auth, $user_name);
 }
 

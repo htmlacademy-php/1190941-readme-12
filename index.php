@@ -46,15 +46,9 @@ $sort = [
     'Дата' => 'date',
 ];
 
-function get_query_string (array $query_string, array $modifier):string {
-    $merged_array = array_merge($query_string, $modifier);
-    foreach ($merged_array as $key => $value) {
-        if ($value === null) {
-            unset($merged_array[$key]);
-        }
-    }
-    return $merged_array ? '?' . http_build_query($merged_array) : '/';
-}
+/* TODO сообразить как сократить код рендеринга шаблонов.
+    Можно сделать функцию, которая принимает постоянные значения как простые параметры,
+    а переменные - в виде массива */
 
 $page_main_content = include_template('index.php', [
 	'total_pages' => $total_pages,
