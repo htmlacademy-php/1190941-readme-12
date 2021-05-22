@@ -1,116 +1,69 @@
 <?php
-require 'helpers.php';
+/**
+ * @var $db
+ * @var $query
+ * @var $is_auth
+ * @var $user_name
+ */
 
-if (!file_exists('config.php'))
-{
-    $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
-    trigger_error($msg,E_USER_ERROR);
+if ($_SERVER['REQUEST_URI'] == '/index.php') {
+	header('Location: /', true, 301);
 }
 
-$config = require 'config.php';
+require 'bootstrap.php';
+require 'model/types.php';
+require 'model/posts.php';
 
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+$query_string = $_GET ?? [];
+$query_string['type'] = $query_string['type'] ?? null;
+$post_types = get_post_types($db);
 
-$db = new mysqli(
-    $config['db']['host'],
-    $config['db']['username'],
-    $config['db']['password'],
-    $config['db']['name'],
-    $config['db']['port']
-);
-$db->set_charset($config['db']['charset']);
-
-$select_post_types = "SELECT * FROM types";
-$post_types = get_data($select_post_types);
-
-$select_posts = "SELECT p.*,
-       u.name AS author,
-       u.avatar_path AS avatar,
-       t.name AS type_name,
-       t.class_name AS type,
-       COUNT(l.post_id) AS likes_count
-FROM posts p
-       JOIN users u ON p.author_id = u.id
-       JOIN types t ON p.type_id = t.id
-       LEFT JOIN likes l ON p.id = l.post_id
-GROUP BY p.id
-ORDER BY likes_count DESC;";
-$posts = get_data($select_posts);
-
-$is_auth = rand(0, 1);
-
-$user_name = 'Богдан';
-
-function show_title_date_format (string $date_time): string {
-    $date_time = new DateTime($date_time, new DateTimeZone('Europe/Moscow'));
-    return $date_time->format('d-m-Y H:i');
+if ($query_string['type'] && !in_array($query_string['type'], array_column($post_types, 'id')) || $query_string['type'] === '0' || $query_string['type'] === '') {
+	get_404_page($is_auth, $user_name);
 }
 
-function get_relative_date_format (string $post_date): string {
-    $post_date = new DateTime($post_date, new DateTimeZone('Europe/Moscow'));
-    $current_date = new DateTime('now', new DateTimeZone('Europe/Moscow'));
-    $date_time_diff = $post_date->diff($current_date);
+$pages_count = get_pages_count($db, $query_string['type']);
+$limit = 6;
+$total_pages = intval(ceil($pages_count / $limit));
+$query_string['page'] = intval($query_string['page'] ?? 1);
 
-    if ($date_time_diff->m !== 0) {
-        $months = $date_time_diff->m;
-        return "{$months} " . get_noun_plural_form($months, 'месяц', 'месяца', 'месяцев') . " назад";
-    }
-
-    if ($date_time_diff->d >= 7) {
-        $weeks = floor($date_time_diff->d / 7);
-        return "{$weeks} " . get_noun_plural_form($weeks, 'неделю', 'недели', 'недели') . " назад";
-    }
-
-    if ($date_time_diff->d < 7 && $date_time_diff->d !== 0) {
-        $days = $date_time_diff->d;
-        return "{$days} " . get_noun_plural_form($days, 'день', 'дня', 'дней') . " назад";
-    }
-
-    if ($date_time_diff->h !== 0) {
-        $hours = $date_time_diff->h;
-        return "{$hours} " . get_noun_plural_form($hours, 'час', 'часа', 'часов') . " назад";
-    }
-
-    if ($date_time_diff->i !== 0) {
-        $minutes = $date_time_diff->i;
-        return "{$minutes} " . get_noun_plural_form($minutes, 'минуту', 'минуты', 'минут') . " назад";
-    }
+if ($query_string['page'] > $total_pages || $query_string['page'] <= 0) {
+	get_404_page($is_auth, $user_name);
 }
 
-function crop_text (string $text, int $max_chars = 300): string {
-    if (mb_strlen($text) < $max_chars) {
-        return $text;
-    }
+$offset = ($query_string['page'] - 1) * $limit;
+$query_string['sort'] = $query_string['sort'] ?? null;
+$query_string['direction'] = $query_string['direction'] ?? null;
+$posts = get_posts($db, $offset, $query_string['type'] , $query_string['sort'], $query_string['direction']);
 
-    $text_parts = explode(' ', $text);
-    $total_chars = 0;
-    $space_value = 1;
-    $verified_text = array();
+$pagination['prev'] = $query_string['page'] - 1;
+$pagination['next'] = $query_string['page'] + 1;
+$pagination['next'] = $pagination['next'] <= $total_pages ? $pagination['next'] : null;
 
-    foreach ($text_parts as $text_part) {
-        $total_chars += mb_strlen($text_part) + $space_value;
+$sort = [
+    'Популярность' => 'popularity',
+    'Лайки' => 'likes',
+    'Дата' => 'date',
+];
 
-        if (($total_chars - $space_value) >= $max_chars) {
-            break;
-        }
+/* TODO сообразить как сократить код рендеринга шаблонов.
+    Можно сделать функцию, которая принимает постоянные значения как простые параметры,
+    а переменные - в виде массива */
 
-        $verified_text[] = $text_part;
-    }
-
-    $text = implode(' ', $verified_text);
-
-    return $text . '...';
-}
-
-$page_main_content = include_template('main.php', [
-    'posts' => $posts,
-    'post_types' => $post_types]);
-
-$page_layout = include_template('layout.php', [
-    'page_title' => 'Readme - популярное',
-    'is_auth' => $is_auth,
-    'user_name' => $user_name,
-    'page_main_content' => $page_main_content,
+$page_main_content = include_template('index.php', [
+	'total_pages' => $total_pages,
+	'posts' => $posts,
+	'post_types' => $post_types,
+	'query_string' => $query_string,
+    'pagination' => $pagination,
+    'sort' => $sort,
 ]);
 
-print($page_layout);
+$page_layout = include_template('layout.php', [
+	'page_title' => 'Readme ▶️ Популярные посты',
+	'is_auth' => $is_auth,
+	'user_name' => $user_name,
+	'page_main_content' => $page_main_content,
+]);
+
+print $page_layout;
