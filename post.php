@@ -14,7 +14,9 @@ require 'model/comments.php';
 $id = intval($_GET['id'] ?? 0);
 $post = get_post_by_id($db, $id);
 
-// TODO додумать с ?id[]=343 и undefined index
+var_dump($post);
+
+// TODO додумать с ?id[]=343
 if (!$post) {
     get_404_page($is_auth, $user_name);
 }

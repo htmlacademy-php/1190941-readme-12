@@ -35,6 +35,10 @@ function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_direction =
     // TODO валидация параметров перед запросом http://readme.loc/?sort=popularity&direction=gnflg
     $direction = $sort_direction ?? 'desc';
 
+    if ($direction !== null && !in_array($direction, ['desc', 'asc'])) {
+        throw new InvalidArgumentException("Invalid Order By direction value");
+    }
+
     switch ($sort) {
         case 'popularity':
             $order_by = "likes_count $direction, comments_count $direction, p.views_count $direction";
@@ -45,6 +49,11 @@ function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_direction =
         case 'date':
             $order_by = "p.creation_date $direction";
             break;
+        case null:
+            $order_by = 'p.views_count DESC';
+            break;
+        default:
+            throw new InvalidArgumentException("Invalid Order By direction value");
     }
 
     $sql = "SELECT p.*,
@@ -61,8 +70,8 @@ function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_direction =
          FROM posts p
              JOIN users u ON p.author_id = u.id
              JOIN types t ON p.type_id = t.id
-         " . (($post_type) ? 'WHERE t.id = ?' : '') . "
-         ORDER BY " . ($order_by ?? 'p.views_count DESC') . "
+         " . ($post_type ? 'WHERE t.id = ?' : '') . "
+         ORDER BY $order_by
          LIMIT ?
          OFFSET ?;";
 

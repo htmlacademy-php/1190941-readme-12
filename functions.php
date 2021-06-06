@@ -130,8 +130,7 @@ function get_noun_plural_form(int $number, string $one, string $two, string $man
  * @param array $data Ассоциативный массив с данными для шаблона
  * @return string Итоговый HTML
  */
-function include_template (string $name, array $data = []): string
-{
+function include_template (string $name, array $data = []): string {
     $name = 'view/templates/' . $name;
 
     ob_start();
@@ -367,7 +366,6 @@ function get_404_page ($is_auth, $user_name) {
     exit();
 }
 
-
 function get_query_string (array $query_string, array $modifier):string {
     // TODO избавится от $merged_array
     $merged_array = array_merge($query_string, $modifier);
@@ -378,3 +376,4 @@ function get_query_string (array $query_string, array $modifier):string {
     }
     return $merged_array ? '?' . http_build_query($merged_array) : '/';
 }
+

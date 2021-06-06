@@ -34,17 +34,22 @@ if ($query_string['page'] > $total_pages || $query_string['page'] <= 0) {
 $offset = ($query_string['page'] - 1) * $limit;
 $query_string['sort'] = $query_string['sort'] ?? null;
 $query_string['direction'] = $query_string['direction'] ?? null;
-$posts = get_posts($db, $offset, $query_string['type'] , $query_string['sort'], $query_string['direction']);
-
-$pagination['prev'] = $query_string['page'] - 1;
-$pagination['next'] = $query_string['page'] + 1;
-$pagination['next'] = $pagination['next'] <= $total_pages ? $pagination['next'] : null;
 
 $sort = [
     'Популярность' => 'popularity',
     'Лайки' => 'likes',
     'Дата' => 'date',
 ];
+
+if ($query_string['sort'] !== null && !in_array($query_string['sort'], $sort) || $query_string['direction'] !== null && !in_array($query_string['direction'], ['desc', 'asc'])) {
+    get_404_page($is_auth, $user_name);
+}
+
+$posts = get_posts($db, $offset, $query_string['type'] , $query_string['sort'], $query_string['direction']);
+
+$pagination['prev'] = $query_string['page'] - 1;
+$pagination['next'] = $query_string['page'] + 1;
+$pagination['next'] = $pagination['next'] <= $total_pages ? $pagination['next'] : null;
 
 /* TODO сообразить как сократить код рендеринга шаблонов.
     Можно сделать функцию, которая принимает постоянные значения как простые параметры,
