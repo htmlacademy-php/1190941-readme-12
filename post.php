@@ -2,37 +2,47 @@
 /**
  * @var $db
  * @var $query
- * @var $is_auth
- * @var $user_name
+ * @var $isAuth
+ * @var $userName
  */
 
 require 'bootstrap.php';
 require 'model/posts.php';
 require 'model/comments.php';
+require 'model/hashtags.php';
 
-// TODO додумать с 0, не передавать в get_post_by_id()
-$id = intval($_GET['id'] ?? 0);
-$post = get_post_by_id($db, $id);
-
-var_dump($post);
-
-// TODO додумать с ?id[]=343
-if (!$post) {
-    get_404_page($is_auth, $user_name);
+// TODO додумать с 0, ?id[]=343 не передавать в getPostById(), и что-то с undefined index (вспомнить где)
+if (!is_string($_GET['id'])) {
+    get404StatusCode();
 }
 
-$comments = get_post_comments($db, $id);
+$id = $_GET['id'] ?? null;
 
-$page_main_content = include_template('post.php', [
+if (is_string($id)) {
+    $id = intval($id);
+}
+
+$post = getPostById($db, $id);
+
+if (!$post) {
+    get404StatusCode();
+}
+
+$comments = getPostComments($db, $id);
+$hashtags = getPostTags($db, $id);
+
+$pageMainContent = includeTemplate('post.php', [
     'post' => $post,
     'comments' => $comments,
+    'hashtags' => $hashtags,
 ]);
 
-$page_layout = include_template('layout.php', [
-    'page_title' => $post['title'] . ' ▶️ Пост на Readme',
-    'is_auth' => $is_auth,
-    'user_name' => $user_name,
-    'page_main_content' => $page_main_content,
+$pageLayout = includeTemplate('layout.php', [
+    'pageTitle' => $post['title'] . ' ▶️ Пост на Readme',
+    'isAuth' => $isAuth,
+    'userName' => $userName,
+    'pageMainContent' => $pageMainContent,
+    'pageMainClass' => 'publication',
 ]);
 
-print($page_layout);
+print($pageLayout);

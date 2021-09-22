@@ -30,7 +30,7 @@ function is_date_valid(string $date): bool
  *
  * @return mysqli_stmt Подготовленное выражение
  */
-function db_get_prepare_stmt(string $link, string $sql, $data = [])
+function db_get_prepare_stmt($link, $sql, $data = [])
 {
     $stmt = mysqli_prepare($link, $sql);
 
@@ -100,7 +100,7 @@ function db_get_prepare_stmt(string $link, string $sql, $data = [])
  *
  * @return string Рассчитанная форма множественнго числа
  */
-function get_noun_plural_form(int $number, string $one, string $two, string $many): string
+function getNounPluralForm(int $number, string $one, string $two, string $many): string
 {
     $number = (int)$number;
     $mod10 = $number % 10;
@@ -130,7 +130,7 @@ function get_noun_plural_form(int $number, string $one, string $two, string $man
  * @param array $data Ассоциативный массив с данными для шаблона
  * @return string Итоговый HTML
  */
-function include_template (string $name, array $data = []): string {
+function includeTemplate(string $name, array $data = []): string {
     $name = 'view/templates/' . $name;
 
     ob_start();
@@ -146,12 +146,12 @@ function include_template (string $name, array $data = []): string {
  *
  * @return string Ошибку если валидация не прошла
  */
-function check_youtube_url(string $url)
+function checkYoutubeUrl($url)
 {
-    $id = extract_youtube_id($url);
+    $id = extractYoutubeId($url);
 
     set_error_handler(function () {}, E_WARNING);
-    $headers = get_headers('https://www.youtube.com/oembed?format=json&url=http://www.youtube.com/watch?v=' . $id);
+    $headers = get_headers('https://www.youtube.com/oembed?format=json&url=https://www.youtube.com/watch?v=' . $id);
     restore_error_handler();
 
     if (!is_array($headers)) {
@@ -169,13 +169,13 @@ function check_youtube_url(string $url)
 
 /**
  * Возвращает код iframe для вставки youtube видео на страницу
- * @param string $youtube_url Ссылка на youtube видео
+ * @param string $youtubeUrl Ссылка на youtube видео
  * @return string
  */
-function embed_youtube_video (string $youtube_url): string
+function embedYoutubeVideo($youtubeUrl)
 {
     $res = "";
-    $id = extract_youtube_id($youtube_url);
+    $id = extractYoutubeId($youtubeUrl);
 
     if ($id) {
         $src = "https://www.youtube.com/embed/" . $id;
@@ -187,13 +187,13 @@ function embed_youtube_video (string $youtube_url): string
 
 /**
  * Возвращает img-тег с обложкой видео для вставки на страницу
- * @param string $youtube_url Ссылка на youtube видео
+ * @param string $youtubeUrl Ссылка на youtube видео
  * @return string
  */
-function embed_youtube_cover (string $youtube_url): string
+function embedYoutubeCover(string $youtubeUrl): string
 {
     $res = "";
-    $id = extract_youtube_id($youtube_url);
+    $id = extractYoutubeId($youtubeUrl);
 
     if ($id) {
         $src = sprintf("https://img.youtube.com/vi/%s/mqdefault.jpg", $id);
@@ -205,14 +205,15 @@ function embed_youtube_cover (string $youtube_url): string
 
 /**
  * Извлекает из ссылки на youtube видео его уникальный ID
- * @param string $youtube_url Ссылка на youtube видео
+ * @param string $youtubeUrl Ссылка на youtube видео
  * @return array
  */
-function extract_youtube_id (string $youtube_url)
+function extractYoutubeId(string $youtubeUrl)
 {
     $id = false;
 
-    $parts = parse_url($youtube_url);
+    $parts = parse_url($youtubeUrl);
+    $parts['host'] = $parts['host'] ?? null;
 
     if ($parts) {
         if ($parts['path'] == '/watch') {
@@ -232,7 +233,7 @@ function extract_youtube_id (string $youtube_url)
  * @param $index
  * @return false|string
  */
-function generate_random_date($index)
+function generateRandomDate($index)
 {
     $deltas = [['minutes' => 59], ['hours' => 23], ['days' => 6], ['weeks' => 4], ['months' => 11]];
     $dcnt = count($deltas);
@@ -250,74 +251,81 @@ function generate_random_date($index)
     $timename = key($delta);
 
     $ts = strtotime("$timeval $timename ago");
+    $dt = date('Y-m-d H:i:s', $ts);
 
-    return $dt = date('Y-m-d H:i:s', $ts);
+    return $dt;
 }
 
-function crop_text (string $text, int $max_chars = 300): string {
-    if (mb_strlen($text) < $max_chars) {
+function cropText(string $text, int $maxChars = 300): string
+{
+    if (mb_strlen($text) < $maxChars) {
         return $text;
     }
 
-    $text_parts = explode(' ', $text);
-    $total_chars = 0;
-    $space_value = 1;
-    $verified_text = array();
+    $totalChars = 0;
+    $spaceValue = 1;
+    $verifiedText = [];
+    $textParts = explode(' ', $text);
 
-    foreach ($text_parts as $text_part) {
-        $total_chars += mb_strlen($text_part) + $space_value;
+    foreach ($textParts as $textPart) {
+        $totalChars += mb_strlen($textPart) + $spaceValue;
 
-        if (($total_chars - $space_value) >= $max_chars) {
+        if (($totalChars - $spaceValue) >= $maxChars) {
             break;
         }
 
-        $verified_text[] = $text_part;
+        $verifiedText[] = $textPart;
     }
 
-    $text = implode(' ', $verified_text);
+    $text = implode(' ', $verifiedText);
 
-    return $text . '...';
+    return $text . ' ...';
 }
 
-function show_title_date_format (string $date_time): string {
-    $date_time = new DateTime($date_time, new DateTimeZone('Europe/Moscow'));
-    return esc($date_time->format('d-m-Y H:i'));
-}
-
-function get_relative_date_format (string $post_date, string $string_end): string {
-    $post_date = new DateTime($post_date, new DateTimeZone('Europe/Moscow'));
-    $current_date = new DateTime('now', new DateTimeZone('Europe/Moscow'));
-    $date_time_diff = $post_date->diff($current_date);
-    $correct_date_format = '';
-
-    if ($date_time_diff->y !== 0) {
-        $years = $date_time_diff->y;
-        $correct_date_format = "{$years} " . get_noun_plural_form($years, 'год', 'года', 'лет') . " $string_end";
-    } elseif ($date_time_diff->m !== 0) {
-        $months = $date_time_diff->m;
-        $correct_date_format = "{$months} " . get_noun_plural_form($months, 'месяц', 'месяца', 'месяцев') . " $string_end";
-    } elseif ($date_time_diff->d >= 7) {
-        $weeks = floor($date_time_diff->d / 7);
-        $correct_date_format = "{$weeks} " . get_noun_plural_form($weeks, 'неделю', 'недели', 'недели') . " $string_end";
-    } elseif ($date_time_diff->d < 7 && $date_time_diff->d !== 0) {
-        $days = $date_time_diff->d;
-        $correct_date_format = "{$days} " . get_noun_plural_form($days, 'день', 'дня', 'дней') . " $string_end";
-    } elseif ($date_time_diff->h !== 0) {
-        $hours = $date_time_diff->h;
-        $correct_date_format = "{$hours} " . get_noun_plural_form($hours, 'час', 'часа', 'часов') . " $string_end";
-    } elseif ($date_time_diff->i !== 0) {
-        $minutes = $date_time_diff->i;
-        $correct_date_format = "{$minutes} " . get_noun_plural_form($minutes, 'минуту', 'минуты', 'минут') . " $string_end";
-    }
-
-    return esc($correct_date_format);
-}
-
-function esc ($content): string {
+function esc($content)
+{
     return htmlspecialchars($content, ENT_QUOTES);
 }
 
-function prepared_query ($db, $sql, $params) {
+function showTitleDateFormat(string $dateTime): string
+{
+    $dateTime = new DateTime($dateTime, new DateTimeZone('Europe/Moscow'));
+
+    return $dateTime->format('d-m-Y H:i');
+}
+
+function getRelativeDateFormat(string $postDate, string $stringEnd): string
+{
+    $postDate = new DateTime($postDate, new DateTimeZone('Europe/Moscow'));
+    $currentDate = new DateTime('now', new DateTimeZone('Europe/Moscow'));
+    $dateTimeDiff = $postDate->diff($currentDate);
+    $correctDateFormat = '';
+
+    if ($dateTimeDiff->y !== 0) {
+        $years = $dateTimeDiff->y;
+        $correctDateFormat = sprintf("{$years} %s {$stringEnd}", getNounPluralForm($years, 'год', 'года', 'лет'));
+    } elseif ($dateTimeDiff->m !== 0) {
+        $months = $dateTimeDiff->m;
+        $correctDateFormat = sprintf("{$months} %s {$stringEnd}", getNounPluralForm($months, 'месяц', 'месяца', 'месяцев'));
+    } elseif ($dateTimeDiff->d >= 7) {
+        $weeks = floor($dateTimeDiff->d / 7);
+        $correctDateFormat = sprintf("{$weeks} %s {$stringEnd}", getNounPluralForm($weeks, 'неделю', 'недели', 'недели'));
+    } elseif ($dateTimeDiff->d < 7 && $dateTimeDiff->d !== 0) {
+        $days = $dateTimeDiff->d;
+        $correctDateFormat = sprintf("{$days} %s {$stringEnd}", getNounPluralForm($days, 'день', 'дня', 'дней'));
+    } elseif ($dateTimeDiff->h !== 0) {
+        $hours = $dateTimeDiff->h;
+        $correctDateFormat = sprintf("{$hours} %s {$stringEnd}", getNounPluralForm($hours, 'час', 'часа', 'часов'));
+    } elseif ($dateTimeDiff->i !== 0) {
+        $minutes = $dateTimeDiff->i;
+        $correctDateFormat = sprintf("{$minutes} %s {$stringEnd}", getNounPluralForm($minutes, 'минуту', 'минуты', 'минут'));
+    }
+
+    return $correctDateFormat;
+}
+
+function preparedQuery($db, string $sql, array $params)
+{
     $types = str_repeat('s', count($params));
     $stmt = $db->prepare($sql);
     $stmt->bind_param($types, ...$params);
@@ -326,54 +334,39 @@ function prepared_query ($db, $sql, $params) {
     return $stmt;
 }
 
-function sql_select ($db, $sql, $params = []) {
+function sqlSelect($db, string $sql, array $params = null)
+{
     if (!$params) {
         return $db->query($sql);
     }
-    return prepared_query($db, $sql, $params)->get_result();
+
+    return preparedQuery($db, $sql, $params)->get_result();
 }
 
-function sql_get_single ($db, $sql, $params = []) {
-    return sql_select($db, $sql, $params)->fetch_assoc();
+function sqlGetSingle($db, string $sql, array $params = null)
+{
+    return sqlSelect($db, $sql, $params)->fetch_assoc();
 }
 
-function sql_get_many ($db, $sql, $params = []) {
-    return sql_select($db, $sql, $params)->fetch_all(MYSQLI_ASSOC);
+function sqlGetMany($db, string $sql, array $params = null)
+{
+    return sqlSelect($db, $sql, $params)->fetch_all(MYSQLI_ASSOC);
 }
 
-function get_path (bool $is_photo, $file_name): string {
-    return !$is_photo
-        ? "/view/img" . "/users/" . $file_name
-        : "/view/img" . "/photos/" . $file_name;
+function getQueryString(array $queryString, array $modifier):string
+{
+    $mergedArray = array_merge($queryString, $modifier);
+
+    return array_filter($mergedArray) ? '?' . http_build_query($mergedArray) : '/';
 }
 
-// TODO попробовать скомпоновать в 1 с get_404_page
-function build_404_page ($is_auth, $user_name): string {
+function get404StatusCode()
+{
     http_response_code(404);
-
-    $page_layout = include_template('layout.php', [
-        'page_title' => 'Readme ▶️ 404',
-        'is_auth' => $is_auth,
-        'user_name' => $user_name,
-        'page_main_content' => include_template('404.php'),
-    ]);
-
-    return print $page_layout;
-}
-
-function get_404_page ($is_auth, $user_name) {
-    build_404_page($is_auth, $user_name);
     exit();
 }
 
-function get_query_string (array $query_string, array $modifier):string {
-    // TODO избавится от $merged_array
-    $merged_array = array_merge($query_string, $modifier);
-    foreach ($merged_array as $key => $value) {
-        if ($value === null) {
-            unset($merged_array[$key]);
-        }
-    }
-    return $merged_array ? '?' . http_build_query($merged_array) : '/';
+function getPostVal($name)
+{
+    return $_POST[$name] ?? "";
 }
-

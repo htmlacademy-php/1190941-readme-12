@@ -1,9 +1,9 @@
 <?php
 
-require 'functions.php';
+require 'helpers.php';
 
-$is_auth = 1;
-$user_name = 'Кто-то там';
+$isAuth = 1;
+$userName = 'Мое имя';
 
 if (!file_exists('config.php')) {
     $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
