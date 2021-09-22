@@ -1,44 +1,62 @@
 <?php
+
 /**
  * @var $db
- * @var $query
- * @var $is_auth
- * @var $user_name
+ * @var array $queryString
+ * @var int $isAuth
+ * @var string $userName
  */
 
 if ($_SERVER['REQUEST_URI'] == '/index.php') {
-	header('Location: /', true, 301);
+    header('Location: /', true, 301);
 }
 
 require 'bootstrap.php';
 require 'model/types.php';
 require 'model/posts.php';
 
-$query_string = $_GET ?? [];
-$query_string['type'] = $query_string['type'] ?? null;
-$post_types = get_post_types($db);
+$queryString = $_GET ?? null;
+$queryString['type'] = $queryString['type'] ?? null;
 
-if ($query_string['type'] && !in_array($query_string['type'], array_column($post_types, 'id')) || $query_string['type'] === '0' || $query_string['type'] === '') {
-	get_404_page($is_auth, $user_name);
+// TODO подумать как переписать условие
+if (!is_string($queryString['type'])
+    && $queryString['type'] !== null
+    || $queryString['type'] === '0'
+    || $queryString['type'] === ''
+) {
+    get404StatusCode();
 }
 
-$pages_count = get_pages_count($db, $query_string['type']);
+$postTypes = getPostTypes($db);
+
+if ($queryString['type'] && !in_array($queryString['type'], array_column($postTypes, 'id'))) {
+    get404StatusCode();
+}
+
+$pagesCount = getPagesCount($db, $queryString['type']);
 $limit = 6;
-$total_pages = intval(ceil($pages_count / $limit));
-$query_string['page'] = intval($query_string['page'] ?? 1);
+$totalPages = intval(ceil($pagesCount / $limit));
+$queryString['page'] = $queryString['page'] ?? 1;
 
-if ($query_string['page'] > $total_pages || $query_string['page'] <= 0) {
-	get_404_page($is_auth, $user_name);
+// TODO подумать как учесть ?page=1fskdfhkj
+if ($queryString['page'] > $totalPages || $queryString['page'] <= 0) {
+    get404StatusCode();
 }
 
-$offset = ($query_string['page'] - 1) * $limit;
-$query_string['sort'] = $query_string['sort'] ?? null;
-$query_string['direction'] = $query_string['direction'] ?? null;
-$posts = get_posts($db, $offset, $query_string['type'] , $query_string['sort'], $query_string['direction']);
+if (is_string($queryString['page'])) {
+    $queryString['page'] = intval($queryString['page']);
+}
 
-$pagination['prev'] = $query_string['page'] - 1;
-$pagination['next'] = $query_string['page'] + 1;
-$pagination['next'] = $pagination['next'] <= $total_pages ? $pagination['next'] : null;
+$offset = ($queryString['page'] - 1) * $limit;
+
+$pagination['prev'] = $queryString['page'] - 1;
+$pagination['next'] = $queryString['page'] + 1;
+$pagination['next'] = $pagination['next'] <= $totalPages ? $pagination['next'] : null;
+
+$queryString['sort'] = $queryString['sort'] ?? null;
+$queryString['direction'] = $queryString['direction'] ?? null;
+
+$postData = getPosts($db, $offset, $queryString['type'], $queryString['sort'], $queryString['direction']);
 
 $sort = [
     'Популярность' => 'popularity',
@@ -46,24 +64,20 @@ $sort = [
     'Дата' => 'date',
 ];
 
-/* TODO сообразить как сократить код рендеринга шаблонов.
-    Можно сделать функцию, которая принимает постоянные значения как простые параметры,
-    а переменные - в виде массива */
-
-$page_main_content = include_template('index.php', [
-	'total_pages' => $total_pages,
-	'posts' => $posts,
-	'post_types' => $post_types,
-	'query_string' => $query_string,
+$pageMainContent = includeTemplate('index.php', [
+    'postData' => $postData,
+    'postTypes' => $postTypes,
+    'queryString' => $queryString,
     'pagination' => $pagination,
     'sort' => $sort,
 ]);
 
-$page_layout = include_template('layout.php', [
-	'page_title' => 'Readme ▶️ Популярные посты',
-	'is_auth' => $is_auth,
-	'user_name' => $user_name,
-	'page_main_content' => $page_main_content,
+$pageLayout = includeTemplate('layout.php', [
+    'pageTitle' => 'Readme - популярное',
+    'isAuth' => $isAuth,
+    'userName' => $userName,
+    'pageMainContent' => $pageMainContent,
+    'pageMainClass' => 'popular',
 ]);
 
-print $page_layout;
+print($pageLayout);

@@ -1,15 +1,13 @@
 <?php
 
-function get_post_by_id ($db, $id) {
-    return sql_get_single($db, '
-        SELECT p.id, title,
-               text_content AS text,
+function getPostById ($db, $id)
+{
+    return sqlGetSingle($db, '
+        SELECT p.id,
+               title,
+               content,
                cite_author,
-               img_name AS photo,
-               youtube_link,
-               link,
                views_count,
-               repost,
                u.name AS author,
                u.avatar_name AS avatar,
                u.registration_date AS author_reg_date,
@@ -22,7 +20,10 @@ function get_post_by_id ($db, $id) {
                 WHERE p.id = c.post_id) AS comments_count,
                (SELECT COUNT(author_id)
                 FROM posts p
-                WHERE p.author_id = u.id) AS publications_count
+                WHERE p.author_id = u.id) AS publications_count,
+               (SELECT COUNT(user_id)
+                FROM subscriptions s
+                WHERE s.user_id = u.id) AS subscriptions_count
         FROM posts p
                  JOIN users u ON author_id = u.id
                  JOIN types t ON type_id = t.id
@@ -30,20 +31,20 @@ function get_post_by_id ($db, $id) {
         [$id]);
 }
 
-function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_direction = '', $limit = 6) {
-
+function getPosts ($db, $offset, $postType = '', $sort = '', $sortDirection = '', $limit = 6)
+{
     // TODO валидация параметров перед запросом http://readme.loc/?sort=popularity&direction=gnflg
-    $direction = $sort_direction ?? 'desc';
+    $direction = $sortDirection ?? 'desc';
 
     switch ($sort) {
         case 'popularity':
-            $order_by = "likes_count $direction, comments_count $direction, p.views_count $direction";
+            $orderBy = "likes_count $direction, comments_count $direction, p.views_count $direction";
             break;
         case 'likes':
-            $order_by = "likes_count $direction";
+            $orderBy = "likes_count $direction";
             break;
         case 'date':
-            $order_by = "p.creation_date $direction";
+            $orderBy = "p.creation_date $direction";
             break;
     }
 
@@ -61,22 +62,30 @@ function get_posts ($db, $offset, $post_type = '', $sort = '', $sort_direction =
          FROM posts p
              JOIN users u ON p.author_id = u.id
              JOIN types t ON p.type_id = t.id
-         " . (($post_type) ? 'WHERE t.id = ?' : '') . "
-         ORDER BY " . ($order_by ?? 'p.views_count DESC') . "
+         " . (($postType) ? 'WHERE t.id = ?' : '') . "
+         ORDER BY " . ($orderBy ?? 'p.views_count DESC') . "
          LIMIT ?
          OFFSET ?;";
 
-    return ($post_type)
-        ? sql_get_many($db, $sql, [$post_type, $limit, $offset])
-        : sql_get_many($db, $sql, [$limit, $offset]);
+    $data = $postType ? [$postType, $limit, $offset] : [$limit, $offset];
+
+    return sqlGetMany($db, $sql, $data);
 }
 
-function get_pages_count ($db, $post_type = '') {
-    return ($post_type)
-        ? current(sql_get_single($db, '
+function getPagesCount ($db, string $postType = null)
+{
+    return ($postType)
+        ? current(sqlGetSingle($db, '
         SELECT COUNT(*)
         FROM posts
         WHERE type_id = ?;',
-        [$post_type]))
-        : current(sql_get_single($db, 'SELECT COUNT(*) FROM posts'));
+            [$postType]))
+        : current(sqlGetSingle($db, 'SELECT COUNT(*) FROM posts'));
+}
+
+function insertNewPost ($db, array $data)
+{
+    $sql = "INSERT INTO posts (title, type_id, author_id, content, cite_author) VALUES (?, ?, ?, ?, ?)";
+
+    return preparedQuery($db, $sql, [$data['title'], $data['typeId'], $data['authorId'], $data['content'], $data['citeAuthor']]);
 }

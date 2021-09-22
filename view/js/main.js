@@ -34,7 +34,7 @@ window.util = {
   if (e) t(e);
   if (r) t(r);
   if (i) t(i)
-}(), document.querySelector(".modal--active"), document.querySelector(".modal"), document.querySelector(".modal--adding"), document.querySelector(".adding-post__submit"), window.util.getScrollbarWidth(), document.querySelector(".page__main-section"), document.querySelector(".footer__wrapper"), /*function () {
+}(), /*document.querySelector(".modal--active"), document.querySelector(".modal"), document.querySelector(".modal--adding"), document.querySelector(".adding-post__submit"), window.util.getScrollbarWidth(), document.querySelector(".page__main-section"), document.querySelector(".footer__wrapper"), function () {
   var t = document.querySelector(".sorting");
   if (t) for (var e = t.querySelectorAll(".sorting__link"), r = t.querySelector(".sorting__link--active"), i = function (t) {
     t.preventDefault(), t.currentTarget === r ? r.classList.toggle("sorting__link--reverse") : (r.classList.remove("sorting__link--active"), t.currentTarget.classList.add("sorting__link--active"), r = t.currentTarget)

@@ -8,7 +8,7 @@ CREATE TABLE users (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(64) NOT NULL,
-    avatar_name VARCHAR(255) NOT NULL UNIQUE,
+    avatar_name VARCHAR(255) DEFAULT NULL UNIQUE,
     registration_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -24,14 +24,13 @@ CREATE TABLE posts (
     creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     type_id INT NOT NULL,
     author_id INT NOT NULL,
-    text_content TEXT,
-    cite_author VARCHAR(255),
-    img_name VARCHAR(255),
-    youtube_link VARCHAR(255),
-    link VARCHAR(255),
-    views_count INT,
-    repost INT,
+    original_author_id INT DEFAULT NULL,
+    content TEXT NOT NULL,
+    cite_author VARCHAR(255) DEFAULT NULL,
+    views_count INT DEFAULT NULL,
+    repost BOOL DEFAULT NULL,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (original_author_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE CASCADE
 );
 
