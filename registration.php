@@ -5,6 +5,8 @@
  * @var string $userName
  */
 
+// Регистрация уже тут
+
 require 'bootstrap.php';
 require 'model/users.php';
 
