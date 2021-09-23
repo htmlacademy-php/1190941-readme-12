@@ -2,8 +2,6 @@
 /**
  * @var array $errors;
  */
-
-var_dump($errors);
 ?>
 
 <div class="container">
