@@ -163,7 +163,6 @@ $pageMainContent = includeTemplate('add.php', [
 $pageLayout = includeTemplate('layout.php', [
     'pageTitle' => 'Readme - Добавить пост',
     'isAuth' => $isAuth,
-    'userName' => $userName,
     'pageMainContent' => $pageMainContent,
     'pageMainClass' => 'adding-post',
 ]);

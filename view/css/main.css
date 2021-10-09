@@ -637,7 +637,7 @@ img {
   height: 30px;
   background-color: #f5722a;
   border-radius: 50%;
-  background-image: url(../img/check.svg);
+  background-image: url(../img/icons/check.svg);
   background-size: 11px 12px;
   background-position: center;
   background-repeat: no-repeat
@@ -820,7 +820,7 @@ img {
 .form__file-zone-text span {
   display: inline-block;
   padding-top: 59px;
-  background-image: url(../img/drag-and-drop.svg);
+  background-image: url(/view/img/icons/drag-and-drop.svg);
   background-size: 43px 43px;
   background-position: center top;
   background-repeat: no-repeat
@@ -1191,17 +1191,17 @@ img {
 }
 
 .header__my-page--feed .header__page-link {
-  background-image: url(../img/feed.svg);
+  background-image: url(../img/icons/feed.svg);
   background-size: 32px 26px
 }
 
 .header__my-page--popular .header__page-link {
-  background-image: url(../img/popular.svg);
+  background-image: url(../img/icons/popular.svg);
   background-size: 32px 32px
 }
 
 .header__my-page--messages .header__page-link {
-  background-image: url(../img/messages.svg);
+  background-image: url(../img/icons/messages.svg);
   background-size: 32px 30px
 }
 
@@ -1329,7 +1329,7 @@ img {
   transform: translateX(-50%);
   width: 21px;
   height: 9px;
-  background-image: url(../img/pointer.png);
+  background-image: url(../img/icons/pointer.png);
   background-size: 21px 9px
 }
 
@@ -1434,7 +1434,7 @@ img {
   min-width: 40px;
   margin-right: 16px;
   background-color: #e2e8f7;
-  background-image: url(../img/icon-input-user.svg);
+  background-image: url(../img/icons/icon-input-user.svg);
   border-radius: 50%;
   background-size: 18px 18px;
   background-repeat: no-repeat;
@@ -1515,7 +1515,7 @@ img {
   font-weight: 500;
   letter-spacing: .7px;
   color: #fff;
-  background-image: url(../img/plus.svg);
+  background-image: url(../img/icons/plus.svg);
   background-repeat: no-repeat;
   background-size: 10px 10px;
   background-position: 16px center;
@@ -1627,17 +1627,17 @@ img {
 }
 
 .footer__my-page--feed .footer__page-link {
-  background-image: url(../img/feed.svg);
+  background-image: url(../img/icons/feed.svg);
   background-size: 16px 13px
 }
 
 .footer__my-page--popular .footer__page-link {
-  background-image: url(../img/popular.svg);
+  background-image: url(../img/icons/popular.svg);
   background-size: 16px 16px
 }
 
 .footer__my-page--messages .footer__page-link {
-  background-image: url(../img/messages.svg);
+  background-image: url(../img/icons/messages.svg);
   background-size: 16px 15px
 }
 
@@ -1887,13 +1887,13 @@ img {
 }
 
 .intro__advantage--ease {
-  background-image: url(../img/everything.svg);
+  background-image: url(../img/icons/everything.svg);
   background-size: 86px 36px;
   background-position: 1px 13px
 }
 
 .intro__advantage--no-excess {
-  background-image: url(../img/no-games.svg);
+  background-image: url(../img/icons/no-games.svg);
   background-size: 70px 58px;
   background-position: 0 0
 }
@@ -2062,7 +2062,7 @@ img {
   height: 60px;
   min-width: 60px;
   background-color: #e2e8f7;
-  background-image: url(../img/icon-input-user.svg);
+  background-image: url(../img/icons/icon-input-user.svg);
   border-radius: 50%;
   background-size: 18px 18px;
   background-repeat: no-repeat;
@@ -2082,7 +2082,7 @@ img {
   width: 100%;
   height: 100%;
   background-color: #eff1f8;
-  background-image: url(../img/icon-repost.svg);
+  background-image: url(../img/icons/icon-repost.svg);
   background-size: 19px 17px;
   background-position: center;
   background-repeat: no-repeat;
@@ -2209,7 +2209,7 @@ img {
 .post__view {
   padding-left: 37px;
   color: #8798ad;
-  background-image: url(../img/view.svg);
+  background-image: url(../img/icons/view.svg);
   background-size: 24px 13px;
   background-position: left center;
   background-repeat: no-repeat
@@ -2323,25 +2323,25 @@ img {
 .post-video__play {
   width: 14px;
   height: 14px;
-  background-image: url(../img/video-pause.svg);
+  background-image: url(../img/icons/video-pause.svg);
   background-size: 14px 14px;
   background-repeat: no-repeat
 }
 
 .post-video__play--paused {
-  background-image: url(../img/video-play-small.svg)
+  background-image: url(../img/icons/video-play-small.svg)
 }
 
 .post-video__fullscreen {
   width: 23px;
   height: 23px;
-  background-image: url(../img/video-collapse.svg);
+  background-image: url(../img/icons/video-collapse.svg);
   background-size: 23px 23px;
   background-repeat: no-repeat
 }
 
 .post-video__fullscreen--inactive {
-  background-image: url(../img/video-expand.svg)
+  background-image: url(../img/icons/video-expand.svg)
 }
 
 .post-video__scale-wrapper {
@@ -2544,7 +2544,7 @@ img {
   margin: 0;
   padding: 143px 160px 86px;
   background-color: #3e5dde;
-  background-image: url(../img/quote.svg);
+  background-image: url(../img/icons/quote.svg);
   background-size: 48px 48px;
   background-repeat: no-repeat;
   background-position: center 73px
@@ -2722,7 +2722,7 @@ img {
 .popular .post-link__external span {
   padding-left: 23px;
   font-size: 14px;
-  background-image: url(../img/link.svg);
+  background-image: url(../img/icons/link.svg);
   background-size: 15px 13px;
   background-position: left center;
   background-repeat: no-repeat
@@ -2969,7 +2969,7 @@ img {
 
 .feed__main-wrapper {
   min-height: 59vh;
-  background-image: url(../img/no-feed-bg.svg);
+  background-image: url(../img/icons/no-feed-bg.svg);
   border-radius: 50%;
   background-size: 152px 165px;
   background-repeat: no-repeat;
@@ -3020,24 +3020,24 @@ img {
 }
 
 .promo__block--barbershop {
-  background-image: url(../img/barbershop.png);
+  background-image: url(../img/promo/barbershop.png);
   background-color: #000
 }
 
 @media (-webkit-min-device-pixel-ratio: 1.5),(min-resolution: 144dpi),(min-resolution: 1.5dppx) {
   .promo__block--barbershop {
-    background-image: url(../img/barbershop@2x.png)
+    background-image: url(../img/promo/barbershop@2x.png)
   }
 }
 
 .promo__block--technomart {
-  background-image: url(../img/technomart.png);
+  background-image: url(../img/promo/technomart.png);
   background-color: #ffc600
 }
 
 @media (-webkit-min-device-pixel-ratio: 1.5),(min-resolution: 144dpi),(min-resolution: 1.5dppx) {
   .promo__block--technomart {
-    background-image: url(../img/technomart@2x.png)
+    background-image: url(../img/promo/technomart@2x.png)
   }
 }
 
@@ -3055,7 +3055,7 @@ img {
   padding-right: 20px;
   font-weight: 700;
   color: #fff;
-  background-image: url(../img/icon-arrow-right-ad.svg);
+  background-image: url(../img/icons/icon-arrow-right-ad.svg);
   background-repeat: no-repeat;
   background-position: right 1px center;
   background-size: 6px 9px
@@ -3158,7 +3158,7 @@ img {
   min-width: 60px;
   margin-right: 21px;
   background-color: #e2e8f7;
-  background-image: url(../img/icon-input-user.svg);
+  background-image: url(../img/icons/icon-input-user.svg);
   border-radius: 50%;
   background-size: 18px 18px;
   background-repeat: no-repeat;
@@ -3320,7 +3320,7 @@ img {
   height: 40px;
   margin-right: 14px;
   background-color: #e2e8f7;
-  background-image: url(../img/icon-input-user.svg);
+  background-image: url(../img/icons/icon-input-user.svg);
   border-radius: 50%;
   background-size: 18px 18px;
   background-repeat: no-repeat;
@@ -3414,7 +3414,7 @@ img {
   height: 40px;
   margin-right: 13px;
   background-color: #e2e8f7;
-  background-image: url(../img/icon-input-user.svg);
+  background-image: url(../img/icons/icon-input-user.svg);
   border-radius: 50%;
   background-size: 18px 18px;
   background-repeat: no-repeat;
@@ -3486,7 +3486,7 @@ img {
   height: 40px;
   margin-right: 13px;
   background-color: #e2e8f7;
-  background-image: url(../img/icon-input-user.svg);
+  background-image: url(../img/icons/icon-input-user.svg);
   border-radius: 50%;
   background-size: 18px 18px;
   background-repeat: no-repeat;
@@ -4001,7 +4001,7 @@ img {
   -ms-flex-align: center;
   align-items: center;
   background-color: #e2e8f7;
-  background-image: url(../img/icon-input-user.svg);
+  background-image: url(../img/icons/icon-input-user.svg);
   border-radius: 50%;
   background-size: 18px 18px;
   background-repeat: no-repeat;

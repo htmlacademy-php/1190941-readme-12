@@ -1,8 +1,15 @@
 <?php
 
-function selectUser ($db, array $data)
+function selectUserEmail ($db, array $data)
 {
     $sql = "SELECT email from users WHERE email = ?";
+
+    return sqlGetSingle($db, $sql, $data);
+}
+
+function getUser ($db, array $data)
+{
+    $sql = "SELECT * from users WHERE email = ?";
 
     return sqlGetSingle($db, $sql, $data);
 }

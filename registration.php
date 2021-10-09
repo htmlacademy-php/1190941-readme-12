@@ -30,7 +30,7 @@ if (!empty($formData)) {
     }
 
     if (!empty($formData['email'])) {
-        if (selectUser($db, [$formData['email']])) {
+        if (selectUserEmail($db, [$formData['email']])) {
             $errors['email']['name'] = $fieldsMap['email'] ?? null;
             $errors['email']['title'] = 'Адрес электронной почты уже используется';
             $errors['email']['description'] = 'Если вы являетесь владельцем данной электронной почты пожалуйста воспользуйтесь страницей входа в аккаунт';
@@ -110,7 +110,6 @@ $pageMainContent = includeTemplate('registration.php', [
 $pageLayout = includeTemplate('layout.php', [
     'pageTitle' => 'Readme - популярное',
     'isAuth' => $isAuth,
-    'userName' => $userName,
     'pageMainContent' => $pageMainContent,
     'pageMainClass' => 'registration',
 ]);
