@@ -1,6 +1,7 @@
 <?php
 
 require 'helpers.php';
+require 'model/users.php';
 
 if (!file_exists('config.php')) {
     $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
@@ -29,16 +30,12 @@ if (empty($_SESSION) && !in_array($_SERVER['SCRIPT_NAME'], $availableAddresses))
     header('Location: /');
 }
 
+if ($_SESSION) {
+    $userData = selectUser($db, 'id', ['name', 'avatar_name AS avatar'], [$_SESSION['id']]);
+}
+
 $isAuth = !empty($_SESSION);
 
 if ($isAuth && in_array($_SERVER['SCRIPT_NAME'], $availableAddresses)) {
     header('Location: /feed.php');
-}
-
-// TODO отдельный сценарий для логаута наверное слишком много чести, уточнить это
-$isLogout = $_GET['logout'] ?? '';
-
-if ($isLogout) {
-    $_SESSION = [];
-    header('Location: /');
 }

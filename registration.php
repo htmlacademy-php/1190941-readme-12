@@ -30,7 +30,7 @@ if (!empty($formData)) {
     }
 
     if (!empty($formData['email'])) {
-        if (selectUserEmail($db, [$formData['email']])) {
+        if (selectUserByEmail($db, [$formData['email']])) {
             $errors['email']['name'] = $fieldsMap['email'] ?? null;
             $errors['email']['title'] = 'Адрес электронной почты уже используется';
             $errors['email']['description'] = 'Если вы являетесь владельцем данной электронной почты пожалуйста воспользуйтесь страницей входа в аккаунт';
@@ -95,11 +95,10 @@ if (!empty($formData)) {
             $data['avatar'] = $fileName;
         }
 
-        insertUser($db, $data);
+        createUser($db, $data);
         $userId = $db->insert_id;
 
-//        header("Location: /user.php?id={$userId}");
-        header("Location: ?formSent=success");
+        header("Location: /");
     }
 }
 

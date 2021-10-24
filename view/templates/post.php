@@ -3,6 +3,8 @@
  * @var array $post
  * @var array $comments
  * @var array $hashtags
+ * @var array $queryString
+ * @var bool $subscribed
  */
 ?>
 
@@ -99,7 +101,7 @@
                 </ul>
                 <?php endif; ?>
 
-                <div class="comments">
+                <div class="comments" id="comments">
                     <form class="comments__form form" action="#" method="post">
                         <div class="comments__my-avatar">
                             <img class="comments__picture" src="../../uploads/avatars/userpic-medium.jpg" alt="Аватар пользователя">
@@ -154,29 +156,44 @@
             <div class="post-details__user user">
                 <div class="post-details__user-info user__info">
                     <div class="post-details__avatar user__avatar">
-                        <a class="post-details__avatar-link user__avatar-link" href="#">
-                            <img class="post-details__picture user__picture" src="uploads/avatars/<?= esc($post['avatar']); ?>" alt="Аватар пользователя <?= esc($post['author']); ?>">
+                        <a class="post-details__avatar-link user__avatar-link"
+                           href="/profile.php?id=<?= esc($post['author_id']); ?>">
+                            <img class="post-details__picture user__picture"
+                                 src="uploads/avatars/<?= esc($post['avatar']); ?>"
+                                 alt="Аватар пользователя <?= esc($post['author']); ?>">
                         </a>
                     </div>
                     <div class="post-details__name-wrapper user__name-wrapper">
-                        <a class="post-details__name user__name" href="#">
+                        <a class="post-details__name user__name" href="/profile.php?id=<?= esc($post['author_id']); ?>">
                             <span><?= esc($post['author']); ?></span>
                         </a>
-                        <time class="post-details__time user__time" datetime="<?= esc($post['author_reg_date']); ?>"><?= esc(getRelativeDateFormat($post['author_reg_date'], "на сайте")); ?></time>
+                        <time class="post-details__time user__time"
+                              datetime="<?= esc($post['author_reg_date']); ?>">
+                            <?= esc(getRelativeDateFormat($post['author_reg_date'], "на сайте")); ?>
+                        </time>
                     </div>
                 </div>
                 <div class="post-details__rating user__rating">
                     <p class="post-details__rating-item user__rating-item user__rating-item--subscribers">
-                        <span class="post-details__rating-amount user__rating-amount"><?= esc($post['subscriptions_count']); ?></span>
+                        <span class="post-details__rating-amount user__rating-amount">
+                            <?= esc($post['subscriptions_count']); ?>
+                        </span>
                         <span class="post-details__rating-text user__rating-text">подписчиков</span>
                     </p>
                     <p class="post-details__rating-item user__rating-item user__rating-item--publications">
-                        <span class="post-details__rating-amount user__rating-amount"><?= esc($post['publications_count']); ?></span>
+                        <span class="post-details__rating-amount user__rating-amount">
+                            <?= esc($post['publications_count']); ?>
+                        </span>
                         <span class="post-details__rating-text user__rating-text">публикаций</span>
                     </p>
                 </div>
                 <div class="post-details__user-buttons user__buttons">
-                    <button class="user__button user__button--subscription button button--main" type="button">Подписаться</button>
+                    <!-- TODO Формирование ссылки выглядит странно, возможно нужно переписать через getQueryString -->
+                    <a class="user__button user__button--subscription button button--main
+                    <?= $subscribed ? ' button--quartz' : ''; ?>"
+                       href="/profile.php?id=<?= esc($post['author_id']); ?>&action=<?= $subscribed ? 'unsubscribe' : 'subscribe'; ?>">
+                        <?= $subscribed ? 'Отписаться' : 'Подписаться'; ?>
+                    </a>
                     <a class="user__button user__button--writing button button--green" href="#">Сообщение</a>
                 </div>
             </div>

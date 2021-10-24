@@ -198,6 +198,11 @@ function embedYoutubeCover(string $youtubeUrl): string
     if ($id) {
         $src = sprintf("https://img.youtube.com/vi/%s/mqdefault.jpg", $id);
         $res = '<img alt="youtube cover" width="320" height="120" src="' . $src . '" />';
+
+        if ($_SERVER['SCRIPT_NAME'] === '/feed.php') {
+            $src = sprintf("https://img.youtube.com/vi/%s/maxresdefault.jpg", $id);
+            $res = '<img alt="youtube cover" width="760" height="396" src="' . $src . '" />';
+        }
     }
 
     return $res;

@@ -3,30 +3,16 @@
  * @var $db
  * @var array $queryString
  * @var int $isAuth
- * @var string $userName
+ * @var array $postTypes
+ * @var array $userData
  */
 
 require 'bootstrap.php';
-require 'model/types.php';
 require 'model/posts.php';
 
 $queryString = $_GET ?? null;
-$queryString['type'] = $queryString['type'] ?? null;
 
-// TODO подумать как переписать условие
-if (!is_string($queryString['type'])
-    && $queryString['type'] !== null
-    || $queryString['type'] === '0'
-    || $queryString['type'] === ''
-) {
-    get404StatusCode();
-}
-
-$postTypes = getPostTypes($db);
-
-if ($queryString['type'] && !in_array($queryString['type'], array_column($postTypes, 'id'))) {
-    get404StatusCode();
-}
+require 'modules/filter.php';
 
 $pagesCount = getPagesCount($db, $queryString['type']);
 $limit = 6;
@@ -70,6 +56,7 @@ $pageMainContent = includeTemplate('popular.php', [
 $pageLayout = includeTemplate('layout.php', [
     'pageTitle' => 'Readme - популярное',
     'isAuth' => $isAuth,
+    'userData' => $userData,
     'pageMainContent' => $pageMainContent,
     'pageMainClass' => 'popular',
 ]);

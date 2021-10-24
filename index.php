@@ -10,17 +10,22 @@ if ($_SERVER['REQUEST_URI'] == '/index.php') {
     header('Location: /', true, 301);
 }
 
+$action = $_GET['action'] ?? null;
+$isLogout = $action === 'logout';
+
+if ($isLogout) {
+    $_SESSION = [];
+}
+
 $formData = $_POST ?? null;
-$userData = getUser($db, [$formData['email'] ?? null]);
+$userData = selectUser($db, 'email', ['id', 'password'], [$formData['email'] ?? null]);
 $isError = null;
 
 if ($formData) {
     if ($userData && password_verify($formData['password'], $userData['password'])) {
         $isError = false;
 
-        $_SESSION = array_filter($userData, function ($key) {
-            return $key !== 'password' ? $key : null;
-        }, ARRAY_FILTER_USE_KEY);
+        $_SESSION['id'] = $userData['id'];
         header('Location: /feed.php');
     }
 
