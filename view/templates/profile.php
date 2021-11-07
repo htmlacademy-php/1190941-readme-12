@@ -43,6 +43,7 @@
                 <?= $subscribed ? ' button--quartz' : ''; ?>"
                    href="/profile.php?id=<?= esc($profileId); ?>&action=<?= $subscribed ? 'unsubscribe' : 'subscribe'; ?>"
                    type="button"><?= $subscribed ? 'Отписаться' : 'Подписаться'; ?></a>
+                <!-- TODO сообщение можно отправить только если подписан на пользователя, клик ведет на страницу сообщен -->
                 <a class="profile__user-button user__button user__button--writing button button--green"
                    href="#">Сообщение</a>
             </div>
@@ -53,12 +54,15 @@
         <div class="container">
             <div class="profile__tabs filters">
                 <b class="profile__tabs-caption filters__caption">Показать:</b>
+                <!-- TODO каждая ссылка содержит собственный параметр относительно текущей страницы, и отображает различное содержимое -->
                 <ul class="profile__tabs-list filters__list tabs__list">
                     <li class="profile__tabs-item filters__item">
                         <a class="profile__tabs-link filters__button filters__button--active tabs__item tabs__item--active button">Посты</a>
+                        <!-- TODO показать в хронологическом порядке все посты от этого пользователя -->
                     </li>
                     <li class="profile__tabs-item filters__item">
                         <a class="profile__tabs-link filters__button tabs__item button" href="#">Лайки</a>
+                        <!-- TODO показать все посты пользователя, у которых есть лайки. Сортировка происходит начиная с самых свежих лайков. -->
                     </li>
                     <li class="profile__tabs-item filters__item">
                         <a class="profile__tabs-link filters__button tabs__item button" href="#">Подписки</a>
@@ -366,6 +370,8 @@
 
                 <section class="profile__subscriptions tabs__content">
                     <h2 class="visually-hidden">Подписки</h2>
+                    <!-- TODO Аватар и логин пользователя оформлены ссылками и ведут на страницу профиля этого пользователя. -->
+                    <!-- TODO Кнопка подписки/отписки меняет своё название и смысл в зависимости от существования подписки на этого пользователя. -->
                     <ul class="profile__subscriptions-list">
                         <li class="post-mini post-mini--photo post user">
                             <div class="post-mini__user-info user__info">

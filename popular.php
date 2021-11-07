@@ -5,6 +5,7 @@
  * @var int $isAuth
  * @var array $postTypes
  * @var array $userData
+ * @var array $postsLikedByUser
  */
 
 require 'bootstrap.php';
@@ -13,6 +14,7 @@ require 'model/posts.php';
 $queryString = $_GET ?? null;
 
 require 'modules/filter.php';
+require 'modules/like.php';
 
 $pagesCount = getPagesCount($db, $queryString['type']);
 $limit = 6;
@@ -38,6 +40,14 @@ $queryString['sort'] = $queryString['sort'] ?? null;
 $queryString['direction'] = $queryString['direction'] ?? null;
 
 $postData = getPosts($db, $offset, $queryString['type'], $queryString['sort'], $queryString['direction']);
+
+foreach ($postData as &$post) {
+    $post['liked'] = false;
+
+    if (in_array($post['id'], $postsLikedByUser)) {
+        $post['liked'] = true;
+    }
+}
 
 $sort = [
     'Популярность' => 'popularity',

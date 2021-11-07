@@ -5,10 +5,7 @@
  * @var string $userName
  */
 
-// Регистрация уже тут
-
 require 'bootstrap.php';
-require 'model/users.php';
 
 $formData = $_POST ?? null;
 $fieldsMap = [
@@ -81,8 +78,9 @@ if (!empty($formData)) {
     if (empty($errors)) {
         $data['email'] = $formData['email'] ?? null;
         $data['login'] = $formData['login'] ?? null;
+        // TODO прочесть о солении пароля
         $data['password'] = password_hash($formData['password'], PASSWORD_DEFAULT);
-        $data['avatar'] = null; // TODO изображение заглушка
+        $data['avatar'] = null;
 
         if ($avatar['error'] === 0) {
             //  TODO сгенерировать имя файла, можно зашить в функцию и переиспользовать

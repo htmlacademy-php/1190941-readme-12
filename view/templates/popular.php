@@ -64,58 +64,9 @@
     <div class="popular__posts">
 
         <?php foreach ($postData as $post): ?>
-            <article class="popular__post post post-<?= esc($post['type']); ?>">
-                <header class="post__header">
-                    <h2>
-                        <!--TODO прочесть доку по srintf, может удобнее будет-->
-                        <a href="<?= '/post.php?id=' . esc($post['id']); ?>"><?= esc($post['title']); ?></a>
-                    </h2>
-                </header>
-
-                <div class="post__main">
-                    <!--здесь содержимое карточки-->
-                    <?= includeTemplate('template-parts/post-preview.php', [
-                        'post' => $post,
-                    ]) ?>
-                </div>
-
-                <footer class="post__footer">
-                    <div class="post__author">
-                        <a class="post__author-link" href="/profile.php?id=<?= esc($post['author_id']); ?>" title="Автор">
-                            <div class="post__avatar-wrapper">
-                                <!--укажите путь к файлу аватара-->
-                                <img class="post__author-avatar" src="uploads/avatars/<?= esc($post['avatar']); ?>" alt="Аватар пользователя <?= esc($post['author']); ?>">
-                            </div>
-                            <div class="post__info">
-                                <b class="post__author-name"><?= esc($post['author']); ?></b>
-                                <time class="post__time" datetime="<?= esc($post['creation_date']); ?>" title="<?= showTitleDateFormat(esc($post['creation_date'])); ?>"><?= getRelativeDateFormat(esc($post['creation_date']), 'назад'); ?></time>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="post__indicators">
-                        <div class="post__buttons">
-                            <a class="post__indicator post__indicator--likes button" href="#" title="Лайк">
-                                <svg class="post__indicator-icon" width="20" height="17">
-                                    <use xlink:href="#icon-heart"></use>
-                                </svg>
-                                <svg class="post__indicator-icon post__indicator-icon--like-active" width="20" height="17">
-                                    <use xlink:href="#icon-heart-active"></use>
-                                </svg>
-                                <span><?= esc($post['likes_count']); ?></span>
-                                <span class="visually-hidden">количество лайков</span>
-                            </a>
-                            <a class="post__indicator post__indicator--comments button" href="<?= '/post.php?id=' . esc($post['id']) . '#comments'; ?>" title="Комментарии">
-                                <svg class="post__indicator-icon" width="19" height="17">
-                                    <use xlink:href="#icon-comment"></use>
-                                </svg>
-                                <span><?= esc($post['comments_count']); ?></span>
-                                <span class="visually-hidden">количество комментариев</span>
-                            </a>
-                            <span class="post__view"><?= esc($post['views_count']); ?></span>
-                        </div>
-                    </div>
-                </footer>
-            </article>
+            <?= includeTemplate('layout.php', [
+                'post' => $post,
+            ], POST_PREVIEW_DIR) ?>
         <?php endforeach; ?>
 
     </div>

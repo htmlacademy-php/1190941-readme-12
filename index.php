@@ -4,7 +4,6 @@
  */
 
 require 'bootstrap.php';
-require 'model/users.php';
 
 if ($_SERVER['REQUEST_URI'] == '/index.php') {
     header('Location: /', true, 301);

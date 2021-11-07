@@ -187,6 +187,7 @@
                         <span class="post-details__rating-text user__rating-text">публикаций</span>
                     </p>
                 </div>
+                <!-- TODO не должен видеть блок когда смотрю свою запись -->
                 <div class="post-details__user-buttons user__buttons">
                     <!-- TODO Формирование ссылки выглядит странно, возможно нужно переписать через getQueryString -->
                     <a class="user__button user__button--subscription button button--main

@@ -3,6 +3,7 @@
  * @var $db
  * @var int $isAuth
  * @var string $userName
+ * @var array $userData
  */
 
 require 'bootstrap.php';
@@ -113,7 +114,7 @@ if (!empty($formData)) {
         }))['id'];
 
         // TODO автор после разбора авторизации
-        $data['authorId'] = 1;
+        $data['authorId'] = $_SESSION['id'];
         $data['content'] = $formData["{$postType}-main"] ?? null;
         $data['citeAuthor'] = $postType === 'quote' ? $formData['quote-author'] : null;
 
@@ -149,7 +150,7 @@ if (!empty($formData)) {
             }
         }
 
-        //  TODO Отправить подписчикам пользователя уведомления о новом посте
+        //  TODO 3.2 Отправить подписчикам пользователя уведомления о новом посте
 
         header("Location: /post.php?id={$postId}");
     }
@@ -163,6 +164,7 @@ $pageMainContent = includeTemplate('add.php', [
 $pageLayout = includeTemplate('layout.php', [
     'pageTitle' => 'Readme - Добавить пост',
     'isAuth' => $isAuth,
+    'userData' => $userData,
     'pageMainContent' => $pageMainContent,
     'pageMainClass' => 'adding-post',
 ]);

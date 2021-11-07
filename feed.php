@@ -12,6 +12,7 @@ require 'model/posts.php';
 $queryString = $_GET ?? null;
 
 require 'modules/filter.php';
+require 'modules/like.php';
 
 $posts = getPostsForFeed($db, $_SESSION['id'], $queryString['type']);
 

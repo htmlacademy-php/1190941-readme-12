@@ -1,5 +1,12 @@
 <?php
 
+const TPL_DIR = 'view/templates/';
+const PARTS_DIR = TPL_DIR . 'parts/';
+const POST_PARTS_DIR = PARTS_DIR . 'post/';
+const POST_PREVIEW_DIR = POST_PARTS_DIR . 'preview/';
+const POST_ADD_DIR = POST_PARTS_DIR . 'add/';
+const POST_ADD_FIELDSETS_DIR = POST_ADD_DIR . 'fieldsets/';
+
 require 'helpers.php';
 require 'model/users.php';
 

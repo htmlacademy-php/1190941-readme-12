@@ -20,6 +20,8 @@
 
                     <?php foreach ($postTypes as $type): ?>
                     <li class="adding-post__tabs-item filters__item">
+                        <!-- TODO Каждая вкладка — это ссылка на текущую страницу с дополнительным параметром запроса, уникальным для каждой вкладки. По умолчанию активна вкладка «Текст» и показана форма для публикации текстового поста. -->
+                        <!-- TODO В завивимости от параметра запроса должна быть активна одна из вкладок и в форме будет соответствующий выбранному типу набор полей. -->
                         <a class="adding-post__tabs-link filters__button filters__button--<?= esc($type['class_name']) ?><?= $type['class_name'] === getPostVal('post-type') || $type['class_name'] === 'text' && !getPostVal('post-type') ? ' filters__button--active' : ''; ?> tabs__item tabs__item--active button">
                             <svg class="filters__icon" width="22" height="18">
                                 <use xlink:href="#icon-filter-<?= esc($type['class_name']) ?>"></use>
@@ -45,32 +47,32 @@
 
                                 <div class="form__<?= esc($type['class_name']); ?>-inputs">
 
-                                    <?= includeTemplate('template-parts/add-post/form-heading-tpl.php', [
+                                    <?= includeTemplate('form-heading-tpl.php', [
                                         'type' => $type,
                                         'errorTitle' => $errors[$type['class_name'] . '-heading']['title'] ?? null,
                                         'errorDesc' => $errors[$type['class_name'] . '-heading']['description'] ?? null,
-                                    ]); ?>
+                                    ], POST_ADD_DIR); ?>
 
-                                    <?= includeTemplate("template-parts/add-post/fieldsets/{$type['class_name']}-fieldset.php", [
+                                    <?= includeTemplate("{$type['class_name']}-fieldset.php", [
                                         'errors' => array_filter($errors, function ($key) use ($type) {
                                             return $key !== $type['class_name'] . '-heading' && $key !== $type['class_name'] . '-tags';
                                         }, ARRAY_FILTER_USE_KEY),
                                         'fieldName' => $type['class_name'] . '-main',
-                                    ]); ?>
+                                    ], POST_ADD_FIELDSETS_DIR); ?>
 
-                                    <?= includeTemplate('template-parts/add-post/form-tags-tpl.php', [
+                                    <?= includeTemplate('form-tags-tpl.php', [
                                         'type' => $type,
                                         'errorTitle' => $errors[$type['class_name'] . '-tags']['title'] ?? null,
                                         'errorDesc' => $errors[$type['class_name'] . '-tags']['description'] ?? null,
-                                    ]); ?>
+                                    ], POST_ADD_DIR); ?>
 
                                 </div>
 
                                 <?php if (count($errors)): ?>
                                 <!-- TODO показывается и на других табах, нужно фиксить -->
-                                <?= includeTemplate('template-parts/form-error.php', [
+                                <?= includeTemplate('form-error.php', [
                                     'errors' => $errors,
-                                ]) ?>
+                                ], PARTS_DIR) ?>
                                 <?php endif; ?>
 
                             </div>
