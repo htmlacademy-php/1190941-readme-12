@@ -40,7 +40,6 @@ $pageMainContent = includeTemplate('post.php', [
 $pageLayout = includeTemplate('layout.php', [
     'pageTitle' => $post['title'] . ' ▶️ Пост на Readme',
     'isAuth' => $isAuth,
-    'userName' => $userName,
     'pageMainContent' => $pageMainContent,
     'pageMainClass' => 'publication',
 ]);
