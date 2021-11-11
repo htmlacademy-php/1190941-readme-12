@@ -113,13 +113,12 @@ if (!empty($formData)) {
             return $type['class_name'] === $postType;
         }))['id'];
 
-        // TODO автор после разбора авторизации
         $data['authorId'] = $_SESSION['id'];
         $data['content'] = $formData["{$postType}-main"] ?? null;
         $data['citeAuthor'] = $postType === 'quote' ? $formData['quote-author'] : null;
 
         if (isset($isFile) && $isFile['error'] === 0) {
-            //  TODO сгенерировать имя файла
+            // FIXME сгенерировать имя файла
             $fileName = $_FILES['photo-main']['name'];
             $filePath = __DIR__ . '/uploads/photos/';
             $fileUrl = '/uploads/photos/' . $fileName;
@@ -129,7 +128,7 @@ if (!empty($formData)) {
             $data['content'] = $fileName;
         } elseif (isset($formData['photo-url']) && $postType === 'photo') {
             $data['content'] = 'privet';
-            //  TODO загрузить изображение по ссылке используя curl или file_get_contents
+            // TODO загрузить изображение по ссылке используя curl или file_get_contents
         }
 
         insertNewPost($db, $data);

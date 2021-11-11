@@ -21,7 +21,7 @@ $limit = 6;
 $totalPages = intval(ceil($pagesCount / $limit));
 $queryString['page'] = $queryString['page'] ?? 1;
 
-// TODO подумать как учесть ?page=1fskdfhkj
+// QSTN подумать как учесть ?page=1fskdfhkj
 if ($queryString['page'] > $totalPages || $queryString['page'] <= 0) {
     get404StatusCode();
 }

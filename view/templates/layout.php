@@ -287,7 +287,7 @@
     </div>
 </footer>
 
-<!-- TODO что-то пошло не так и оно не отрабатывает, разобраться нет времени -->
+<!-- FIXME что-то пошло не так и оно не отрабатывает, разобраться нет времени -->
 <!--        <script src="/view/libs/dropzone.js"></script>-->
 <!--        <script src="/view/js/dropzone-settings.js"></script>-->
 <script src="/view/js/main.js"></script>

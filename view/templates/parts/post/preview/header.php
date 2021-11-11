@@ -4,11 +4,11 @@
  */
 ?>
 
-<!-- todo $_SERVER не безопасно -->
+<!-- TODO $_SERVER не безопасно, вынести в контроллер и передавать переменную с именем скрипта в шаблон -->
 <?php if ($_SERVER['SCRIPT_NAME'] === '/popular.php'): ?>
 <header class="post__header">
     <h2>
-        <!--TODO прочесть доку по srintf или использовать getQuery, может удобнее будет-->
+        <!-- FIXME прочесть доку по srintf или использовать getQuery, может удобнее будет-->
         <a href="<?= '/post.php?id=' . esc($post['id']); ?>"><?= esc($post['title']); ?></a>
     </h2>
 </header>

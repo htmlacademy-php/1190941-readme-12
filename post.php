@@ -18,16 +18,14 @@ require 'modules/like.php';
 $queryString = $_GET ?? null;
 $action = $queryString['action'] ?? null;
 
-// TODO додумать с 0, ?id[]=343 не передавать в getPostById(), и что-то с undefined index (вспомнить где)
+// QSTN думать с 0, ?id[]=343 не передавать в getPostById(), и что-то с undefined index (вспомнить где)
 if (!is_string($_GET['id'])) {
     get404StatusCode();
 }
 
-// TODO При каждом открытии этой страницы должен увеличиваться счётчик просмотров поста.
-
 $id = $_GET['id'] ?? null;
 
-// TODO подумать над местом для этого кода, может вынести в отдельный модуль
+// FIXME подумать над местом для этого кода, может вынести в отдельный модуль
 if ($action === 'like' && !in_array($id, $postsLikedByUser)) {
     insertLike($db, [$id, $_SESSION['id']]);
 
@@ -47,9 +45,12 @@ $profileId = $post['author_id'];
 
 require 'modules/subscriptions.php';
 
+// FIXME может стоит поднять выше
 if (!$post) {
     get404StatusCode();
 }
+
+incrementViewsCount($db, [$id]);
 
 $comments = getPostComments($db, $id);
 $hashtags = getPostTags($db, $id);

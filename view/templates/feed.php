@@ -34,7 +34,7 @@
                         </a>
                     </header>
 
-                    <!-- TODO вывести куски в отдельный dir -->
+                    <!-- TODO вывести куски в отдельный dir, сейчас post-preview.php -->
                     <div class="post__main">
                         <h2>
                             <a href="<?= '/post.php?id=' . esc($post['id']); ?>"><?= $post['title'] ?></a>

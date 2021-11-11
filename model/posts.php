@@ -1,6 +1,6 @@
 <?php
 
-function getPostById ($db, $id)
+function getPostById($db, $id)
 {
     return sqlGetSingle($db, '
         SELECT p.id,
@@ -32,9 +32,9 @@ function getPostById ($db, $id)
         [$id]);
 }
 
-function getPosts ($db, $offset, $postType = '', $sort = '', $sortDirection = '', $limit = 6)
+function getPosts($db, $offset, $postType = '', $sort = '', $sortDirection = '', $limit = 6)
 {
-    // TODO валидация параметров перед запросом http://readme.loc/?sort=popularity&direction=gnflg
+    // QSTN валидация параметров перед запросом http://readme.loc/?sort=popularity&direction=gnflg
     $direction = $sortDirection ?? 'desc';
 
     switch ($sort) {
@@ -106,7 +106,7 @@ function getPostsForFeed($db, int $id, string $postType = null)
     return sqlGetMany($db, $sql, $data);
 }
 
-function getPagesCount ($db, string $postType = null)
+function getPagesCount($db, string $postType = null)
 {
     return ($postType)
         ? current(sqlGetSingle($db, '
@@ -117,9 +117,16 @@ function getPagesCount ($db, string $postType = null)
         : current(sqlGetSingle($db, 'SELECT COUNT(*) FROM posts'));
 }
 
-function insertNewPost ($db, array $data)
+function insertNewPost($db, array $data)
 {
     $sql = "INSERT INTO posts (title, type_id, author_id, content, cite_author) VALUES (?, ?, ?, ?, ?)";
 
     return preparedQuery($db, $sql, [$data['title'], $data['typeId'], $data['authorId'], $data['content'], $data['citeAuthor']]);
+}
+
+function incrementViewsCount($db, array $data)
+{
+    $sql = 'UPDATE posts SET views_count = views_count + 1 WHERE id = ?';
+
+    return preparedQuery($db, $sql, $data);
 }

@@ -78,12 +78,12 @@ if (!empty($formData)) {
     if (empty($errors)) {
         $data['email'] = $formData['email'] ?? null;
         $data['login'] = $formData['login'] ?? null;
-        // TODO прочесть о солении пароля
+        // FIXME прочесть о солении пароля
         $data['password'] = password_hash($formData['password'], PASSWORD_DEFAULT);
         $data['avatar'] = null;
 
         if ($avatar['error'] === 0) {
-            //  TODO сгенерировать имя файла, можно зашить в функцию и переиспользовать
+            // FIXME сгенерировать имя файла, можно зашить в функцию и переиспользовать
             $fileName = $_FILES['avatar-file']['name'];
             $filePath = __DIR__ . '/uploads/avatars/';
             $fileUrl = '/uploads/avatars/' . $fileName;

@@ -8,7 +8,7 @@ require 'model/types.php';
 
 $queryString['type'] = $queryString['type'] ?? null;
 
-// TODO подумать как переписать условие
+// QSTN подумать как переписать условие
 if (!is_string($queryString['type'])
     && $queryString['type'] !== null
     || $queryString['type'] === '0'
