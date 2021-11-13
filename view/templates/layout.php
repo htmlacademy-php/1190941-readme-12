@@ -208,6 +208,7 @@
                             <a class="header__user-button header__authorization-button button" href="/">Вход</a>
                         </li>
                         <li>
+                            <!-- todo убрать глобальную переменную server из шаблонов -->
                             <?php $regActiveClass = $_SERVER['SCRIPT_NAME'] === '/registration.php'
                                 ? 'header__user-button--active '
                                 : ''; ?>
@@ -287,9 +288,5 @@
     </div>
 </footer>
 
-<!-- FIXME что-то пошло не так и оно не отрабатывает, разобраться нет времени -->
-<!--        <script src="/view/libs/dropzone.js"></script>-->
-<!--        <script src="/view/js/dropzone-settings.js"></script>-->
-<script src="/view/js/main.js"></script>
 </body>
 </html>
