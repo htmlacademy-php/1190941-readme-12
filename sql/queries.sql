@@ -128,10 +128,6 @@ INSERT INTO subscriptions (user_id, follower_id)
 VALUES (5, 1),
        (5, 3);
 
-INSERT INTO posts (title, type_id, author_id, original_author_id, content, views_count, repost)
-VALUES ('Моя мечта', 3, 1, 5, 'coast.jpg', 348, TRUE),
-       ('Моя мечта', 3, 3, 5, 'coast.jpg', 348, TRUE);
-
 /* Добавить лайк к посту; */
 INSERT INTO likes (post_id, user_id) VALUES (2, 3);
 

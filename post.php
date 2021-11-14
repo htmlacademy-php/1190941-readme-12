@@ -23,7 +23,7 @@ if (!is_string($_GET['id'])) {
     get404StatusCode();
 }
 
-$id = $_GET['id'] ?? null;
+$id = $queryString['id'] ?? null;
 
 // FIXME подумать над местом для этого кода, может вынести в отдельный модуль
 // todo Для того, чтобы удалить лайк, не обязательно проверять его наличие. БД просто вернёт 0 строк в ответ
@@ -42,11 +42,14 @@ if (is_string($id)) {
     $id = intval($id);
 }
 
-
-
 incrementViewsCount($db, [$id]);
 
 $post = getPostById($db, $id);
+
+if ($action === 'repost' && $post) {
+    insertRepost($db, [$_SESSION['id'], $id]);
+}
+
 $profileId = $post['author_id'] ?? null;
 
 $formData = $_POST ?? null;

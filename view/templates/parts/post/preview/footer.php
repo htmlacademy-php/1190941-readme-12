@@ -45,12 +45,12 @@
                 <span><?= esc($post['comments_count']); ?></span>
                 <span class="visually-hidden">количество комментариев</span>
             </a>
-            <?php if ($scriptName === 'feed'): ?>
-            <a class="post__indicator post__indicator--repost button" href="#" title="Репост">
+            <?php if ($scriptName === 'feed' || $scriptName === 'profile'): ?>
+            <a class="post__indicator post__indicator--repost button" href="/post.php?<?= esc(http_build_query(['id' => $post['id'], 'action' => 'repost'])) ?>" title="Репост">
                 <svg class="post__indicator-icon" width="19" height="17">
                     <use xlink:href="#icon-repost"></use>
                 </svg>
-                <span>0</span>
+                <span><?= esc($post['reposts_count']) ?></span>
                 <span class="visually-hidden">количество репостов</span>
             </a>
             <?php endif; ?>

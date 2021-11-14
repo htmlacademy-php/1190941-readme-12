@@ -92,7 +92,10 @@ function getPostsForFeed($db, int $id, string $postType = null)
                     WHERE p.id = l.post_id) AS likes_count,
                    (SELECT COUNT(post_id)
                     FROM comments c
-                    WHERE p.id = c.post_id) AS comments_count
+                    WHERE p.id = c.post_id) AS comments_count,
+                    (SELECT COUNT(original_post_id)
+                    FROM posts
+                    WHERE original_post_id = p.id) AS reposts_count
             FROM posts p
                      JOIN subscriptions s ON s.user_id = p.author_id
                      JOIN users u ON p.author_id = u.id
@@ -116,7 +119,10 @@ function getUserPosts($db, array $data)
                 WHERE p.id = l.post_id) AS likes_count,
                 (SELECT COUNT(post_id)
                 FROM comments c
-                WHERE p.id = c.post_id) AS comments_count
+                WHERE p.id = c.post_id) AS comments_count,
+                (SELECT COUNT(original_post_id)
+                FROM posts
+                WHERE original_post_id = p.id) AS reposts_count
             FROM posts p
                 JOIN users u ON p.author_id = u.id
                 JOIN types t ON p.type_id = t.id
@@ -183,9 +189,20 @@ function insertNewPost($db, array $data)
     return preparedQuery($db, $sql, [$data['title'], $data['typeId'], $data['authorId'], $data['content'], $data['citeAuthor']]);
 }
 
+// qstn есть ли возможность использовать тут if
 function incrementViewsCount($db, array $data)
 {
     $sql = 'UPDATE posts SET views_count = views_count + 1 WHERE id = ?';
+
+    return preparedQuery($db, $sql, $data);
+}
+
+function insertRepost($db, array $data)
+{
+    $sql = 'INSERT INTO posts (title, type_id, author_id, content, cite_author, original_post_id)
+            SELECT title, type_id, ?, content, cite_author, id
+            FROM posts
+            WHERE id = ?';
 
     return preparedQuery($db, $sql, $data);
 }
