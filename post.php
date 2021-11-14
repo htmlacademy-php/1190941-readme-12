@@ -26,6 +26,8 @@ if (!is_string($_GET['id'])) {
 $id = $_GET['id'] ?? null;
 
 // FIXME подумать над местом для этого кода, может вынести в отдельный модуль
+// todo Для того, чтобы удалить лайк, не обязательно проверять его наличие. БД просто вернёт 0 строк в ответ
+// todo Перенаправление можно вынести за пределы условия. И там и там это один и тот же код
 if ($action === 'like' && !in_array($id, $postsLikedByUser)) {
     insertLike($db, [$id, $_SESSION['id']]);
 
@@ -40,8 +42,39 @@ if (is_string($id)) {
     $id = intval($id);
 }
 
+
+
+incrementViewsCount($db, [$id]);
+
 $post = getPostById($db, $id);
-$profileId = $post['author_id'];
+$profileId = $post['author_id'] ?? null;
+
+$formData = $_POST ?? null;
+$formDataPostId = $formData['post-id'] ?? null;
+$comment = $formData['comment'] ?? null;
+$errors = [];
+
+if ($formData && getPostById($db, $formDataPostId)) {
+    if (empty($comment)) {
+        $errors['title'] = 'Все упало';
+        $errors['description'] = 'Это поле должно быть заполнено';
+    } else {
+        if (mb_strlen(trim($comment)) < 4) {
+            $errors['title'] = 'Все упало';
+            $errors['description'] = 'Комментарий должен быть длиннее 4 символов не включая пробелы';
+        }
+    }
+
+    if (empty($errors)) {
+        $data['comment'] = trim($comment);
+        $data['post_id'] = $formDataPostId;
+        $data['author_id'] = $_SESSION['id'];
+
+        insertNewComment($db, array_values($data));
+
+        header('Location: /profile.php?id=' . $profileId);
+    }
+}
 
 require 'modules/subscriptions.php';
 
@@ -50,8 +83,7 @@ if (!$post) {
     get404StatusCode();
 }
 
-incrementViewsCount($db, [$id]);
-
+// fixme собрать в дату и прокидывать в шаблон одним массивом, комменты +хештеги
 $comments = getPostComments($db, $id);
 $hashtags = getPostTags($db, $id);
 
@@ -61,6 +93,8 @@ $pageMainContent = includeTemplate('post.php', [
     'hashtags' => $hashtags,
     'queryString' => $queryString,
     'subscribed' => $subscribed,
+    'userData' => $userData,
+    'errors' => $errors,
 ]);
 
 $pageLayout = includeTemplate('layout.php', [

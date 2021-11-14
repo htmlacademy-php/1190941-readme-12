@@ -6,6 +6,7 @@
  * @var array $postTypes
  * @var array $userData
  * @var array $postsLikedByUser
+ * @var string $scriptName
  */
 
 require 'bootstrap.php';
@@ -61,6 +62,7 @@ $pageMainContent = includeTemplate('popular.php', [
     'queryString' => $queryString,
     'pagination' => $pagination,
     'sort' => $sort,
+    'scriptName' => $scriptName,
 ]);
 
 $pageLayout = includeTemplate('layout.php', [

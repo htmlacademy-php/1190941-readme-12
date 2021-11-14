@@ -1,22 +1,24 @@
 <?php
 /**
  * @var array $post
+ * @var array $scriptName
  */
 ?>
 
-<article class="<?= $_SERVER['SCRIPT_NAME'] === '/popular.php' ? 'popular' : 'feed'; ?>__post post post-<?= esc($post['type']); ?>">
+<article class="<?= esc($scriptName); ?>__post post post-<?= esc($post['type']); ?>">
     <?= includeTemplate('header.php', [
         'post' => $post,
+        'scriptName' => $scriptName,
     ], POST_PREVIEW_DIR) ?>
 
     <div class="post__main">
-        <!--здесь содержимое карточки-->
-        <?= includeTemplate('post-preview.php', [
+        <?= includeTemplate('main.php', [
             'post' => $post,
-        ], PARTS_DIR) ?>
+        ], POST_PREVIEW_DIR) ?>
     </div>
 
     <?= includeTemplate('footer.php', [
         'post' => $post,
+        'scriptName' => $scriptName,
     ], POST_PREVIEW_DIR) ?>
 </article>

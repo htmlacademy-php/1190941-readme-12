@@ -4,11 +4,46 @@
  * @var bool $isAuth
  * @var array $userData
  * @var bool $subscribed
+ * @var string $scriptName
+ * @var array $postsLikedByUser
+ * @var array $subscriptions
  */
 
 require 'bootstrap.php';
+require 'model/posts.php';
+
+require 'modules/like.php';
 
 $queryString = $_GET ?? null;
+$activeTab = $queryString['show'] ?? null;
+
+$profileTabs = [
+    'posts' => [
+        'title' => 'Посты',
+        'href' => [
+            'show' => 'posts'
+        ]
+    ],
+    'likes' => [
+        'title' => 'Лайки',
+        'href' => [
+            'show' => 'likes'
+        ]
+    ],
+    'subscriptions' => [
+        'title' => 'Подписки',
+        'href' => [
+            'show' => 'subscriptions'
+        ]
+    ]
+];
+
+if (!$activeTab) {
+    header('Location: ' . getQueryString($queryString, $profileTabs['posts']['href']));
+} elseif (!array_key_exists($activeTab, $profileTabs)) {
+    get404StatusCode();
+}
+
 $action = $queryString['action'] ?? null;
 $profileId = $queryString['id'] ? +$queryString['id'] : null;
 $existingProfile = selectUser($db, 'id', ['*'], [$profileId]);
@@ -19,7 +54,10 @@ if (!$existingProfile) {
 
 require 'modules/subscriptions.php';
 
+// fixme вынести одинаковые строчки
 if ($action === 'subscribe' && $profileId !== $_SESSION['id']) {
+    // TODO проверить существует ли пользователь на которого подписываюсь
+
     if (!$subscribed) {
         subscribe($db, [$_SESSION['id'], $profileId]);
     }
@@ -33,11 +71,39 @@ if ($action === 'subscribe' && $profileId !== $_SESSION['id']) {
 }
 
 $profileData = getProfileData($db, $profileId);
+$userPosts = getUserPosts($db, [$profileId]);
 
+foreach ($userPosts as &$post) {
+    $post['liked'] = false;
+
+    if (in_array($post['id'], $postsLikedByUser)) {
+        $post['liked'] = true;
+    }
+}
+
+$userPostsLikedByUsers = getPostsLikedByUsers($db, [$profileId]);
+$subscribedUsers = getSubscribedUsers($db, [$profileId]);
+
+foreach ($subscribedUsers as &$user) {
+    $user['curr_subscribed'] = null;
+
+    if (in_array($user['id'], array_column($subscriptions, 'user_id'))) {
+        $user['curr_subscribed'] = true;
+    }
+}
+
+// fixme перебрать пробросы, может не нужно так много и можно все собрать в data
 $pageMainContent = includeTemplate('profile.php', [
+    'profileTabs' => $profileTabs,
     'profileData' => $profileData,
+    'activeTab' => $activeTab,
+    'queryString' => $queryString,
     'profileId' => $profileId,
     'subscribed' => $subscribed,
+    'scriptName' => $scriptName,
+    'userPosts' => $userPosts,
+    'userPostsLikedByUsers' => $userPostsLikedByUsers,
+    'subscribedUsers' => $subscribedUsers,
 ]);
 
 $pageLayout = includeTemplate('layout.php', [

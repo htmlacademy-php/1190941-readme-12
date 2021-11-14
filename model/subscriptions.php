@@ -1,8 +1,8 @@
 <?php
 
-function checkSubscription($db, array $data)
+function checkSubscriptions($db, array $data)
 {
-    $sql = "SELECT * FROM subscriptions WHERE follower_id = ? && user_id = ?";
+    $sql = "SELECT * FROM subscriptions WHERE follower_id = ?";
 
     return sqlGetMany($db, $sql, $data);
 }

@@ -5,6 +5,7 @@
  * @var array $queryString
  * @var array $pagination
  * @var array $sort
+ * @var string $scriptName
 */
 ?>
 
@@ -66,6 +67,7 @@
         <?php foreach ($postData as $post): ?>
             <?= includeTemplate('layout.php', [
                 'post' => $post,
+                'scriptName' => $scriptName,
             ], POST_PREVIEW_DIR) ?>
         <?php endforeach; ?>
 

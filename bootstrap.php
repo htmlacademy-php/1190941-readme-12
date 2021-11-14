@@ -46,3 +46,6 @@ $isAuth = !empty($_SESSION);
 if ($isAuth && in_array($_SERVER['SCRIPT_NAME'], $availableAddresses)) {
     header('Location: /feed.php');
 }
+
+// qstn этого достаточно что бы глобальную переменную не про эксплуатировали?
+$scriptName = preg_replace('/(\/)(\w.*)(\.php)/', '$2', $_SERVER['SCRIPT_NAME']);

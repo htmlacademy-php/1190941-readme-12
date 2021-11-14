@@ -83,7 +83,6 @@ function getPostsForFeed($db, int $id, string $postType = null)
                    p.author_id,
                    p.content,
                    p.cite_author,
-                   p.views_count,
                    u.name AS author,
                    u.avatar_name AS avatar,
                    t.name AS type_name,
@@ -102,6 +101,66 @@ function getPostsForFeed($db, int $id, string $postType = null)
             ORDER BY p.creation_date DESC;";
 
     $data = $postType ? [$id, $postType] : [$id];
+
+    return sqlGetMany($db, $sql, $data);
+}
+
+function getUserPosts($db, array $data)
+{
+    $sql = "SELECT p.*,
+                u.name AS author,
+                t.name AS type_name,
+                t.class_name AS type,
+                (SELECT COUNT(post_id)
+                FROM likes l
+                WHERE p.id = l.post_id) AS likes_count,
+                (SELECT COUNT(post_id)
+                FROM comments c
+                WHERE p.id = c.post_id) AS comments_count
+            FROM posts p
+                JOIN users u ON p.author_id = u.id
+                JOIN types t ON p.type_id = t.id
+            WHERE author_id = ?
+            ORDER BY creation_date DESC";
+
+    return sqlGetMany($db, $sql, $data);
+}
+
+function getPostsLikedByUsers($db, array $data)
+{
+    $sql = "SELECT p.id,
+                   p.content,
+                   l.date,
+                   u.id AS user_id,
+                   u.name AS user_name,
+                   u.avatar_name AS avatar,
+                   t.class_name AS type
+            FROM posts p
+                JOIN likes l ON p.id = l.post_id
+                JOIN users u ON l.user_id = u.id
+                JOIN types t ON p.type_id = t.id
+            WHERE author_id = ?
+            ORDER BY l.date DESC";
+
+    return sqlGetMany($db, $sql, $data);
+}
+
+function getSubscribedUsers($db, array $data)
+{
+    $sql = "SELECT u.id,
+                   u.name,
+                   u.avatar_name AS avatar,
+                   u.registration_date AS date,
+                   (SELECT COUNT(author_id)
+                    FROM posts p
+                    WHERE p.author_id = u.id) AS publications_count,
+                   (SELECT COUNT(user_id)
+                    FROM subscriptions s
+                    WHERE s.user_id = u.id) AS subscriptions_count
+            FROM users u
+                JOIN subscriptions s ON u.id = s.follower_id
+            WHERE s.user_id = ?
+            ORDER BY s.id DESC";
 
     return sqlGetMany($db, $sql, $data);
 }

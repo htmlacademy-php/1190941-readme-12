@@ -1,18 +1,11 @@
 <?php
 /**
  * @var array $post
+ * @var string $scriptName
  */
 ?>
 
-<!-- TODO $_SERVER не безопасно, вынести в контроллер и передавать переменную с именем скрипта в шаблон -->
-<?php if ($_SERVER['SCRIPT_NAME'] === '/popular.php'): ?>
-<header class="post__header">
-    <h2>
-        <!-- FIXME прочесть доку по srintf или использовать getQuery, может удобнее будет-->
-        <a href="<?= '/post.php?id=' . esc($post['id']); ?>"><?= esc($post['title']); ?></a>
-    </h2>
-</header>
-<?php elseif ($_SERVER['SCRIPT_NAME'] === '/feed.php'): ?>
+<?php if ($scriptName === 'feed'): ?>
 <header class="post__header post__author">
     <a class="post__author-link" href="/profile.php?id=<?= esc($post['author_id']) ?>"
        title="Автор">
@@ -25,5 +18,12 @@
             <span class="post__time"><?= getRelativeDateFormat(esc($post['creation_date']), 'назад'); ?></span>
         </div>
     </a>
+</header>
+<?php else: ?>
+<header class="post__header">
+    <h2>
+        <!-- FIXME прочесть доку по srintf или использовать getQuery, может удобнее будет-->
+        <a href="<?= '/post.php?id=' . esc($post['id']); ?>"><?= esc($post['title']); ?></a>
+    </h2>
 </header>
 <?php endif; ?>
