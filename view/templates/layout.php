@@ -134,7 +134,7 @@
                             ],
                             [
                                 'class' => 'messages',
-                                'href' => '/',
+                                'href' => '/messages.php',
                                 'text' => 'Личные сообщения',
                             ]
                         ] ?>

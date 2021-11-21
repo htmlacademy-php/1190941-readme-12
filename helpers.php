@@ -297,6 +297,13 @@ function esc($content)
     return htmlspecialchars($content, ENT_QUOTES);
 }
 
+function formatDate(string $dateTime, string $format): string
+{
+    $dateTime = new DateTime($dateTime, new DateTimeZone('Europe/Moscow'));
+
+    return $dateTime->format($format);
+}
+
 function showTitleDateFormat(string $dateTime): string
 {
     $dateTime = new DateTime($dateTime, new DateTimeZone('Europe/Moscow'));
