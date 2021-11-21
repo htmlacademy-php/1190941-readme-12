@@ -4,7 +4,6 @@
  * @var array $queryString
  * @var int $isAuth
  * @var array $userData
- * @var string $scriptName
  */
 
 require 'bootstrap.php';
@@ -14,9 +13,6 @@ $queryString = $_GET ?? null;
 $formData = $_POST ?? null;
 $message = $_POST['message'] ?? null;
 $chatID = $queryString['chat'] ?? null;
-
-
-
 $errors = [];
 
 $chat = getChat($db, [$chatID, $_SESSION['id'], $_SESSION['id'], $chatID]);
@@ -94,7 +90,6 @@ if ($formData
 
 $pageMainContent = includeTemplate('messages.php', [
     'queryString' => $queryString,
-    'scriptName' => $scriptName,
     'openChats' => $openChats,
     'chatID' => $chatID,
     'chat' => $chat,

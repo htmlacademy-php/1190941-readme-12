@@ -1,6 +1,6 @@
 <?php
 /**
- * Использую логику в 2-х сценариях /post.php и /popular.php
+ * Использую логику в 3-х сценариях /post.php, /popular.php, /search.php
  * @var $db
  */
 

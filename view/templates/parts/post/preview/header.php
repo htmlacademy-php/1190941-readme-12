@@ -5,7 +5,7 @@
  */
 ?>
 
-<?php if ($scriptName === 'feed'): ?>
+<?php if ($scriptName === 'feed' || $scriptName === 'search'): ?>
 <header class="post__header post__author">
     <a class="post__author-link" href="/profile.php?id=<?= esc($post['author_id']) ?>"
        title="Автор">

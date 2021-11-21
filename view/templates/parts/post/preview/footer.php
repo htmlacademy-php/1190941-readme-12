@@ -45,7 +45,7 @@
                 <span><?= esc($post['comments_count']); ?></span>
                 <span class="visually-hidden">количество комментариев</span>
             </a>
-            <?php if ($scriptName === 'feed' || $scriptName === 'profile'): ?>
+            <?php if ($scriptName === 'feed' || $scriptName === 'profile' || $scriptName === 'search'): ?>
             <a class="post__indicator post__indicator--repost button" href="/post.php?<?= esc(http_build_query(['id' => $post['id'], 'action' => 'repost'])) ?>" title="Репост">
                 <svg class="post__indicator-icon" width="19" height="17">
                     <use xlink:href="#icon-repost"></use>
@@ -57,12 +57,12 @@
         </div>
     </div>
 
-    <?php if ($scriptName === 'feed' && $post['hashtags']): ?>
+    <?php if ($scriptName === 'feed' && $post['hashtags'] || $scriptName === 'search' && $post['hashtags']): ?>
         <ul class="post__tags">
             <?php foreach ($post['hashtags'] as $hashtag): ?>
                 <li>
                     <!-- todo реализовать ссылки на поиск по тегу -->
-                    <a href="#">#<?= esc($hashtag['name']); ?></a>
+                    <a href="/search.php?<?= esc(http_build_query(['result' => '#' . $hashtag['name']])); ?>">#<?= esc($hashtag['name']); ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>

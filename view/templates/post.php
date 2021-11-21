@@ -89,7 +89,7 @@
                 <ul class="post__tags">
                     <?php foreach ($hashtags as $hashtag): ?>
                     <li>
-                        <a href="#">#<?= esc($hashtag['name']); ?></a>
+                        <a href="/search.php?<?= esc(http_build_query(['result' => '#' . $hashtag['name']])) ?>">#<?= esc($hashtag['name']); ?></a>
                     </li>
                     <?php endforeach; ?>
                 </ul>

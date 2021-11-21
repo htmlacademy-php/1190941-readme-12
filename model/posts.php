@@ -189,7 +189,7 @@ function insertNewPost($db, array $data)
     return preparedQuery($db, $sql, [$data['title'], $data['typeId'], $data['authorId'], $data['content'], $data['citeAuthor']]);
 }
 
-// qstn есть ли возможность использовать тут if
+// qstn есть ли возможность использовать тут if null = 0
 function incrementViewsCount($db, array $data)
 {
     $sql = 'UPDATE posts SET views_count = views_count + 1 WHERE id = ?';
@@ -205,4 +205,9 @@ function insertRepost($db, array $data)
             WHERE id = ?';
 
     return preparedQuery($db, $sql, $data);
+}
+
+function searchPosts()
+{
+    // todo запрос на поиск постов по совпадениям
 }
