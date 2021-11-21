@@ -126,16 +126,21 @@ function getNounPluralForm(int $number, string $one, string $two, string $many):
 
 /**
  * Подключает шаблон, передает туда данные и возвращает итоговый HTML контент
- * @param string $name Путь к файлу шаблона относительно папки templates
+ * @param string $fileName Имя файла
  * @param array $data Ассоциативный массив с данными для шаблона
  * @return string Итоговый HTML
  */
-function includeTemplate(string $name, array $data = []): string {
-    $name = 'view/templates/' . $name;
+function includeTemplate(string $fileName, array $data = [], string $dir = null): string
+{
+    if (!$dir) {
+        $dir = 'view/templates/';
+    }
+
+    $fullPath = $dir . $fileName;
 
     ob_start();
     extract($data);
-    require $name;
+    require $fullPath;
 
     return ob_get_clean();
 }
@@ -198,6 +203,11 @@ function embedYoutubeCover(string $youtubeUrl): string
     if ($id) {
         $src = sprintf("https://img.youtube.com/vi/%s/mqdefault.jpg", $id);
         $res = '<img alt="youtube cover" width="320" height="120" src="' . $src . '" />';
+
+        if ($_SERVER['SCRIPT_NAME'] === '/feed.php') {
+            $src = sprintf("https://img.youtube.com/vi/%s/maxresdefault.jpg", $id);
+            $res = '<img alt="youtube cover" width="760" height="396" src="' . $src . '" />';
+        }
     }
 
     return $res;
@@ -285,6 +295,13 @@ function cropText(string $text, int $maxChars = 300): string
 function esc($content)
 {
     return htmlspecialchars($content, ENT_QUOTES);
+}
+
+function formatDate(string $dateTime, string $format): string
+{
+    $dateTime = new DateTime($dateTime, new DateTimeZone('Europe/Moscow'));
+
+    return $dateTime->format($format);
 }
 
 function showTitleDateFormat(string $dateTime): string

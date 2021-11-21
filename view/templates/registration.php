@@ -30,10 +30,10 @@
                                value="<?= esc(getPostVal('email')); ?>">
 
                         <?php if (isset($errors['email'])): ?>
-                            <?= includeTemplate('template-parts/field-error.php', [
+                            <?= includeTemplate('field-error.php', [
                                 'errorTitle' => $errors['email']['title'],
                                 'errorDesc' => $errors['email']['description'],
-                            ]); ?>
+                            ], PARTS_DIR); ?>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -54,10 +54,10 @@
                                value="<?= esc(getPostVal('login')); ?>">
 
                         <?php if (isset($errors['login'])): ?>
-                            <?= includeTemplate('/template-parts/field-error.php', [
+                            <?= includeTemplate('field-error.php', [
                                 'errorTitle' => $errors['login']['title'],
                                 'errorDesc' => $errors['login']['description'],
-                            ]); ?>
+                            ], PARTS_DIR); ?>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -74,10 +74,10 @@
                                placeholder="Придумайте пароль">
 
                         <?php if (isset($errors['password'])): ?>
-                            <?= includeTemplate('/template-parts/field-error.php', [
+                            <?= includeTemplate('field-error.php', [
                                 'errorTitle' => $errors['password']['title'],
                                 'errorDesc' => $errors['password']['description'],
-                            ]); ?>
+                            ], PARTS_DIR); ?>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -94,19 +94,19 @@
                                placeholder="Повторите пароль">
 
                         <?php if (isset($errors['password-repeat'])): ?>
-                            <?= includeTemplate('/template-parts/field-error.php', [
+                            <?= includeTemplate('field-error.php', [
                                 'errorTitle' => $errors['password-repeat']['title'],
                                 'errorDesc' => $errors['password-repeat']['description'],
-                            ]); ?>
+                            ], PARTS_DIR); ?>
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
 
             <?php if (count($errors)): ?>
-            <?= includeTemplate('template-parts/form-error.php', [
+            <?= includeTemplate('form-error.php', [
                 'errors' => $errors,
-            ]) ?>
+            ], PARTS_DIR) ?>
             <?php endif; ?>
         </div>
         <div class="registration__input-file-container form__input-container form__input-container--file">
@@ -119,10 +119,10 @@
                        value="<?= esc(getPostVal('userpic-file')); ?>">
 
                 <?php if (isset($errors['avatar-file'])): ?>
-                    <?= includeTemplate('/template-parts/field-error.php', [
+                    <?= includeTemplate('field-error.php', [
                         'errorTitle' => $errors['avatar']['title'],
                         'errorDesc' => $errors['avatar']['description'],
-                    ]); ?>
+                    ], PARTS_DIR); ?>
                 <?php endif; ?>
 
             </div>

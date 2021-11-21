@@ -1,6 +1,14 @@
 <?php
 
+const TPL_DIR = 'view/templates/';
+const PARTS_DIR = TPL_DIR . 'parts/';
+const POST_PARTS_DIR = PARTS_DIR . 'post/';
+const POST_PREVIEW_DIR = POST_PARTS_DIR . 'preview/';
+const POST_ADD_DIR = POST_PARTS_DIR . 'add/';
+const POST_ADD_FIELDSETS_DIR = POST_ADD_DIR . 'fieldsets/';
+
 require 'helpers.php';
+require 'model/users.php';
 
 if (!file_exists('config.php')) {
     $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
@@ -29,16 +37,15 @@ if (empty($_SESSION) && !in_array($_SERVER['SCRIPT_NAME'], $availableAddresses))
     header('Location: /');
 }
 
+if ($_SESSION) {
+    $userData = selectUser($db, 'id', ['name', 'avatar_name AS avatar'], [$_SESSION['id']]);
+}
+
 $isAuth = !empty($_SESSION);
 
 if ($isAuth && in_array($_SERVER['SCRIPT_NAME'], $availableAddresses)) {
     header('Location: /feed.php');
 }
 
-// TODO отдельный сценарий для логаута наверное слишком много чести, уточнить это
-$isLogout = $_GET['logout'] ?? '';
-
-if ($isLogout) {
-    $_SESSION = [];
-    header('Location: /');
-}
+// qstn этого достаточно что бы глобальную переменную не про эксплуатировали?
+$scriptName = preg_replace('/(\/)(\w.*)(\.php)/', '$2', $_SERVER['SCRIPT_NAME']);

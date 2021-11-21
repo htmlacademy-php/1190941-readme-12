@@ -2,7 +2,7 @@
 /**
  * @var string $pageTitle
  * @var bool $isAuth
- * @var string $userName
+ * @var array $userData
  * @var string $pageMainClass
  * @var string $pageMainContent
  */
@@ -102,10 +102,10 @@
         </div>
 
         <?php if ($isAuth): ?>
-            <form class="header__search-form form" action="#" method="get">
+            <form class="header__search-form form" action="/search.php" method="get">
                 <div class="header__search">
                     <label class="visually-hidden" for="search-input">Поиск</label>
-                    <input class="header__search-input form__input" id="search-input" type="search">
+                    <input class="header__search-input form__input" name="result" id="search-input" type="search">
                     <button class="header__search-button button" type="submit">
                         <svg class="header__search-icon" width="18" height="18">
                             <use xlink:href="#icon-search"></use>
@@ -121,33 +121,47 @@
             <nav class="header__nav">
                 <?php if ($isAuth): ?>
                     <ul class="header__my-nav">
-                        <li class="header__my-page header__my-page--popular">
-                            <a class="header__page-link header__page-link--active" title="Популярный контент">
-                                <span class="visually-hidden">Популярный контент</span>
+                        <?php $userPages = [
+                            [
+                                'class' => 'popular',
+                                'href' => '/popular.php',
+                                'text' => 'Популярный контент',
+                            ],
+                            [
+                                'class' => 'feed',
+                                'href' => '/feed.php',
+                                'text' => 'Моя лента',
+                            ],
+                            [
+                                'class' => 'messages',
+                                'href' => '/messages.php',
+                                'text' => 'Личные сообщения',
+                            ]
+                        ] ?>
+                        <?php foreach ($userPages as $userPage): ?>
+                        <li class="header__my-page header__my-page--<?= esc($userPage['class']) ?>">
+                            <a class="header__page-link<?= $userPage['href'] === $_SERVER['SCRIPT_NAME']
+                                ? ' header__page-link--active'
+                                : '' ?>"
+                               href="<?= esc($userPage['href']) ?>"
+                               title="<?= esc($userPage['text']) ?>">
+                                <span class="visually-hidden"><?= esc($userPage['text']) ?></span>
                             </a>
                         </li>
-                        <li class="header__my-page header__my-page--feed">
-                            <a class="header__page-link" href="/" title="Моя лента">
-                                <span class="visually-hidden">Моя лента</span>
-                            </a>
-                        </li>
-                        <li class="header__my-page header__my-page--messages">
-                            <a class="header__page-link" href="/" title="Личные сообщения">
-                                <span class="visually-hidden">Личные сообщения</span>
-                            </a>
-                        </li>
+                        <?php endforeach; ?>
                     </ul>
                     <!-- здесь должен быть PHP код, который показывает следующий тег по условию -->
                     <ul class="header__user-nav">
                         <li class="header__profile">
                             <a class="header__profile-link" href="#">
                                 <div class="header__avatar-wrapper">
-                                    <img class="header__profile-avatar" src="/uploads/avatars/<?= esc($_SESSION['avatar_name']); ?>" alt="Аватар профиля">
+                                    <?php if ($userData['avatar'] !== null): ?>
+                                    <img class="header__profile-avatar" src="/uploads/avatars/<?= esc($userData['avatar']); ?>" alt="Аватар профиля <?= esc($userData['name']); ?>">
+                                    <?php endif; ?>
                                 </div>
                                 <div class="header__profile-name">
                                     <span>
-                                        <!--здесь должно быть имя пользователя-->
-                                        <?= esc($_SESSION['name']); ?>
+                                        <?= esc($userData['name']); ?>
                                     </span>
                                     <svg class="header__link-arrow" width="10" height="6">
                                         <use xlink:href="#icon-arrow-right-ad"></use>
@@ -158,7 +172,8 @@
                                 <div class="header__profile-tooltip">
                                     <ul class="header__profile-nav">
                                         <li class="header__profile-nav-item">
-                                            <a class="header__profile-nav-link" href="#">
+                                            <a class="header__profile-nav-link"
+                                               href="/profile.php?id=<?= esc($_SESSION['id']); ?>">
                                               <span class="header__profile-nav-text">
                                                 Мой профиль
                                               </span>
@@ -172,9 +187,8 @@
                                               </span>
                                             </a>
                                         </li>
-
                                         <li class="header__profile-nav-item">
-                                            <a class="header__profile-nav-link" href="?logout=true">
+                                            <a class="header__profile-nav-link" href="/?action=logout">
                                               <span class="header__profile-nav-text">
                                                 Выход
                                               </span>
@@ -194,6 +208,7 @@
                             <a class="header__user-button header__authorization-button button" href="/">Вход</a>
                         </li>
                         <li>
+                            <!-- todo убрать глобальную переменную server из шаблонов -->
                             <?php $regActiveClass = $_SERVER['SCRIPT_NAME'] === '/registration.php'
                                 ? 'header__user-button--active '
                                 : ''; ?>
@@ -273,9 +288,5 @@
     </div>
 </footer>
 
-<!-- TODO что-то пошло не так и оно не отрабатывает, разобраться нет времени -->
-<!--        <script src="/view/libs/dropzone.js"></script>-->
-<!--        <script src="/view/js/dropzone-settings.js"></script>-->
-<script src="/view/js/main.js"></script>
 </body>
 </html>
