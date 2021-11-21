@@ -18,6 +18,7 @@ CREATE TABLE types (
     class_name VARCHAR(255) NOT NULL UNIQUE
 );
 
+# qstn спросить про индексы +реиндекс
 CREATE TABLE posts (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     title VARCHAR(255) NOT NULL,
@@ -31,6 +32,8 @@ CREATE TABLE posts (
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE CASCADE
 );
+
+CREATE FULLTEXT INDEX post_ft_search ON posts(title, content);
 
 CREATE TABLE hashtags (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,

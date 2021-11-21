@@ -207,7 +207,34 @@ function insertRepost($db, array $data)
     return preparedQuery($db, $sql, $data);
 }
 
-function searchPosts()
+function searchPosts($db, $data, $type = null)
 {
-    // todo запрос на поиск постов по совпадениям
+    $sql = 'SELECT p.id,
+                   p.title,
+                   p.creation_date,
+                   p.author_id,
+                   p.content,
+                   p.cite_author,
+                   u.name AS author,
+                   u.avatar_name AS avatar,
+                   t.name AS type_name,
+                   t.class_name AS type,
+                   (SELECT COUNT(post_id)
+                    FROM likes l
+                    WHERE p.id = l.post_id) AS likes_count,
+                   (SELECT COUNT(post_id)
+                    FROM comments c
+                    WHERE p.id = c.post_id) AS comments_count,
+                    (SELECT COUNT(original_post_id)
+                    FROM posts
+                    WHERE original_post_id = p.id) AS reposts_count
+            FROM posts p
+                     JOIN subscriptions s ON s.user_id = p.author_id
+                     JOIN users u ON p.author_id = u.id
+                     JOIN types t ON p.type_id = t.id
+                     ' . ($type === 'hashtag' ? 'JOIN post_tags pt ON p.id = pt.post_id
+                     JOIN hashtags h ON pt.hashtag_id = h.id ' : '') .
+            'WHERE ' . ($type === 'hashtag' ? 'h.name LIKE ? ORDER BY p.creation_date DESC' : ' MATCH(title, content) AGAINST(?)');
+
+    return sqlGetMany($db, $sql, $data);
 }

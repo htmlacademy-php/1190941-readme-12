@@ -18,27 +18,38 @@ require 'modules/like.php';
 $queryString = $_GET ?? null;
 $searchResult = $queryString['result'] ?? null;
 $queryText = trim($searchResult);
-$posts = getPostsForFeed($db, $_SESSION['id']);
+$posts = null;
+$isHashtag = null;
 
-foreach ($posts as &$post) {
-    $post['liked'] = false;
-
-    if (in_array($post['id'], (array)$postsLikedByUser)) {
-        $post['liked'] = true;
+if (mb_strlen($queryText) > 0) {
+    if (preg_match('/^#(.*)/' , $queryText)) {
+        $isHashtag = true;
+        $queryText = preg_replace('/^#(.*)/' , '$1', $queryText);
     }
 
-    $post['hashtags'] = getPostTags($db, $post['id']);
+    $posts = searchPosts($db, [$queryText], $isHashtag ? 'hashtag' : '');
+
+    var_dump($posts);
 }
 
-//if (mb_strlen($queryText) > 0) {
-//    // todo sql запрос на поиск
-//}
+if ($posts) {
+    foreach ($posts as &$post) {
+        $post['liked'] = false;
+
+        if (in_array($post['id'], (array)$postsLikedByUser)) {
+            $post['liked'] = true;
+        }
+
+        $post['hashtags'] = getPostTags($db, $post['id']);
+    }
+}
 
 $pageMainContent = includeTemplate('search.php', [
     'queryString' => $queryString,
     'scriptName' => $scriptName,
     'posts' => $posts,
     'queryText' => $queryText,
+    'isHashtag' => $isHashtag,
 ]);
 
 $pageLayout = includeTemplate('layout.php', [
