@@ -1,6 +1,6 @@
 <?php
 /**
- * @var array $errors;
+ * @var array $errors ;
  */
 ?>
 
@@ -104,9 +104,9 @@
             </div>
 
             <?php if (count($errors)): ?>
-            <?= includeTemplate('form-error.php', [
-                'errors' => $errors,
-            ], PARTS_DIR) ?>
+                <?= includeTemplate('form-error.php', [
+                    'errors' => $errors,
+                ], PARTS_DIR) ?>
             <?php endif; ?>
         </div>
         <div class="registration__input-file-container form__input-container form__input-container--file">

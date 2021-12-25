@@ -16,10 +16,10 @@ $message = $_POST['message'] ?? null;
 $openChats = getChats($db, $_SESSION['id'], $_SESSION['id']);
 
 if (!isset($queryString['chat'])) {
-    header('Location: /messages.php?chat=' . $openChats[0]['recipient_id'] );
+    header('Location: /messages.php?chat=' . $openChats[0]['recipient_id']);
 }
 
-$chatID = $queryString['chat'] ? (int) $queryString['chat'] : null;
+$chatID = $queryString['chat'] ? (int)$queryString['chat'] : null;
 $errors = [];
 
 $chat = getChat($db, $chatID, $_SESSION['id']);

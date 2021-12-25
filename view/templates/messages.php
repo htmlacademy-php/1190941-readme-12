@@ -30,14 +30,14 @@
                               </span>
                             <div class="messages__preview">
                                 <?php if ($openChat['message']): ?>
-                                <p class="messages__preview-text">
-                                    <?= esc($openChat['message']); ?>
-                                </p>
+                                    <p class="messages__preview-text">
+                                        <?= esc($openChat['message']); ?>
+                                    </p>
                                 <?php endif; ?>
                                 <?php if ($openChat['date']): ?>
-                                <time class="messages__preview-time" datetime="<?= esc($openChat['date']); ?>">
-                                    <?= esc(formatDate($openChat['date'], 'H:i')); ?>
-                                </time>
+                                    <time class="messages__preview-time" datetime="<?= esc($openChat['date']); ?>">
+                                        <?= esc(formatDate($openChat['date'], 'H:i')); ?>
+                                    </time>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -51,35 +51,35 @@
         <div class="messages__chat-wrapper">
 
             <?php if ($chat): ?>
-            <ul class="messages__list tabs__content tabs__content--active">
-                <?php foreach ($chat as $message): ?>
-                <li class="messages__item<?= $message['id'] === $_SESSION['id'] ? ' messages__item--my' : ''; ?>">
-                    <div class="messages__info-wrapper">
-                        <div class="messages__item-avatar">
-                            <a class="messages__author-link"
-                               href="/profile.php?<?= esc(http_build_query(['id' => $message['id']])) ?>">
-                                <?php if ($message['avatar']): ?>
-                                <img class="messages__avatar"
-                                     src="../../uploads/avatars/<?= esc($message['avatar']) ?>" alt="Аватар пользователя">
-                                <?php endif; ?>
-                            </a>
-                        </div>
-                        <div class="messages__item-info">
-                            <a class="messages__author"
-                               href="/profile.php?<?= esc(http_build_query(['id' => $message['id']])) ?>">
-                                <?= esc($message['name']) ?>
-                            </a>
-                            <time class="messages__time" datetime="<?= esc($message['date']) ?>">
-                                <?= esc(getRelativeDateFormat($message['date'], 'назад')) ?>
-                            </time>
-                        </div>
-                    </div>
-                    <p class="messages__text">
-                        <?= esc($message['message']); ?>
-                    </p>
-                </li>
-                <?php endforeach; ?>
-            </ul>
+                <ul class="messages__list tabs__content tabs__content--active">
+                    <?php foreach ($chat as $message): ?>
+                        <li class="messages__item<?= $message['id'] === $_SESSION['id'] ? ' messages__item--my' : ''; ?>">
+                            <div class="messages__info-wrapper">
+                                <div class="messages__item-avatar">
+                                    <a class="messages__author-link"
+                                       href="/profile.php?<?= esc(http_build_query(['id' => $message['id']])) ?>">
+                                        <?php if ($message['avatar']): ?>
+                                            <img class="messages__avatar"
+                                                 src="../../uploads/avatars/<?= esc($message['avatar']) ?>" alt="Аватар пользователя">
+                                        <?php endif; ?>
+                                    </a>
+                                </div>
+                                <div class="messages__item-info">
+                                    <a class="messages__author"
+                                       href="/profile.php?<?= esc(http_build_query(['id' => $message['id']])) ?>">
+                                        <?= esc($message['name']) ?>
+                                    </a>
+                                    <time class="messages__time" datetime="<?= esc($message['date']) ?>">
+                                        <?= esc(getRelativeDateFormat($message['date'], 'назад')) ?>
+                                    </time>
+                                </div>
+                            </div>
+                            <p class="messages__text">
+                                <?= esc($message['message']); ?>
+                            </p>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
             <?php else: ?>
                 <p class="messages__text">
                     Сообщений не было.

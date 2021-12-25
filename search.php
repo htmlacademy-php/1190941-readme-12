@@ -22,9 +22,9 @@ $posts = null;
 $isHashtag = false;
 
 if (mb_strlen($queryText) > 0) {
-    if (preg_match('/^#([\d\w]+)/u' , $queryText)) {
+    if (preg_match('/^#([\d\w]+)/u', $queryText)) {
         $isHashtag = true;
-        $queryText = preg_replace('/^#(.*)/' , '$1', $queryText);
+        $queryText = preg_replace('/^#(.*)/', '$1', $queryText);
     }
 
     $posts = searchPosts($db, $queryText, $isHashtag ? 'hashtag' : '');
@@ -32,7 +32,7 @@ if (mb_strlen($queryText) > 0) {
 
 if ($posts) {
     foreach ($posts as &$post) {
-        $post['liked'] = in_array($post['id'], (array) $postsLikedByUser);
+        $post['liked'] = in_array($post['id'], (array)$postsLikedByUser);
 
         $post['hashtags'] = getPostTags($db, $post['id']);
     }

@@ -45,7 +45,7 @@ if (!$activeTab) {
 }
 
 $action = $queryString['action'] ?? null;
-$profileId = $queryString['id'] ? (int) $queryString['id'] : null;
+$profileId = $queryString['id'] ? (int)$queryString['id'] : null;
 $existingProfile = selectUser($db, 'id', ['*'], [$profileId]);
 
 if (!$existingProfile) {

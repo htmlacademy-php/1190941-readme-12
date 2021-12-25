@@ -139,15 +139,15 @@
                             ]
                         ] ?>
                         <?php foreach ($userPages as $userPage): ?>
-                        <li class="header__my-page header__my-page--<?= esc($userPage['class']) ?>">
-                            <a class="header__page-link<?= $userPage['href'] === $_SERVER['SCRIPT_NAME']
-                                ? ' header__page-link--active'
-                                : '' ?>"
-                               href="<?= esc($userPage['href']) ?>"
-                               title="<?= esc($userPage['text']) ?>">
-                                <span class="visually-hidden"><?= esc($userPage['text']) ?></span>
-                            </a>
-                        </li>
+                            <li class="header__my-page header__my-page--<?= esc($userPage['class']) ?>">
+                                <a class="header__page-link<?= $userPage['href'] === $_SERVER['SCRIPT_NAME']
+                                    ? ' header__page-link--active'
+                                    : '' ?>"
+                                   href="<?= esc($userPage['href']) ?>"
+                                   title="<?= esc($userPage['text']) ?>">
+                                    <span class="visually-hidden"><?= esc($userPage['text']) ?></span>
+                                </a>
+                            </li>
                         <?php endforeach; ?>
                     </ul>
                     <!-- здесь должен быть PHP код, который показывает следующий тег по условию -->
@@ -156,7 +156,7 @@
                             <a class="header__profile-link" href="#">
                                 <div class="header__avatar-wrapper">
                                     <?php if ($userData['avatar'] !== null): ?>
-                                    <img class="header__profile-avatar" src="/uploads/avatars/<?= esc($userData['avatar']); ?>" alt="Аватар профиля <?= esc($userData['name']); ?>">
+                                        <img class="header__profile-avatar" src="/uploads/avatars/<?= esc($userData['avatar']); ?>" alt="Аватар профиля <?= esc($userData['name']); ?>">
                                     <?php endif; ?>
                                 </div>
                                 <div class="header__profile-name">

@@ -26,7 +26,7 @@ require 'model/users.php';
 
 if (!file_exists('config.php')) {
     $msg = 'Создайте файл config.php на основе config.sample.php и внесите туда настройки сервера MySQL';
-    trigger_error($msg,E_USER_ERROR);
+    trigger_error($msg, E_USER_ERROR);
 }
 
 $config = require 'config.php';

@@ -7,9 +7,9 @@
 
 require 'model/types.php';
 
-$queryString['type'] = isset($queryString['type']) ? (int) $queryString['type'] : null;
+$queryString['type'] = isset($queryString['type']) ? (int)$queryString['type'] : null;
 
-if ($queryString['type'] && !(bool) $queryString['type']) {
+if ($queryString['type'] && !(bool)$queryString['type']) {
     get404StatusCode();
 }
 

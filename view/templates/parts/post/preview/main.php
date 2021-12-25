@@ -18,7 +18,7 @@
     <div class="post-photo__image-wrapper">
         <img src="uploads/photos/<?= esc($post['content']); ?>"
              alt="Фото от пользователя <?= esc($post['author']); ?>"
-             <?= $_SERVER['SCRIPT_NAME'] === '/popular.php' ? 'width="360" height="240"' : 'width="760" height="396"' ?>>
+            <?= $_SERVER['SCRIPT_NAME'] === '/popular.php' ? 'width="360" height="240"' : 'width="760" height="396"' ?>>
     </div>
 <?php elseif ($post['type'] === 'link'): ?>
     <div class="post-link__wrapper">

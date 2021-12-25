@@ -6,7 +6,7 @@
  * @var array $pagination
  * @var array $sort
  * @var string $scriptName
-*/
+ */
 ?>
 
 <div class="container">
@@ -24,7 +24,8 @@
                     <?php $classActive = $queryString['sort'] === $sortName ? ' sorting__link--active' : '' ?>
                     <?php $sortDirection = $classActive && $queryString['direction'] === 'desc' ? 'asc' : 'desc' ?>
                     <?php $class_reverse = $sortDirection === 'desc' ? ' sorting__link--reverse' : '' ?>
-                    <?php $href = getQueryString($queryString, ['sort' => $sortName, 'page' => null, 'direction' => $sortDirection]) ?>
+                    <?php $href = getQueryString($queryString,
+                        ['sort' => $sortName, 'page' => null, 'direction' => $sortDirection]) ?>
                     <li class="sorting__item">
                         <a class="sorting__link<?= $classActive ?><?= $class_reverse ?>" href="<?= esc($href) ?>">
                             <span><?= $name; ?></span>
@@ -76,12 +77,17 @@
     <?php if ($pagination['next'] || $pagination['prev']): ?>
         <div class="popular__page-links">
             <?php if ($pagination['prev']): ?>
-                <?php $prev_link = getQueryString($queryString, ['page' => $pagination['prev'] === 1 ? null : $pagination['prev']]) ?>
-                <a class="popular__page-link popular__page-link--prev button button--gray" href="<?= $prev_link ?>">Предыдущая страница</a>
+                <?php $prev_link = getQueryString($queryString,
+                    ['page' => $pagination['prev'] === 1 ? null : $pagination['prev']]) ?>
+                <a class="popular__page-link popular__page-link--prev button button--gray" href="<?= $prev_link ?>">
+                    Предыдущая страница
+                </a>
             <?php endif; ?>
             <?php if ($pagination['next']): ?>
                 <?php $next_link = getQueryString($queryString, ['page' => $pagination['next']]) ?>
-                <a class="popular__page-link popular__page-link--next button button--gray" href="<?= $next_link ?>">Следующая страница</a>
+                <a class="popular__page-link popular__page-link--next button button--gray" href="<?= $next_link ?>">
+                    Следующая страница
+                </a>
             <?php endif; ?>
         </div>
     <?php endif; ?>

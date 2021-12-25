@@ -2,7 +2,7 @@
 
 function selectUserByEmail(mysqli $db, string $email)
 {
-    $sql = "SELECT * from users WHERE email = ?";
+    $sql = "SELECT * FROM users WHERE email = ?";
 
     return sqlGetSingle($db, $sql, [$email]);
 }

@@ -34,8 +34,8 @@ function getPosts(
     ?string $postType = '',
     ?string $sort = '',
     ?string $sortDirection = '',
-    int $limit = 6)
-{
+    int $limit = 6
+) {
     $direction = $sortDirection ?? 'desc';
 
     switch ($sort) {
@@ -170,7 +170,7 @@ function incrementViewsCount(mysqli $db, int $id)
     return preparedQuery($db, $sql, [$id]);
 }
 
-function insertRepost(mysqli $db, int $authorID ,int $id)
+function insertRepost(mysqli $db, int $authorID, int $id)
 {
     $sql = 'INSERT INTO posts (title, type_id, author_id, content, cite_author, original_post_id)
             SELECT title, type_id, ?, content, cite_author, id
@@ -203,11 +203,11 @@ function searchPosts(mysqli $db, string $queryText, ?string $type = null)
                      LEFT JOIN comments c ON p.id = c.post_id
                      LEFT JOIN posts p2 ON p2.original_post_id = p.id
                      ' . ($type === 'hashtag'
-                            ? 'JOIN post_tags pt ON p.id = pt.post_id JOIN hashtags h ON pt.hashtag_id = h.id '
-                            : '') .
-            'WHERE ' . ($type === 'hashtag'
-                            ? 'h.name = ? GROUP BY p.id ORDER BY p.creation_date DESC'
-                            : ' MATCH(p.title, p.content) AGAINST(?) GROUP BY p.id');
+            ? 'JOIN post_tags pt ON p.id = pt.post_id JOIN hashtags h ON pt.hashtag_id = h.id '
+            : '') .
+        'WHERE ' . ($type === 'hashtag'
+            ? 'h.name = ? GROUP BY p.id ORDER BY p.creation_date DESC'
+            : ' MATCH(p.title, p.content) AGAINST(?) GROUP BY p.id');
 
     return sqlGetMany($db, $sql, [$queryText]);
 }

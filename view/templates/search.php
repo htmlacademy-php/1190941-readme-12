@@ -24,18 +24,19 @@
             <div class="search__content">
 
                 <?php if ($posts): ?>
-                <?php foreach ($posts as $post): ?>
-                    <?= includeTemplate('layout.php', [
-                        'post' => $post,
-                        'scriptName' => $scriptName,
-                    ], POST_PREVIEW_DIR) ?>
-                <?php endforeach; ?>
+                    <?php foreach ($posts as $post): ?>
+                        <?= includeTemplate('layout.php', [
+                            'post' => $post,
+                            'scriptName' => $scriptName,
+                        ], POST_PREVIEW_DIR) ?>
+                    <?php endforeach; ?>
                 <?php else: ?>
                     <div class="search__results-wrapper">
                         <div class="search__no-results container">
                             <p class="search__no-results-info">К сожалению, ничего не найдено.</p>
                             <p class="search__no-results-desc">
-                                Попробуйте изменить поисковый запрос или просто зайти в раздел &laquo;Популярное&raquo;, там живет самый крутой контент.
+                                Попробуйте изменить поисковый запрос или просто зайти в раздел &laquo;Популярное&raquo;,
+                                там живет самый крутой контент.
                             </p>
                             <div class="search__links">
                                 <a class="search__popular-link button button--main" href="/popular.php">Популярное</a>

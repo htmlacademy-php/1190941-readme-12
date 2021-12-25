@@ -118,8 +118,7 @@ if (!empty($formData)) {
     if (empty($errors)) {
 
         $tags = explode(' ', $_POST["{$formDataPostType}-tags"]) ?? null;
-        $typeID = current(array_filter($postTypes, function ($type) use ($formDataPostType)
-        {
+        $typeID = current(array_filter($postTypes, function ($type) use ($formDataPostType) {
             return $type['class_name'] === $formDataPostType;
         }))['id'];
 
@@ -159,7 +158,7 @@ if (!empty($formData)) {
                 $tagId = selectTag($db, $tag)['id'];
             }
 
-            if (!selectTagToPost($db, $tagId, $postId)){
+            if (!selectTagToPost($db, $tagId, $postId)) {
                 setTagToPost($db, $tagId, $postId);
             }
         }

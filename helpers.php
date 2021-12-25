@@ -151,7 +151,8 @@ function checkYoutubeUrl($url)
 {
     $id = extractYoutubeId($url);
 
-    set_error_handler(function () {}, E_WARNING);
+    set_error_handler(function () {
+    }, E_WARNING);
     $headers = get_headers('https://www.youtube.com/oembed?format=json&url=https://www.youtube.com/watch?v=' . $id);
     restore_error_handler();
 
@@ -319,10 +320,12 @@ function getRelativeDateFormat(string $postDate, string $stringEnd): string
         $correctDateFormat = sprintf("{$years} %s {$stringEnd}", getNounPluralForm($years, 'год', 'года', 'лет'));
     } elseif ($dateTimeDiff->m !== 0) {
         $months = $dateTimeDiff->m;
-        $correctDateFormat = sprintf("{$months} %s {$stringEnd}", getNounPluralForm($months, 'месяц', 'месяца', 'месяцев'));
+        $correctDateFormat = sprintf("{$months} %s {$stringEnd}",
+            getNounPluralForm($months, 'месяц', 'месяца', 'месяцев'));
     } elseif ($dateTimeDiff->d >= 7) {
         $weeks = floor($dateTimeDiff->d / 7);
-        $correctDateFormat = sprintf("{$weeks} %s {$stringEnd}", getNounPluralForm($weeks, 'неделю', 'недели', 'недели'));
+        $correctDateFormat = sprintf("{$weeks} %s {$stringEnd}",
+            getNounPluralForm($weeks, 'неделю', 'недели', 'недели'));
     } elseif ($dateTimeDiff->d < 7 && $dateTimeDiff->d !== 0) {
         $days = $dateTimeDiff->d;
         $correctDateFormat = sprintf("{$days} %s {$stringEnd}", getNounPluralForm($days, 'день', 'дня', 'дней'));
@@ -331,7 +334,8 @@ function getRelativeDateFormat(string $postDate, string $stringEnd): string
         $correctDateFormat = sprintf("{$hours} %s {$stringEnd}", getNounPluralForm($hours, 'час', 'часа', 'часов'));
     } elseif ($dateTimeDiff->i !== 0) {
         $minutes = $dateTimeDiff->i;
-        $correctDateFormat = sprintf("{$minutes} %s {$stringEnd}", getNounPluralForm($minutes, 'минуту', 'минуты', 'минут'));
+        $correctDateFormat = sprintf("{$minutes} %s {$stringEnd}",
+            getNounPluralForm($minutes, 'минуту', 'минуты', 'минут'));
     }
 
     return $correctDateFormat;
@@ -366,7 +370,7 @@ function sqlGetMany($db, string $sql, array $params = null)
     return sqlSelect($db, $sql, $params)->fetch_all(MYSQLI_ASSOC);
 }
 
-function getQueryString(array $queryString, array $modifier):string
+function getQueryString(array $queryString, array $modifier): string
 {
     $mergedArray = array_merge($queryString, $modifier);
 
