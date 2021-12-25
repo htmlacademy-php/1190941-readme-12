@@ -18,17 +18,16 @@ CREATE TABLE types (
     class_name VARCHAR(255) NOT NULL UNIQUE
 );
 
-# qstn спросить про индексы +реиндекс
 CREATE TABLE posts (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     title VARCHAR(255) NOT NULL,
     creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     type_id INT NOT NULL,
     author_id INT NOT NULL,
-    original_post_id INT DEFAULT NULL,
     content TEXT NOT NULL,
     cite_author VARCHAR(255) DEFAULT NULL,
     views_count INT DEFAULT 0,
+    original_author_id INT DEFAULT NULL,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE CASCADE
 );

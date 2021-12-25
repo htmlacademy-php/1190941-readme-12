@@ -12,60 +12,37 @@ require 'model/messages.php';
 $queryString = $_GET ?? null;
 $formData = $_POST ?? null;
 $message = $_POST['message'] ?? null;
-$chatID = $queryString['chat'] ?? null;
-$errors = [];
 
-$chat = getChat($db, [$chatID, $_SESSION['id'], $_SESSION['id'], $chatID]);
+$openChats = getChats($db, $_SESSION['id'], $_SESSION['id']);
 
-// qstn нужна помощь, не понимаю как составить запрос на получение чатов
-$openChats = [
-    [
-        'id' => '3',
-        'date' => '2021-11-20 16:03:36',
-        'name' => 'Марк Смолов',
-        'avatar' => 'userpic-mark.jpg',
-        'message' => 'Алло'
-    ], [
-        'id' => '4',
-        'date' => '2021-11-20 16:13:36',
-        'name' => 'Эльвира Хайпулинова',
-        'avatar' => 'userpic-elvira.jpg',
-        'message' => 'Алло2'
-    ], [
-        'id' => '5',
-        'date' => '2021-11-20 16:23:36',
-        'name' => 'Петр Демин',
-        'avatar' => 'userpic-petro.jpg',
-        'message' => 'Алло3'
-    ],
-];
-
-if (!$chatID) {
-    header('Location: /messages.php?chat=' . $openChats[0]['id'] );
+if (!isset($queryString['chat'])) {
+    header('Location: /messages.php?chat=' . $openChats[0]['recipient_id'] );
 }
 
-$isOpened = null;
+$chatID = $queryString['chat'] ? (int) $queryString['chat'] : null;
+$errors = [];
 
-foreach ($openChats as $openChat) {
-    if (in_array($chatID, $openChat)) {
-        $isOpened = true;
-    }
+$chat = getChat($db, $chatID, $_SESSION['id']);
+
+$isOpened = false;
+
+if (in_array($chatID, array_column($openChats, 'recipient_id'))) {
+    $isOpened = true;
 }
 
 if (!$isOpened) {
     $chatData = [];
     $usrData = selectUser($db, 'id', ['name', 'avatar_name'], [$chatID]);
 
-    $chatData['id'] = $chatID;
+    $chatData['recipient_id'] = $chatID;
     $chatData['date'] = null;
     $chatData['name'] = $usrData['name'];
-    $chatData['avatar'] = $usrData['avatar_name'];
-    $chatData['message'] = null;
+    $chatData['avatar_name'] = $usrData['avatar_name'];
+    $chatData['message'] = 'Сообщений нет';
 
     array_push($openChats, $chatData);
 }
 
-// todo валидацию формы можно подать отдельным сценарием
 if ($formData
     && selectUser($db, 'id', ['id'], [$formData['recipientID']])
     && $formData['recipientID'] !== $_SESSION['id']
@@ -76,17 +53,11 @@ if ($formData
     }
 
     if (empty($errors)) {
-        $data['message'] = trim($message);
-        $data['recipient_id'] = $formData['recipientID'];
-        $data['sender_id'] = $_SESSION['id'];
-
-        sendMessage($db, array_values($data));
+        sendMessage($db, trim($message), $formData['recipientID'], $_SESSION['id']);
 
         header('Location: /messages.php?chat=' . $chatID);
     }
 }
-
-// todo заходить в интерфейс переписки могут только подписанные пользователи, остальным denied
 
 $pageMainContent = includeTemplate('messages.php', [
     'queryString' => $queryString,

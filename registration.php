@@ -27,7 +27,7 @@ if (!empty($formData)) {
     }
 
     if (!empty($formData['email'])) {
-        if (selectUserByEmail($db, [$formData['email']])) {
+        if (selectUserByEmail($db, $formData['email'])) {
             $errors['email']['name'] = $fieldsMap['email'] ?? null;
             $errors['email']['title'] = 'Адрес электронной почты уже используется';
             $errors['email']['description'] = 'Если вы являетесь владельцем данной электронной почты пожалуйста воспользуйтесь страницей входа в аккаунт';
@@ -76,24 +76,25 @@ if (!empty($formData)) {
     }
 
     if (empty($errors)) {
-        $data['email'] = $formData['email'] ?? null;
-        $data['login'] = $formData['login'] ?? null;
-        // FIXME прочесть о солении пароля
-        $data['password'] = password_hash($formData['password'], PASSWORD_DEFAULT);
-        $data['avatar'] = null;
+        $avatarName = null;
 
         if ($avatar['error'] === 0) {
-            // FIXME сгенерировать имя файла, можно зашить в функцию и переиспользовать
             $fileName = $_FILES['avatar-file']['name'];
             $filePath = __DIR__ . '/uploads/avatars/';
             $fileUrl = '/uploads/avatars/' . $fileName;
 
             move_uploaded_file($_FILES['avatar-file']['tmp_name'], $filePath . $fileName);
 
-            $data['avatar'] = $fileName;
+            $avatarName = $fileName;
         }
 
-        createUser($db, $data);
+        createUser(
+            $db,
+            $formData['login'],
+            $formData['email'],
+            password_hash($formData['password'], PASSWORD_DEFAULT),
+            $avatarName
+        );
         $userId = $db->insert_id;
 
         header("Location: /");

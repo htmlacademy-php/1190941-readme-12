@@ -1,27 +1,13 @@
 <?php
 
-function selectUserByEmail($db, array $data)
+function selectUserByEmail(mysqli $db, string $email)
 {
     $sql = "SELECT * from users WHERE email = ?";
 
-    return sqlGetSingle($db, $sql, $data);
+    return sqlGetSingle($db, $sql, [$email]);
 }
 
-function selectUserIdByName($db, array $data)
-{
-    $sql = "SELECT id from users WHERE name = ?";
-
-    return sqlGetSingle($db, $sql, $data);
-}
-
-function getUser($db, array $data)
-{
-    $sql = "SELECT * from users WHERE email = ?";
-
-    return sqlGetSingle($db, $sql, $data);
-}
-
-function selectUser($db, string $where, array $fields, array $data)
+function selectUser(mysqli $db, string $where, array $fields, array $data)
 {
     $fields = implode(', ', $fields);
     $sql = "SELECT {$fields} FROM users WHERE {$where} = ?";
@@ -29,27 +15,44 @@ function selectUser($db, string $where, array $fields, array $data)
     return sqlGetSingle($db, $sql, $data);
 }
 
-function getProfileData($db, string $userId)
+function getProfileData(mysqli $db, string $userID)
 {
-    $sql = "SELECT name,
-                   avatar_name AS avatar,
-                   registration_date AS date,
-                   (SELECT COUNT(author_id)
-                    FROM posts p
-                    WHERE p.author_id = u.id) AS publications_count,
-                   (SELECT COUNT(user_id)
-                    FROM subscriptions s
-                    WHERE s.user_id = u.id) AS subscriptions_count
+    $sql = "SELECT u.name,
+                   u.avatar_name AS avatar,
+                   u.registration_date AS date,
+                   COUNT(DISTINCT p.id) AS publications_count,
+                   COUNT(DISTINCT s.id) AS subscriptions_count
             FROM users u
-            WHERE id = ?";
+                JOIN posts p ON p.author_id = u.id
+                LEFT JOIN subscriptions s ON s.user_id = u.id
+            WHERE u.id = ?
+            GROUP BY u.id";
 
-    return sqlGetSingle($db, $sql, [$userId]);
+    return sqlGetSingle($db, $sql, [$userID]);
 }
 
-function createUser($db, array $data)
+function createUser(mysqli $db, string $name, string $email, string $password, ?string $avatarName)
 {
     $sql = "INSERT INTO users (name, email, password, avatar_name) VALUES (?, ?, ?, ?)";
 
-    // TODO Разобраться почему не $data
-    return preparedQuery($db, $sql, [$data['login'], $data['email'], $data['password'], $data['avatar']]);
+    return preparedQuery($db, $sql, [$name, $email, $password, $avatarName]);
+}
+
+function getSubscribedUsers(mysqli $db, int $userID)
+{
+    $sql = "SELECT u.id,
+                   u.name,
+                   u.avatar_name AS avatar,
+                   u.registration_date AS date,
+                   COUNT(DISTINCT p.id) AS publications_count,
+                   COUNT(DISTINCT s2.id) AS subscriptions_count
+            FROM users u
+                     LEFT JOIN subscriptions s ON u.id = s.follower_id
+                     LEFT JOIN subscriptions s2 ON u.id = s2.user_id
+                     LEFT JOIN posts p ON u.id = p.author_id
+            WHERE s.user_id = ?
+            GROUP BY s.id
+            ORDER BY s.id DESC;";
+
+    return sqlGetMany($db, $sql, [$userID]);
 }

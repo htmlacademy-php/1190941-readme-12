@@ -130,12 +130,8 @@ function getNounPluralForm(int $number, string $one, string $two, string $many):
  * @param array $data Ассоциативный массив с данными для шаблона
  * @return string Итоговый HTML
  */
-function includeTemplate(string $fileName, array $data = [], string $dir = null): string
+function includeTemplate(string $fileName, array $data = [], string $dir = TPL_DIR): string
 {
-    if (!$dir) {
-        $dir = 'view/templates/';
-    }
-
     $fullPath = $dir . $fileName;
 
     ob_start();

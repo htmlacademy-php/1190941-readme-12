@@ -1,6 +1,6 @@
 <?php
 
-function getPostComments ($db, $id)
+function getPostComments(mysqli $db, int $id)
 {
     return sqlGetMany($db, '
     SELECT comment AS text,
@@ -15,9 +15,9 @@ function getPostComments ($db, $id)
         [$id]);
 }
 
-function insertNewComment($db, array $data)
+function insertNewComment(mysqli $db, string $comment, int $postID, int $authorID)
 {
     $sql = "INSERT INTO comments (comment, post_id, author_id) VALUES (?, ?, ?)";
 
-    return preparedQuery($db, $sql, $data);
+    return preparedQuery($db, $sql, [$comment, $postID, $authorID]);
 }

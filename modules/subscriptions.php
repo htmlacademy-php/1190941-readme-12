@@ -7,5 +7,5 @@
 
 require 'model/subscriptions.php';
 
-$subscriptions = checkSubscriptions($db, [$_SESSION['id']]);
+$subscriptions = checkSubscriptions($db, $_SESSION['id']);
 $subscribed = in_array($profileId, array_column($subscriptions, 'user_id'));

@@ -2,18 +2,14 @@
 /**
  * Использую логику в 2-х сценариях /feed.php и /popular.php
  * @var $db
+ * @var array $queryString
  */
 
 require 'model/types.php';
 
-$queryString['type'] = $queryString['type'] ?? null;
+$queryString['type'] = isset($queryString['type']) ? (int) $queryString['type'] : null;
 
-// QSTN подумать как переписать условие
-if (!is_string($queryString['type'])
-    && $queryString['type'] !== null
-    || $queryString['type'] === '0'
-    || $queryString['type'] === ''
-) {
+if ($queryString['type'] && !(bool) $queryString['type']) {
     get404StatusCode();
 }
 

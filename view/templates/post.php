@@ -180,7 +180,7 @@
                         <span class="post-details__rating-text user__rating-text">публикаций</span>
                     </p>
                 </div>
-                <!-- TODO не должен видеть блок когда смотрю свою запись -->
+                <?php if ($post['author_id'] !== $_SESSION['id']): ?>
                 <div class="post-details__user-buttons user__buttons">
                     <!-- FIXME Формирование ссылки выглядит странно, возможно нужно переписать через getQueryString -->
                     <a class="user__button user__button--subscription button button--main
@@ -192,6 +192,7 @@
                     <a class="user__button user__button--writing button button--green" href="#">Сообщение</a>
                     <?php endif; ?>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
 

@@ -2,8 +2,6 @@
 /**
  * @var array $post
  */
-
-// TODO разбить файл на отдельные превью подключить в 3-х сценариях /post.php, /feed.php, /popular.php
 ?>
 
 <?php if ($post['type'] === 'quote'): ?>

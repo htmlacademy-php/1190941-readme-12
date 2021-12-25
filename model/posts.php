@@ -1,40 +1,41 @@
 <?php
 
-function getPostById($db, $id)
+function getPostById(mysqli $db, int $id)
 {
-    return sqlGetSingle($db, '
-        SELECT p.id,
-               title,
-               content,
-               cite_author,
-               views_count,
-               author_id,
-               u.name AS author,
-               u.avatar_name AS avatar,
-               u.registration_date AS author_reg_date,
-               t.class_name AS type,
-               (SELECT COUNT(post_id)
-                FROM likes l
-                WHERE p.id = l.post_id) AS likes_count,
-               (SELECT COUNT(post_id)
-                FROM comments c
-                WHERE p.id = c.post_id) AS comments_count,
-               (SELECT COUNT(author_id)
-                FROM posts p
-                WHERE p.author_id = u.id) AS publications_count,
-               (SELECT COUNT(user_id)
-                FROM subscriptions s
-                WHERE s.user_id = u.id) AS subscriptions_count
-        FROM posts p
-                 JOIN users u ON author_id = u.id
-                 JOIN types t ON type_id = t.id
-        WHERE p.id = ?;',
+    return sqlGetSingle($db, 'SELECT p.id,
+                                       p.title,
+                                       p.content,
+                                       p.cite_author,
+                                       p.views_count,
+                                       p.author_id,
+                                       u.name AS author,
+                                       u.avatar_name AS avatar,
+                                       u.registration_date AS author_reg_date,
+                                       t.class_name AS type,
+                                       COUNT(DISTINCT l.id) AS likes_count,
+                                       COUNT(DISTINCT c.id) AS comments_count,
+                                       COUNT(DISTINCT p2.id) AS publications_count,
+                                       COUNT(DISTINCT s.id) AS subscriptions_count
+                                FROM posts p
+                                        JOIN users u ON author_id = u.id
+                                        JOIN types t ON type_id = t.id
+                                        LEFT JOIN likes l ON p.id = l.post_id
+                                        LEFT JOIN comments c ON p.id = c.post_id
+                                        JOIN posts p2 ON p2.author_id = u.id
+                                        LEFT JOIN subscriptions s ON s.user_id = u.id
+                                WHERE p.id = ?
+                                GROUP BY p.id;',
         [$id]);
 }
 
-function getPosts($db, $offset, $postType = '', $sort = '', $sortDirection = '', $limit = 6)
+function getPosts(
+    mysqli $db,
+    int $offset,
+    ?string $postType = '',
+    ?string $sort = '',
+    ?string $sortDirection = '',
+    int $limit = 6)
 {
-    // QSTN валидация параметров перед запросом http://readme.loc/?sort=popularity&direction=gnflg
     $direction = $sortDirection ?? 'desc';
 
     switch ($sort) {
@@ -49,23 +50,20 @@ function getPosts($db, $offset, $postType = '', $sort = '', $sortDirection = '',
             break;
     }
 
-    //  TODO получить посты пользователей на которых подписан
-
     $sql = "SELECT p.*,
              u.name AS author,
              u.avatar_name AS avatar,
              t.name AS type_name,
              t.class_name AS type,
-             (SELECT COUNT(post_id)
-             FROM likes l
-             WHERE p.id = l.post_id) AS likes_count,
-             (SELECT COUNT(post_id)
-             FROM comments c
-             WHERE p.id = c.post_id) AS comments_count
+             COUNT(DISTINCT l.id) AS likes_count,
+             COUNT(DISTINCT c.id) AS comments_count
          FROM posts p
              JOIN users u ON p.author_id = u.id
              JOIN types t ON p.type_id = t.id
+             LEFT JOIN likes l ON p.id = l.post_id
+             LEFT JOIN comments c ON p.id = c.post_id
          " . ($postType ? 'WHERE t.id = ?' : '') . "
+         GROUP BY p.id
          ORDER BY " . ($orderBy ?? 'p.views_count DESC') . "
          LIMIT ?
          OFFSET ?;";
@@ -75,7 +73,7 @@ function getPosts($db, $offset, $postType = '', $sort = '', $sortDirection = '',
     return sqlGetMany($db, $sql, $data);
 }
 
-function getPostsForFeed($db, int $id, string $postType = null)
+function getPostsForFeed(mysqli $db, int $id, ?string $postType = null)
 {
     $sql = "SELECT p.id,
                    p.title,
@@ -87,20 +85,18 @@ function getPostsForFeed($db, int $id, string $postType = null)
                    u.avatar_name AS avatar,
                    t.name AS type_name,
                    t.class_name AS type,
-                   (SELECT COUNT(post_id)
-                    FROM likes l
-                    WHERE p.id = l.post_id) AS likes_count,
-                   (SELECT COUNT(post_id)
-                    FROM comments c
-                    WHERE p.id = c.post_id) AS comments_count,
-                    (SELECT COUNT(original_post_id)
-                    FROM posts
-                    WHERE original_post_id = p.id) AS reposts_count
+                   COUNT(DISTINCT l.id) AS likes_count,
+                   COUNT(DISTINCT c.id) AS comments_count,
+                   COUNT(DISTINCT p2.id) AS reposts_count
             FROM posts p
                      JOIN subscriptions s ON s.user_id = p.author_id
                      JOIN users u ON p.author_id = u.id
                      JOIN types t ON p.type_id = t.id
+                     LEFT JOIN likes l ON p.id = l.post_id
+                     LEFT JOIN comments c ON p.id = c.post_id
+                     LEFT JOIN posts p2 ON p2.original_post_id = p.id
             WHERE s.follower_id = ?" . ($postType ? '&& t.id = ?' : '') . "
+            GROUP BY p.id
             ORDER BY p.creation_date DESC;";
 
     $data = $postType ? [$id, $postType] : [$id];
@@ -108,31 +104,29 @@ function getPostsForFeed($db, int $id, string $postType = null)
     return sqlGetMany($db, $sql, $data);
 }
 
-function getUserPosts($db, array $data)
+function getUserPosts(mysqli $db, int $authorID)
 {
     $sql = "SELECT p.*,
-                u.name AS author,
-                t.name AS type_name,
-                t.class_name AS type,
-                (SELECT COUNT(post_id)
-                FROM likes l
-                WHERE p.id = l.post_id) AS likes_count,
-                (SELECT COUNT(post_id)
-                FROM comments c
-                WHERE p.id = c.post_id) AS comments_count,
-                (SELECT COUNT(original_post_id)
-                FROM posts
-                WHERE original_post_id = p.id) AS reposts_count
+                   u.name AS author,
+                   t.name AS type_name,
+                   t.class_name AS type,
+                   COUNT(DISTINCT l.id) AS likes_count,
+                   COUNT(DISTINCT c.id) AS comments_count,
+                   COUNT(DISTINCT p2.id) AS reposts_count
             FROM posts p
-                JOIN users u ON p.author_id = u.id
-                JOIN types t ON p.type_id = t.id
-            WHERE author_id = ?
-            ORDER BY creation_date DESC";
+                     JOIN users u ON p.author_id = u.id
+                     JOIN types t ON p.type_id = t.id
+                     LEFT JOIN likes l ON p.id = l.post_id
+                     LEFT JOIN comments c ON p.id = c.post_id
+                     LEFT JOIN posts p2 ON p2.original_post_id = p.id
+            WHERE p.author_id = ?
+            GROUP BY p.id
+            ORDER BY p.creation_date DESC;";
 
-    return sqlGetMany($db, $sql, $data);
+    return sqlGetMany($db, $sql, [$authorID]);
 }
 
-function getPostsLikedByUsers($db, array $data)
+function getLikedPostsByAuthor(mysqli $db, int $authorID)
 {
     $sql = "SELECT p.id,
                    p.content,
@@ -146,32 +140,12 @@ function getPostsLikedByUsers($db, array $data)
                 JOIN users u ON l.user_id = u.id
                 JOIN types t ON p.type_id = t.id
             WHERE author_id = ?
-            ORDER BY l.date DESC";
+            ORDER BY l.date DESC;";
 
-    return sqlGetMany($db, $sql, $data);
+    return sqlGetMany($db, $sql, [$authorID]);
 }
 
-function getSubscribedUsers($db, array $data)
-{
-    $sql = "SELECT u.id,
-                   u.name,
-                   u.avatar_name AS avatar,
-                   u.registration_date AS date,
-                   (SELECT COUNT(author_id)
-                    FROM posts p
-                    WHERE p.author_id = u.id) AS publications_count,
-                   (SELECT COUNT(user_id)
-                    FROM subscriptions s
-                    WHERE s.user_id = u.id) AS subscriptions_count
-            FROM users u
-                JOIN subscriptions s ON u.id = s.follower_id
-            WHERE s.user_id = ?
-            ORDER BY s.id DESC";
-
-    return sqlGetMany($db, $sql, $data);
-}
-
-function getPagesCount($db, string $postType = null)
+function getPagesCount(mysqli $db, ?string $postType = null)
 {
     return ($postType)
         ? current(sqlGetSingle($db, '
@@ -182,32 +156,31 @@ function getPagesCount($db, string $postType = null)
         : current(sqlGetSingle($db, 'SELECT COUNT(*) FROM posts'));
 }
 
-function insertNewPost($db, array $data)
+function insertNewPost(mysqli $db, string $title, int $typeID, int $authorID, string $content, string $citeAuthor)
 {
     $sql = "INSERT INTO posts (title, type_id, author_id, content, cite_author) VALUES (?, ?, ?, ?, ?)";
 
-    return preparedQuery($db, $sql, [$data['title'], $data['typeId'], $data['authorId'], $data['content'], $data['citeAuthor']]);
+    return preparedQuery($db, $sql, [$title, $typeID, $authorID, $content, $citeAuthor]);
 }
 
-// qstn есть ли возможность использовать тут if null = 0
-function incrementViewsCount($db, array $data)
+function incrementViewsCount(mysqli $db, int $id)
 {
     $sql = 'UPDATE posts SET views_count = views_count + 1 WHERE id = ?';
 
-    return preparedQuery($db, $sql, $data);
+    return preparedQuery($db, $sql, [$id]);
 }
 
-function insertRepost($db, array $data)
+function insertRepost(mysqli $db, int $authorID ,int $id)
 {
     $sql = 'INSERT INTO posts (title, type_id, author_id, content, cite_author, original_post_id)
             SELECT title, type_id, ?, content, cite_author, id
             FROM posts
             WHERE id = ?';
 
-    return preparedQuery($db, $sql, $data);
+    return preparedQuery($db, $sql, [$authorID, $id]);
 }
 
-function searchPosts($db, $data, $type = null)
+function searchPosts(mysqli $db, string $queryText, ?string $type = null)
 {
     $sql = 'SELECT p.id,
                    p.title,
@@ -219,22 +192,22 @@ function searchPosts($db, $data, $type = null)
                    u.avatar_name AS avatar,
                    t.name AS type_name,
                    t.class_name AS type,
-                   (SELECT COUNT(post_id)
-                    FROM likes l
-                    WHERE p.id = l.post_id) AS likes_count,
-                   (SELECT COUNT(post_id)
-                    FROM comments c
-                    WHERE p.id = c.post_id) AS comments_count,
-                    (SELECT COUNT(original_post_id)
-                    FROM posts
-                    WHERE original_post_id = p.id) AS reposts_count
+                   COUNT(DISTINCT l.id) AS likes_count,
+                   COUNT(DISTINCT c.id) AS comments_count,
+                   COUNT(DISTINCT p2.id) AS reposts_count
             FROM posts p
-                     JOIN subscriptions s ON s.user_id = p.author_id
+                     LEFT JOIN subscriptions s ON s.user_id = p.author_id
                      JOIN users u ON p.author_id = u.id
                      JOIN types t ON p.type_id = t.id
-                     ' . ($type === 'hashtag' ? 'JOIN post_tags pt ON p.id = pt.post_id
-                     JOIN hashtags h ON pt.hashtag_id = h.id ' : '') .
-            'WHERE ' . ($type === 'hashtag' ? 'h.name LIKE ? ORDER BY p.creation_date DESC' : ' MATCH(title, content) AGAINST(?)');
+                     LEFT JOIN likes l ON p.id = l.post_id
+                     LEFT JOIN comments c ON p.id = c.post_id
+                     LEFT JOIN posts p2 ON p2.original_post_id = p.id
+                     ' . ($type === 'hashtag'
+                            ? 'JOIN post_tags pt ON p.id = pt.post_id JOIN hashtags h ON pt.hashtag_id = h.id '
+                            : '') .
+            'WHERE ' . ($type === 'hashtag'
+                            ? 'h.name = ? GROUP BY p.id ORDER BY p.creation_date DESC'
+                            : ' MATCH(p.title, p.content) AGAINST(?) GROUP BY p.id');
 
-    return sqlGetMany($db, $sql, $data);
+    return sqlGetMany($db, $sql, [$queryText]);
 }

@@ -26,7 +26,6 @@
 </div>
 
 <div class="adding-post__input-file-container form__input-container form__input-container--file">
-    <!-- TODO ограничить выбор форматов -->
     <input id="<?= esc($fieldName); ?>" type="file" name="<?= esc($fieldName); ?>" title=""
-           value="<?= esc(getPostVal($fieldName)); ?>">
+           value="<?= esc(getPostVal($fieldName)); ?>" accept="image/png, image/jpeg, image/gif">
 </div>

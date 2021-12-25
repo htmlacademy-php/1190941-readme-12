@@ -20,11 +20,7 @@ require 'modules/like.php';
 $posts = getPostsForFeed($db, $_SESSION['id'], $queryString['type']);
 
 foreach ($posts as &$post) {
-    $post['liked'] = false;
-
-    if (in_array($post['id'], $postsLikedByUser)) {
-        $post['liked'] = true;
-    }
+    $post['liked'] = in_array($post['id'], $postsLikedByUser);
 
     $post['hashtags'] = getPostTags($db, $post['id']);
 }

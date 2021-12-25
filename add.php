@@ -117,16 +117,13 @@ if (!empty($formData)) {
 
     if (empty($errors)) {
 
-        $data['title'] = $formData["{$formDataPostType}-heading"];
-        $data['tags'] = explode(' ', $_POST["{$formDataPostType}-tags"]);
-        $data['typeId'] = current(array_filter($postTypes, function ($type) use ($formDataPostType)
+        $tags = explode(' ', $_POST["{$formDataPostType}-tags"]) ?? null;
+        $typeID = current(array_filter($postTypes, function ($type) use ($formDataPostType)
         {
             return $type['class_name'] === $formDataPostType;
         }))['id'];
 
-        $data['authorId'] = $_SESSION['id'];
-        $data['content'] = $formData["{$formDataPostType}-main"] ?? null;
-        $data['citeAuthor'] = $formDataPostType === 'quote' ? $formData['quote-author'] : null;
+        $content = $formData["{$formDataPostType}-main"] ?? null;
 
         if (isset($isFile) && $isFile['error'] === 0) {
             // FIXME сгенерировать имя файла
@@ -136,27 +133,34 @@ if (!empty($formData)) {
 
             move_uploaded_file($_FILES['photo-main']['tmp_name'], $filePath . $fileName);
 
-            $data['content'] = $fileName;
+            $content = $fileName;
         } elseif (isset($formData['photo-url']) && $formDataPostType === 'photo') {
-            $data['content'] = 'privet';
+            $content = 'privet';
             // TODO загрузить изображение по ссылке используя curl или file_get_contents
         }
 
-        insertNewPost($db, $data);
+        insertNewPost(
+            $db,
+            $formData["{$formDataPostType}-heading"],
+            $typeID,
+            $_SESSION['id'],
+            $content,
+            $formDataPostType === 'quote' ? $formData['quote-author'] : null
+        );
         $postId = $db->insert_id;
 
-        foreach ($data['tags'] as $tag) {
+        foreach ($tags as $tag) {
             $tagId = null;
 
-            if (!selectTag($db, [$tag])) {
-                insertTag($db, [$tag]);
+            if (!selectTag($db, $tag)) {
+                insertTag($db, $tag);
                 $tagId = $db->insert_id;
             } else {
-                $tagId = selectTag($db, [$tag])['id'];
+                $tagId = selectTag($db, $tag)['id'];
             }
 
-            if (!selectTagToPost($db, [$tagId, $postId])){
-                setTagToPost($db, [$tagId, $postId]);
+            if (!selectTagToPost($db, $tagId, $postId)){
+                setTagToPost($db, $tagId, $postId);
             }
         }
 

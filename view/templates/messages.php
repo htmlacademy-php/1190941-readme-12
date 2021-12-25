@@ -17,11 +17,11 @@
         <ul class="messages__contacts-list tabs__list">
             <?php foreach ($openChats as $openChat): ?>
                 <li class="messages__contacts-item">
-                    <a class="messages__contacts-tab<?= $openChat['id'] === $chatID ? ' messages__contacts-tab--active tabs__item tabs__item--active' : '' ?>"
-                       href="/messages.php?<?= esc(http_build_query(['chat' => $openChat['id']])); ?>">
+                    <a class="messages__contacts-tab<?= $openChat['recipient_id'] === $chatID ? ' messages__contacts-tab--active tabs__item tabs__item--active' : '' ?>"
+                       href="/messages.php?<?= esc(http_build_query(['chat' => $openChat['recipient_id']])); ?>">
                         <div class="messages__avatar-wrapper">
                             <img class="messages__avatar"
-                                 src="../../uploads/avatars/<?= esc($openChat['avatar']) ?>"
+                                 src="../../uploads/avatars/<?= esc($openChat['avatar_name']) ?>"
                                  alt="Аватар пользователя">
                         </div>
                         <div class="messages__info">
@@ -50,6 +50,7 @@
     <div class="messages__chat">
         <div class="messages__chat-wrapper">
 
+            <?php if ($chat): ?>
             <ul class="messages__list tabs__content tabs__content--active">
                 <?php foreach ($chat as $message): ?>
                 <li class="messages__item<?= $message['id'] === $_SESSION['id'] ? ' messages__item--my' : ''; ?>">
@@ -79,6 +80,11 @@
                 </li>
                 <?php endforeach; ?>
             </ul>
+            <?php else: ?>
+                <p class="messages__text">
+                    Сообщений не было.
+                </p>
+            <?php endif; ?>
         </div>
 
         <div class="comments">

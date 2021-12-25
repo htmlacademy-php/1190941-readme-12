@@ -208,7 +208,7 @@
                             <a class="header__user-button header__authorization-button button" href="/">Вход</a>
                         </li>
                         <li>
-                            <!-- todo убрать глобальную переменную server из шаблонов -->
+                            <!-- fixme убрать глобальную переменную server из шаблонов -->
                             <?php $regActiveClass = $_SERVER['SCRIPT_NAME'] === '/registration.php'
                                 ? 'header__user-button--active '
                                 : ''; ?>

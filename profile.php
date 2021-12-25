@@ -45,7 +45,7 @@ if (!$activeTab) {
 }
 
 $action = $queryString['action'] ?? null;
-$profileId = $queryString['id'] ? +$queryString['id'] : null;
+$profileId = $queryString['id'] ? (int) $queryString['id'] : null;
 $existingProfile = selectUser($db, 'id', ['*'], [$profileId]);
 
 if (!$existingProfile) {
@@ -54,24 +54,24 @@ if (!$existingProfile) {
 
 require 'modules/subscriptions.php';
 
-// fixme вынести одинаковые строчки
 if ($action === 'subscribe' && $profileId !== $_SESSION['id']) {
     // TODO проверить существует ли пользователь на которого подписываюсь
 
     if (!$subscribed) {
-        subscribe($db, [$_SESSION['id'], $profileId]);
+        subscribe($db, $_SESSION['id'], $profileId);
     }
 
     header("Location: /profile.php?id={$profileId}");
     // TODO отправить пользователю уведомление о подписке
-} elseif ($action === 'unsubscribe' && $subscribed) {
-    unsubscribe($db, [$_SESSION['id'], $profileId]);
+
+} elseif ($action === 'unsubscribe') {
+    unsubscribe($db, $_SESSION['id'], $profileId);
 
     header("Location: /profile.php?id={$profileId}");
 }
 
 $profileData = getProfileData($db, $profileId);
-$userPosts = getUserPosts($db, [$profileId]);
+$userPosts = getUserPosts($db, $profileId);
 
 foreach ($userPosts as &$post) {
     $post['liked'] = false;
@@ -81,18 +81,13 @@ foreach ($userPosts as &$post) {
     }
 }
 
-$userPostsLikedByUsers = getPostsLikedByUsers($db, [$profileId]);
-$subscribedUsers = getSubscribedUsers($db, [$profileId]);
+$userPostsLikedByUsers = getLikedPostsByAuthor($db, $profileId);
+$subscribedUsers = getSubscribedUsers($db, $profileId);
 
 foreach ($subscribedUsers as &$user) {
-    $user['curr_subscribed'] = null;
-
-    if (in_array($user['id'], array_column($subscriptions, 'user_id'))) {
-        $user['curr_subscribed'] = true;
-    }
+    $user['curr_subscribed'] = in_array($user['id'], array_column($subscriptions, 'user_id'));
 }
 
-// fixme перебрать пробросы, может не нужно так много и можно все собрать в data
 $pageMainContent = includeTemplate('profile.php', [
     'profileTabs' => $profileTabs,
     'profileData' => $profileData,

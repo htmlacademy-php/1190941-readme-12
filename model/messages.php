@@ -1,26 +1,27 @@
 <?php
 
-function getChats($db, $data)
+function getChats(mysqli $db, int $senderID, int $recipientID): array
 {
-    // todo плохо написан запрос, нужно переписать
-    $sql = 'SELECT MAX(m.date) AS latest_date,
-                   u2.id AS sender_id,
-                   u.id AS recipient_id,
-                   u2.name AS sender_name,
-                   u.name AS recipient_name,
-                   u2.avatar_name AS sender_avatar,
-                   u.avatar_name AS recipient_avatar
+    $sql = "SELECT m.*,
+                   u.avatar_name,
+                   u.name
             FROM messages m
-                JOIN users u ON u.id = m.recipient_id
-                JOIN users u2 ON u2.id = m.sender_id
-            WHERE m.recipient_id = ? || m.sender_id = ?
-            GROUP BY u.id, u2.id';
+                     JOIN users u ON u.id = m.recipient_id
+            WHERE m.id IN
+                  (
+                      SELECT MAX(id)
+                      FROM messages
+                      WHERE sender_id = ?
+                         OR recipient_id = ?
+                      GROUP BY IF(sender_id < recipient_id,
+                                  CONCAT(sender_id, ':', recipient_id),
+                                  CONCAT(recipient_id, ':', sender_id))
+                  );";
 
-    return sqlGetMany($db, $sql, $data);
+    return sqlGetMany($db, $sql, [$senderID, $recipientID]);
 }
 
-// qstn странно с параметрами получилось, может возможно как-то по другому
-function getChat($db, $data)
+function getChat(mysqli $db, int $senderID, int $recipientID): array
 {
     $sql = 'SELECT m.message,
                    m.date,
@@ -30,14 +31,14 @@ function getChat($db, $data)
             FROM messages m
                 JOIN users u ON u.id = m.sender_id
             WHERE m.sender_id = ? && m.recipient_id = ? || m.sender_id = ? && m.recipient_id = ?
-            ORDER BY m.date ASC;';
+            ORDER BY m.date;';
 
-    return sqlGetMany($db, $sql, $data);
+    return sqlGetMany($db, $sql, [$senderID, $recipientID, $recipientID, $senderID]);
 }
 
-function sendMessage($db, $data)
+function sendMessage(mysqli $db, string $message, int $recipientID, int $senderID)
 {
     $sql = 'INSERT INTO messages (message, recipient_id, sender_id) VALUES (?, ?, ?);';
 
-    return preparedQuery($db, $sql, $data);
+    return preparedQuery($db, $sql, [$message, $recipientID, $senderID]);
 }

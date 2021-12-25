@@ -6,6 +6,6 @@
 
 require 'model/likes.php';
 
-$likedByUser = getLikes($db, [$_SESSION['id']]);
+$likedByUser = getLikes($db, $_SESSION['id']);
 $postsLikedByUser = array_column($likedByUser, 'post_id');
 

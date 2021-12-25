@@ -1,11 +1,25 @@
 <?php
 
-const TPL_DIR = 'view/templates/';
-const PARTS_DIR = TPL_DIR . 'parts/';
-const POST_PARTS_DIR = PARTS_DIR . 'post/';
-const POST_PREVIEW_DIR = POST_PARTS_DIR . 'preview/';
-const POST_ADD_DIR = POST_PARTS_DIR . 'add/';
-const POST_ADD_FIELDSETS_DIR = POST_ADD_DIR . 'fieldsets/';
+//set_error_handler(function (
+//    int $errno,
+//    string $errstr,
+//    string $errfile = null,
+//    int $errline = null,
+//    array $errcontext = null
+//) {
+//    throw new Exception($errstr, 500);
+//}, E_ALL);
+
+//set_exception_handler(function (Throwable $exception) {
+//    http_response_code(404);
+//});
+
+const TPL_DIR = 'view' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR;
+const PARTS_DIR = TPL_DIR . 'parts' . DIRECTORY_SEPARATOR;
+const POST_PARTS_DIR = PARTS_DIR . 'post' . DIRECTORY_SEPARATOR;
+const POST_PREVIEW_DIR = POST_PARTS_DIR . 'preview' . DIRECTORY_SEPARATOR;
+const POST_ADD_DIR = POST_PARTS_DIR . 'add' . DIRECTORY_SEPARATOR;
+const POST_ADD_FIELDSETS_DIR = POST_ADD_DIR . 'fieldsets' . DIRECTORY_SEPARATOR;
 
 require 'helpers.php';
 require 'model/users.php';
@@ -47,5 +61,4 @@ if ($isAuth && in_array($_SERVER['SCRIPT_NAME'], $availableAddresses)) {
     header('Location: /feed.php');
 }
 
-// qstn этого достаточно что бы глобальную переменную не про эксплуатировали?
 $scriptName = preg_replace('/(\/)(\w.*)(\.php)/', '$2', $_SERVER['SCRIPT_NAME']);

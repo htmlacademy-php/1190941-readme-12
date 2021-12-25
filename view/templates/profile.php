@@ -44,7 +44,6 @@
                 </p>
             </div>
 
-            <!-- qstn session тоже не безопасно в шаблоне? -->
             <?php if ($_SESSION['id'] !== $profileId): ?>
             <div class="profile__user-buttons user__buttons">
                 <a class="profile__user-button user__button user__button--subscription button button--main
@@ -52,7 +51,6 @@
                    href="/profile.php?id=<?= esc($profileId); ?>&action=<?= $subscribed ? 'unsubscribe' : 'subscribe'; ?>">
                     <?= $subscribed ? 'Отписаться' : 'Подписаться'; ?>
                 </a>
-                <!-- TODO добавить ссылку на интерфейс переписки, после её реализации -->
                 <?php if ($subscribed): ?>
                 <a class="profile__user-button user__button user__button--writing button button--green"
                    href="/messages.php?<?= esc(http_build_query(['chat' => $profileId])) ?>">Сообщение</a>
@@ -75,7 +73,6 @@
             </div>
 
             <div class="profile__tab-content">
-                <!-- TODO показать в хронологическом порядке все посты от этого пользователя -->
                 <?php if ($activeTab === 'posts'): ?>
                 <section class="profile__posts tabs__content tabs__content--active">
                     <h2 class="visually-hidden">Публикации</h2>
@@ -88,7 +85,6 @@
                     <?php endforeach; ?>
                 </section>
 
-                <!-- TODO показать все посты пользователя, у которых есть лайки. Сортировка происходит начиная с самых свежих лайков (свежих? хранить дату лайка?). -->
                 <?php elseif ($activeTab === 'likes'): ?>
                 <section class="profile__likes tabs__content tabs__content--active">
                     <h2 class="visually-hidden">Лайки</h2>
@@ -159,8 +155,6 @@
                 <?php elseif ($activeTab === 'subscriptions'): ?>
                 <section class="profile__subscriptions tabs__content tabs__content--active">
                     <h2 class="visually-hidden">Подписки</h2>
-                    <!-- TODO Аватар и логин пользователя оформлены ссылками и ведут на страницу профиля этого пользователя. -->
-                    <!-- TODO Кнопка подписки/отписки меняет своё название и смысл в зависимости от существования подписки на этого пользователя. -->
                     <ul class="profile__subscriptions-list">
                         <?php foreach ($subscribedUsers as $user): ?>
                         <li class="post-mini post user">

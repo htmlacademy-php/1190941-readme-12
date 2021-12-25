@@ -18,12 +18,10 @@ if ($isLogout) {
 
 $formData = $_POST ?? null;
 $userData = selectUser($db, 'email', ['id', 'password'], [$formData['email'] ?? null]);
-$isError = null;
+$isError = false;
 
 if ($formData) {
     if ($userData && password_verify($formData['password'], $userData['password'])) {
-        $isError = false;
-
         $_SESSION['id'] = $userData['id'];
         header('Location: /feed.php');
     }

@@ -18,22 +18,18 @@ require 'modules/like.php';
 $queryString = $_GET ?? null;
 $action = $queryString['action'] ?? null;
 
-// QSTN думать с 0, ?id[]=343 не передавать в getPostById(), и что-то с undefined index (вспомнить где)
 if (!is_string($_GET['id'])) {
     get404StatusCode();
 }
 
 $id = $queryString['id'] ?? null;
 
-// FIXME подумать над местом для этого кода, может вынести в отдельный модуль
-// todo Для того, чтобы удалить лайк, не обязательно проверять его наличие. БД просто вернёт 0 строк в ответ
-// todo Перенаправление можно вынести за пределы условия. И там и там это один и тот же код
 if ($action === 'like' && !in_array($id, $postsLikedByUser)) {
-    insertLike($db, [$id, $_SESSION['id']]);
+    insertLike($db, $id, $_SESSION['id']);
 
     header('Location: ' . $_SERVER['HTTP_REFERER']);
 } elseif ($action === 'dislike' && in_array($id, $postsLikedByUser)) {
-    deleteLike($db, [$id, $_SESSION['id']]);
+    deleteLike($db, $id, $_SESSION['id']);
 
     header('Location: ' . $_SERVER['HTTP_REFERER']);
 }
@@ -42,12 +38,12 @@ if (is_string($id)) {
     $id = intval($id);
 }
 
-incrementViewsCount($db, [$id]);
+incrementViewsCount($db, $id);
 
 $post = getPostById($db, $id);
 
 if ($action === 'repost' && $post) {
-    insertRepost($db, [$_SESSION['id'], $id]);
+    insertRepost($db, $_SESSION['id'], $id);
 }
 
 $profileId = $post['author_id'] ?? null;
@@ -69,11 +65,7 @@ if ($formData && getPostById($db, $formDataPostId)) {
     }
 
     if (empty($errors)) {
-        $data['comment'] = trim($comment);
-        $data['post_id'] = $formDataPostId;
-        $data['author_id'] = $_SESSION['id'];
-
-        insertNewComment($db, array_values($data));
+        insertNewComment($db, trim($comment), $formDataPostId, $_SESSION['id']);
 
         header('Location: /profile.php?id=' . $profileId);
     }
@@ -81,12 +73,10 @@ if ($formData && getPostById($db, $formDataPostId)) {
 
 require 'modules/subscriptions.php';
 
-// FIXME может стоит поднять выше
 if (!$post) {
     get404StatusCode();
 }
 
-// fixme собрать в дату и прокидывать в шаблон одним массивом, комменты +хештеги
 $comments = getPostComments($db, $id);
 $hashtags = getPostTags($db, $id);
 

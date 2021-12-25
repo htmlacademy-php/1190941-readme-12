@@ -1,22 +1,22 @@
 <?php
 
-function checkSubscriptions($db, array $data)
+function checkSubscriptions(mysqli $db, int $followerID)
 {
     $sql = "SELECT * FROM subscriptions WHERE follower_id = ?";
 
-    return sqlGetMany($db, $sql, $data);
+    return sqlGetMany($db, $sql, [$followerID]);
 }
 
-function subscribe($db, array $data)
+function subscribe(mysqli $db, int $followerID, int $userID)
 {
     $sql = "INSERT INTO subscriptions (follower_id, user_id) VALUES (?, ?)";
 
-    return preparedQuery($db, $sql, $data);
+    return preparedQuery($db, $sql, [$followerID, $userID]);
 }
 
-function unsubscribe($db, array $data)
+function unsubscribe(mysqli $db, int $followerID, int $userID)
 {
     $sql = "DELETE FROM subscriptions WHERE follower_id = ? && user_id = ?";
 
-    return preparedQuery($db, $sql, $data);
+    return preparedQuery($db, $sql, [$followerID, $userID]);
 }
