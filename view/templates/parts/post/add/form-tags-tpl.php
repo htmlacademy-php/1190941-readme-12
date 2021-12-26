@@ -17,10 +17,10 @@
                value="<?= esc(getPostVal($type['class_name'] . '-tags')); ?>">
 
         <?php if (isset($errorTitle) && isset($errorDesc)): ?>
-            <?= includeTemplate('template-parts/field-error.php', [
+            <?= includeTemplate('field-error.php', [
                 'errorTitle' => $errorTitle,
                 'errorDesc' => $errorDesc,
-            ]); ?>
+            ], PARTS_DIR); ?>
         <?php endif; ?>
     </div>
 </div>

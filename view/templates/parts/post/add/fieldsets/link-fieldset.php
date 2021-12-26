@@ -17,10 +17,10 @@
                value="<?= esc(getPostVal($fieldName)); ?>">
 
         <?php if (!empty($errors) && isset($errors[$fieldName])): ?>
-            <?= includeTemplate('template-parts/field-error.php', [
+            <?= includeTemplate('field-error.php', [
                 'errorTitle' => $errors[$fieldName]['title'] ?? null,
                 'errorDesc' => $errors[$fieldName]['description'] ?? null,
-            ]); ?>
+            ], PARTS_DIR); ?>
         <?php endif; ?>
     </div>
 </div>

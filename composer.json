@@ -1,0 +1,9 @@
+{
+    "name": "kbhdn/readme",
+    "description": "Personal project",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "symfony/mailer": "^5.4"
+    }
+}

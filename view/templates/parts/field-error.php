@@ -2,7 +2,7 @@
 /**
  * @var string $errorTitle
  * @var string $errorDesc
-*/
+ */
 ?>
 
 <button class="form__error-button button" style="display: block" type="button">!

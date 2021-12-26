@@ -24,15 +24,15 @@ CREATE TABLE posts (
     creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     type_id INT NOT NULL,
     author_id INT NOT NULL,
-    original_author_id INT DEFAULT NULL,
     content TEXT NOT NULL,
     cite_author VARCHAR(255) DEFAULT NULL,
-    views_count INT DEFAULT NULL,
-    repost BOOL DEFAULT NULL,
+    views_count INT DEFAULT 0,
+    original_author_id INT DEFAULT NULL,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (original_author_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE CASCADE
 );
+
+CREATE FULLTEXT INDEX post_ft_search ON posts(title, content);
 
 CREATE TABLE hashtags (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
@@ -51,6 +51,7 @@ CREATE TABLE likes (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     post_id INT NOT NULL,
     user_id INT NOT NULL,
+    date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
