@@ -1,19 +1,5 @@
 <?php
 
-//set_error_handler(function (
-//    int $errno,
-//    string $errstr,
-//    string $errfile = null,
-//    int $errline = null,
-//    array $errcontext = null
-//) {
-//    throw new Exception($errstr, 500);
-//}, E_ALL);
-
-//set_exception_handler(function (Throwable $exception) {
-//    http_response_code(404);
-//});
-
 const TPL_DIR = 'view' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR;
 const PARTS_DIR = TPL_DIR . 'parts' . DIRECTORY_SEPARATOR;
 const POST_PARTS_DIR = PARTS_DIR . 'post' . DIRECTORY_SEPARATOR;

@@ -156,8 +156,14 @@ function getPagesCount(mysqli $db, ?string $postType = null)
         : current(sqlGetSingle($db, 'SELECT COUNT(*) FROM posts'));
 }
 
-function insertNewPost(mysqli $db, string $title, int $typeID, int $authorID, string $content, string $citeAuthor)
-{
+function insertNewPost(
+    mysqli $db,
+    string $title,
+    int $typeID,
+    int $authorID,
+    string $content,
+    ?string $citeAuthor = null
+) {
     $sql = "INSERT INTO posts (title, type_id, author_id, content, cite_author) VALUES (?, ?, ?, ?, ?)";
 
     return preparedQuery($db, $sql, [$title, $typeID, $authorID, $content, $citeAuthor]);

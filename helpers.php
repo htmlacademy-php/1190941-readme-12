@@ -1,82 +1,4 @@
 <?php
-/**
- * Проверяет переданную дату на соответствие формату 'ГГГГ-ММ-ДД'
- *
- * Примеры использования:
- * is_date_valid('2019-01-01'); // true
- * is_date_valid('2016-02-29'); // true
- * is_date_valid('2019-04-31'); // false
- * is_date_valid('10.10.2010'); // false
- * is_date_valid('10/10/2010'); // false
- *
- * @param string $date Дата в виде строки
- *
- * @return bool true при совпадении с форматом 'ГГГГ-ММ-ДД', иначе false
- */
-function is_date_valid(string $date): bool
-{
-    $format_to_check = 'Y-m-d';
-    $dateTimeObj = date_create_from_format($format_to_check, $date);
-
-    return $dateTimeObj !== false && array_sum(date_get_last_errors()) === 0;
-}
-
-/**
- * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
- *
- * @param $link mysqli Ресурс соединения
- * @param $sql string SQL запрос с плейсхолдерами вместо значений
- * @param array $data Данные для вставки на место плейсхолдеров
- *
- * @return mysqli_stmt Подготовленное выражение
- */
-function db_get_prepare_stmt($link, $sql, $data = [])
-{
-    $stmt = mysqli_prepare($link, $sql);
-
-    if ($stmt === false) {
-        $errorMsg = 'Не удалось инициализировать подготовленное выражение: ' . mysqli_error($link);
-        die($errorMsg);
-    }
-
-    if ($data) {
-        $types = '';
-        $stmt_data = [];
-
-        foreach ($data as $value) {
-            $type = 's';
-
-            if (is_int($value)) {
-                $type = 'i';
-            } else {
-                if (is_string($value)) {
-                    $type = 's';
-                } else {
-                    if (is_double($value)) {
-                        $type = 'd';
-                    }
-                }
-            }
-
-            if ($type) {
-                $types .= $type;
-                $stmt_data[] = $value;
-            }
-        }
-
-        $values = array_merge([$stmt, $types], $stmt_data);
-
-        $func = 'mysqli_stmt_bind_param';
-        $func(...$values);
-
-        if (mysqli_errno($link) > 0) {
-            $errorMsg = 'Не удалось связать подготовленное выражение с параметрами: ' . mysqli_error($link);
-            die($errorMsg);
-        }
-    }
-
-    return $stmt;
-}
 
 /**
  * Возвращает корректную форму множественного числа
@@ -237,32 +159,11 @@ function extractYoutubeId(string $youtubeUrl)
 }
 
 /**
- * @param $index
- * @return false|string
+ * Обрезает текст до фиксированной длинны
+ * @param string $text Редактируемая строка
+ * @param int $maxChars Кол-во символов до которого нужно обрезать строку
+ * @return string Строка длинной не больше $maxChars символов
  */
-function generateRandomDate($index)
-{
-    $deltas = [['minutes' => 59], ['hours' => 23], ['days' => 6], ['weeks' => 4], ['months' => 11]];
-    $dcnt = count($deltas);
-
-    if ($index < 0) {
-        $index = 0;
-    }
-
-    if ($index >= $dcnt) {
-        $index = $dcnt - 1;
-    }
-
-    $delta = $deltas[$index];
-    $timeval = rand(1, current($delta));
-    $timename = key($delta);
-
-    $ts = strtotime("$timeval $timename ago");
-    $dt = date('Y-m-d H:i:s', $ts);
-
-    return $dt;
-}
-
 function cropText(string $text, int $maxChars = 300): string
 {
     if (mb_strlen($text) < $maxChars) {
@@ -289,11 +190,24 @@ function cropText(string $text, int $maxChars = 300): string
     return $text . ' ...';
 }
 
-function esc($content)
+/**
+ * Экранирует спец. символы
+ * @param $content
+ *
+ * @return string
+ */
+function esc($content): string
 {
     return htmlspecialchars($content, ENT_QUOTES);
 }
 
+/**
+ * Приводит $dateTime к заданному $format
+ * @param string $dateTime
+ * @param string $format
+ *
+ * @return string
+ */
 function formatDate(string $dateTime, string $format): string
 {
     $dateTime = new DateTime($dateTime, new DateTimeZone('Europe/Moscow'));
@@ -301,13 +215,13 @@ function formatDate(string $dateTime, string $format): string
     return $dateTime->format($format);
 }
 
-function showTitleDateFormat(string $dateTime): string
-{
-    $dateTime = new DateTime($dateTime, new DateTimeZone('Europe/Moscow'));
-
-    return $dateTime->format('d-m-Y H:i');
-}
-
+/**
+ * Приводит $postDate к заданному формату
+ * @param string $postDate
+ * @param string $stringEnd
+ *
+ * @return string
+ */
 function getRelativeDateFormat(string $postDate, string $stringEnd): string
 {
     $postDate = new DateTime($postDate, new DateTimeZone('Europe/Moscow'));
@@ -341,7 +255,13 @@ function getRelativeDateFormat(string $postDate, string $stringEnd): string
     return $correctDateFormat;
 }
 
-function preparedQuery($db, string $sql, array $params)
+/**
+ * Выполняет подготовленное утверждение
+ * @param mysqli $db
+ * @param string $sql
+ * @param array $params
+ */
+function preparedQuery(mysqli $db, string $sql, array $params)
 {
     $types = str_repeat('s', count($params));
     $stmt = $db->prepare($sql);
@@ -351,7 +271,15 @@ function preparedQuery($db, string $sql, array $params)
     return $stmt;
 }
 
-function sqlSelect($db, string $sql, array $params = null)
+/**
+ * Получает результат из подготовленного запроса в виде объекта mysqli_result
+ * @param mysqli $db
+ * @param string $sql
+ * @param array|null $params
+ *
+ * @return mysqli_result
+ */
+function sqlSelect(mysqli $db, string $sql, array $params = null): mysqli_result
 {
     if (!$params) {
         return $db->query($sql);
@@ -360,16 +288,37 @@ function sqlSelect($db, string $sql, array $params = null)
     return preparedQuery($db, $sql, $params)->get_result();
 }
 
-function sqlGetSingle($db, string $sql, array $params = null)
+/**
+ * Выбирает строку из набора результатов и помещает её в ассоциативный массив
+ * @param mysqli $db
+ * @param string $sql
+ * @param array|null $params
+ *
+ * @return array|null|false
+ */
+function sqlGetSingle(mysqli $db, string $sql, array $params = null)
 {
     return sqlSelect($db, $sql, $params)->fetch_assoc();
 }
 
-function sqlGetMany($db, string $sql, array $params = null)
+/**
+ * Выбирает все строки из результирующего набора и помещает их в ассоциативный массив, обычный массив или в оба
+ * @param mysqli $db
+ * @param string $sql
+ * @param array|null $params
+ *
+ * @return array
+ */
+function sqlGetMany(mysqli $db, string $sql, array $params = null): array
 {
     return sqlSelect($db, $sql, $params)->fetch_all(MYSQLI_ASSOC);
 }
 
+/**
+ * @param array $queryString
+ * @param array $modifier
+ * @return string
+ */
 function getQueryString(array $queryString, array $modifier): string
 {
     $mergedArray = array_merge($queryString, $modifier);
@@ -377,13 +326,24 @@ function getQueryString(array $queryString, array $modifier): string
     return array_filter($mergedArray) ? '?' . http_build_query($mergedArray) : '/';
 }
 
+/**
+ * Отдает 404 статус код
+ * @return void
+ */
 function get404StatusCode()
 {
     http_response_code(404);
     exit();
 }
 
+/**
+ * Сохраняет данные полей при ошибке
+ * @param $name
+ * @return mixed|string
+ */
 function getPostVal($name)
 {
     return $_POST[$name] ?? "";
 }
+
+// todo запустить форматирование к PSR2 еще раз

@@ -55,14 +55,13 @@ if (!$existingProfile) {
 require 'modules/subscriptions.php';
 
 if ($action === 'subscribe' && $profileId !== $_SESSION['id']) {
-    // TODO проверить существует ли пользователь на которого подписываюсь
-
     if (!$subscribed) {
         subscribe($db, $_SESSION['id'], $profileId);
     }
 
     header("Location: /profile.php?id={$profileId}");
-    // TODO отправить пользователю уведомление о подписке
+
+    // TODO 3.5 отправить пользователю уведомление о подписке
 
 } elseif ($action === 'unsubscribe') {
     unsubscribe($db, $_SESSION['id'], $profileId);

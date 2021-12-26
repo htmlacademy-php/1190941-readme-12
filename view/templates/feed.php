@@ -38,7 +38,7 @@
             <?php foreach ($postTypes as $type): ?>
                 <li class="feed__filters-item filters__item">
                     <a class="filters__button filters__button--<?= esc($type['class_name']); ?> button
-                <?= $queryString['type'] === $type['id'] ? ' filters__button--active' : ''; ?>"
+                <?= $queryString['type'] === (int)$type['id'] ? ' filters__button--active' : ''; ?>"
                        href="?type=<?= esc($type['id']); ?>">
                         <span class="visually-hidden"><?= esc($type['name']); ?></span>
                         <svg class="filters__icon" width="22" height="18">

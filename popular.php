@@ -46,11 +46,7 @@ $queryString['direction'] = $queryString['direction'] ?? null;
 $postData = getPosts($db, $offset, $queryString['type'], $queryString['sort'], $queryString['direction']);
 
 foreach ($postData as &$post) {
-    $post['liked'] = false;
-
-    if (in_array($post['id'], $postsLikedByUser)) {
-        $post['liked'] = true;
-    }
+    $post['liked'] = in_array($post['id'], $postsLikedByUser);
 }
 
 $sort = [

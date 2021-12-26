@@ -44,6 +44,7 @@ $post = getPostById($db, $id);
 
 if ($action === 'repost' && $post) {
     insertRepost($db, $_SESSION['id'], $id);
+    header('Location: ' . '/profile.php?id=' . $_SESSION['id'] . '&show=posts');
 }
 
 $profileId = $post['author_id'] ?? null;

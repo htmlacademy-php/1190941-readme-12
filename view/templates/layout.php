@@ -5,6 +5,8 @@
  * @var array $userData
  * @var string $pageMainClass
  * @var string $pageMainContent
+ * @var string $queryText
+ * @var bool $isHashtag
  */
 ?>
 
@@ -105,7 +107,8 @@
             <form class="header__search-form form" action="/search.php" method="get">
                 <div class="header__search">
                     <label class="visually-hidden" for="search-input">Поиск</label>
-                    <input class="header__search-input form__input" name="result" id="search-input" type="search">
+                    <input class="header__search-input form__input" name="result" id="search-input" type="search"
+                           value="<?= !empty($queryText) ? esc($isHashtag ? '#' . $queryText : $queryText) : ''; ?>">
                     <button class="header__search-button button" type="submit">
                         <svg class="header__search-icon" width="18" height="18">
                             <use xlink:href="#icon-search"></use>
@@ -208,7 +211,6 @@
                             <a class="header__user-button header__authorization-button button" href="/">Вход</a>
                         </li>
                         <li>
-                            <!-- fixme убрать глобальную переменную server из шаблонов -->
                             <?php $regActiveClass = $_SERVER['SCRIPT_NAME'] === '/registration.php'
                                 ? 'header__user-button--active '
                                 : ''; ?>

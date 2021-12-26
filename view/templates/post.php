@@ -153,9 +153,11 @@
                     <div class="post-details__avatar user__avatar">
                         <a class="post-details__avatar-link user__avatar-link"
                            href="/profile.php?id=<?= esc($post['author_id']); ?>">
-                            <img class="post-details__picture user__picture"
-                                 src="uploads/avatars/<?= esc($post['avatar']); ?>"
-                                 alt="Аватар пользователя <?= esc($post['author']); ?>">
+                            <?php if ($post['avatar']): ?>
+                                <img class="post-details__picture user__picture"
+                                     src="uploads/avatars/<?= esc($post['avatar']); ?>"
+                                     alt="Аватар пользователя <?= esc($post['author']); ?>">
+                            <?php endif; ?>
                         </a>
                     </div>
                     <div class="post-details__name-wrapper user__name-wrapper">
@@ -184,7 +186,6 @@
                 </div>
                 <?php if ($post['author_id'] !== $_SESSION['id']): ?>
                     <div class="post-details__user-buttons user__buttons">
-                        <!-- FIXME Формирование ссылки выглядит странно, возможно нужно переписать через getQueryString -->
                         <a class="user__button user__button--subscription button button--main
                     <?= $subscribed ? ' button--quartz' : ''; ?>"
                            href="/profile.php?id=<?= esc($post['author_id']); ?>&action=<?= $subscribed ? 'unsubscribe' : 'subscribe'; ?>">

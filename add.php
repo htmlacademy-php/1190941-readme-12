@@ -31,6 +31,7 @@ $noValidateFields = [
     'photo-main',
     'photo-url',
 ];
+
 $errors = [];
 
 $fieldsMap = [
@@ -41,7 +42,7 @@ $fieldsMap = [
 
 if (!empty($formData)) {
     foreach ($formData as $name => $value) {
-        if (!in_array($name, $noValidateFields) && empty($value)) {
+        if (!in_array($name, $noValidateFields) && empty($value) && $name !== "{$formDataPostType}-tags") {
             $errors[$name]['name'] = $fieldsMap[$name] ?? null;
             $errors[$name]['title'] = 'Поле не заполнено';
             $errors[$name]['description'] = 'Это поле должно быть заполнено';
@@ -102,8 +103,8 @@ if (!empty($formData)) {
 
     if ($formDataPostType === 'link' || $formDataPostType === 'video') {
         if (!empty($formData["{$formDataPostType}-main"]
-            && !filter_var($formData["{$formDataPostType}-main"], FILTER_VALIDATE_URL))) {
-
+            && !filter_var($formData["{$formDataPostType}-main"], FILTER_VALIDATE_URL))
+        ) {
             $errors["{$formDataPostType}-main"]['name'] = $fieldsMap["{$formDataPostType}-main"];
             $errors["{$formDataPostType}-main"]['title'] = 'Не корректный URL-адрес';
             $errors["{$formDataPostType}-main"]['description'] = 'Пожалуйста укажите корректный URL-адрес';
@@ -116,8 +117,6 @@ if (!empty($formData)) {
     }
 
     if (empty($errors)) {
-
-        $tags = explode(' ', $_POST["{$formDataPostType}-tags"]) ?? null;
         $typeID = current(array_filter($postTypes, function ($type) use ($formDataPostType) {
             return $type['class_name'] === $formDataPostType;
         }))['id'];
@@ -125,7 +124,6 @@ if (!empty($formData)) {
         $content = $formData["{$formDataPostType}-main"] ?? null;
 
         if (isset($isFile) && $isFile['error'] === 0) {
-            // FIXME сгенерировать имя файла
             $fileName = $_FILES['photo-main']['name'];
             $filePath = __DIR__ . '/uploads/photos/';
             $fileUrl = '/uploads/photos/' . $fileName;
@@ -134,8 +132,14 @@ if (!empty($formData)) {
 
             $content = $fileName;
         } elseif (isset($formData['photo-url']) && $formDataPostType === 'photo') {
-            $content = 'privet';
-            // TODO загрузить изображение по ссылке используя curl или file_get_contents
+
+            // fixme не безопасно, нужна проверка mime type перед загрузкой в директорию на сервере (требования в ТЗ нет, если будет время)
+            $fileName = uniqid() . '.jpg';
+            $filePath = 'uploads' . DIRECTORY_SEPARATOR . 'photos' . DIRECTORY_SEPARATOR;
+            $fileContent = file_get_contents($formData['photo-url']);
+            file_put_contents($filePath . $fileName, $fileContent);
+
+            $content = $fileName;
         }
 
         insertNewPost(
@@ -148,18 +152,22 @@ if (!empty($formData)) {
         );
         $postId = $db->insert_id;
 
-        foreach ($tags as $tag) {
-            $tagId = null;
+        if ($_POST["{$formDataPostType}-tags"]) {
+            $tags = explode(' ', $_POST["{$formDataPostType}-tags"]);
 
-            if (!selectTag($db, $tag)) {
-                insertTag($db, $tag);
-                $tagId = $db->insert_id;
-            } else {
-                $tagId = selectTag($db, $tag)['id'];
-            }
+            foreach ($tags as $tag) {
+                $tagId = null;
 
-            if (!selectTagToPost($db, $tagId, $postId)) {
-                setTagToPost($db, $tagId, $postId);
+                if (!selectTag($db, $tag)) {
+                    insertTag($db, $tag);
+                    $tagId = $db->insert_id;
+                } else {
+                    $tagId = selectTag($db, $tag)['id'];
+                }
+
+                if (!selectTagToPost($db, $tagId, $postId)) {
+                    setTagToPost($db, $tagId, $postId);
+                }
             }
         }
 

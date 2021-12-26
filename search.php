@@ -48,6 +48,8 @@ $pageMainContent = includeTemplate('search.php', [
 
 $pageLayout = includeTemplate('layout.php', [
     'pageTitle' => 'Readme - сообщения',
+    'queryText' => $queryText,
+    'isHashtag' => $isHashtag,
     'isAuth' => $isAuth,
     'userData' => $userData,
     'pageMainContent' => $pageMainContent,

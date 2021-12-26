@@ -11,13 +11,17 @@
         <div class="post__author">
             <a class="post__author-link" href="/profile.php?id=<?= esc($post['author_id']); ?>" title="Автор">
                 <div class="post__avatar-wrapper">
-                    <!--укажите путь к файлу аватара-->
-                    <img class="post__author-avatar" src="uploads/avatars/<?= esc($post['avatar']); ?>" alt="Аватар пользователя <?= esc($post['author']); ?>">
+                    <?php if ($post['avatar']): ?>
+                        <img class="post__author-avatar" src="uploads/avatars/<?= esc($post['avatar']); ?>"
+                             alt="Аватар пользователя <?= esc($post['author']); ?>">
+                    <?php endif; ?>
                 </div>
                 <div class="post__info">
                     <b class="post__author-name"><?= esc($post['author']); ?></b>
-                    <time class="post__time" datetime="<?= esc($post['creation_date']); ?>" title="<?= showTitleDateFormat(esc($post['creation_date'])); ?>"><?= getRelativeDateFormat(esc($post['creation_date']),
-                            'назад'); ?></time>
+                    <time class="post__time" datetime="<?= esc($post['creation_date']); ?>"
+                          title="<?= formatDate(esc($post['creation_date']), 'd-m-Y H:i'); ?>">
+                        <?= getRelativeDateFormat(esc($post['creation_date']), 'назад'); ?>
+                    </time>
                 </div>
             </a>
         </div>
@@ -25,7 +29,6 @@
 
     <div class="post__indicators">
         <div class="post__buttons">
-            <!-- FIXME переписать ссылку через getQueryString -->
             <a class="post__indicator post__indicator--likes<?= $post['liked'] ? ' post__indicator--likes-active' : ''; ?> button"
                href="/post.php?id=<?= esc($post['id']); ?>&action=<?= $post['liked'] ? 'dislike' : 'like'; ?>"
                title="<?= $post['liked'] ? 'Удалить лайк' : 'Лайк'; ?>">
