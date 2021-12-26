@@ -1,5 +1,11 @@
 <?php
 
+use Symfony\Component\Mailer\Transport;
+require 'vendor/autoload.php';
+
+$dsn = 'smtp://2019d4305b6549:730b0e496bf4d8@smtp.mailtrap.io:2525?encryption=tls&auth_mode=login';
+$transport = Transport::fromDsn($dsn);
+
 const TPL_DIR = 'view' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR;
 const PARTS_DIR = TPL_DIR . 'parts' . DIRECTORY_SEPARATOR;
 const POST_PARTS_DIR = PARTS_DIR . 'post' . DIRECTORY_SEPARATOR;

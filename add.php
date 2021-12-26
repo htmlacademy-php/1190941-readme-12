@@ -4,7 +4,14 @@
  * @var int $isAuth
  * @var string $userName
  * @var array $userData
+ * @var TransportInterface $transport
+ * @var Email $message
+ * @var Email $message
  */
+
+use Symfony\Component\Mailer\Transport\TransportInterface;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Email;
 
 require 'bootstrap.php';
 require 'model/types.php';
@@ -13,6 +20,7 @@ require 'model/hashtags.php';
 
 $queryString = $_GET ?? null;
 $postType = $queryString['type'] ?? null;
+$subscribers = getSubscribers($db, $_SESSION['id']);
 
 $formData = $_POST ?? null;
 $formDataPostType = $formData['post-type'] ?? null;
@@ -171,7 +179,18 @@ if (!empty($formData)) {
             }
         }
 
-        //  TODO 3.2 Отправить подписчикам пользователя уведомления о новом посте
+        foreach ($subscribers as $subscriber) {
+            // Формирование сообщения
+            $message = new Email();
+            $message->to($subscriber['email']);
+            $message->from("mail@readme.me");
+            $message->subject("Новая публикация от пользователя {$userData['name']}");
+            $message->text("Здравствуйте, {$subscriber['name']}. Пользователь {$userData['name']} только что опубликовал новую запись „{$formData["{$formDataPostType}-heading"]}“. Посмотрите её на странице пользователя: <a href=\"http://readme.cloc/profile.php?id={$_SESSION['id']}\">{$userData['name']}</a>");
+
+            // Отправка сообщения
+            $mailer = new Mailer($transport);
+            $mailer->send($message);
+        }
 
         header("Location: /post.php?id={$postId}");
     }

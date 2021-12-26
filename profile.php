@@ -7,7 +7,14 @@
  * @var string $scriptName
  * @var array $postsLikedByUser
  * @var array $subscriptions
+ * @var TransportInterface $transport
+ * @var Email $message
+ * @var Email $message
  */
+
+use Symfony\Component\Mailer\Transport\TransportInterface;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Email;
 
 require 'bootstrap.php';
 require 'model/posts.php';
@@ -54,10 +61,23 @@ if (!$existingProfile) {
 
 require 'modules/subscriptions.php';
 
+$profileData = getProfileData($db, $profileId);
+
 if ($action === 'subscribe' && $profileId !== $_SESSION['id']) {
     if (!$subscribed) {
         subscribe($db, $_SESSION['id'], $profileId);
     }
+
+    // Формирование сообщения
+    $message = new Email();
+    $message->to($profileData['email']);
+    $message->from("mail@readme.me");
+    $message->subject("У вас новый подписчик");
+    $message->text("Здравствуйте, {$profileData['name']}. На вас подписался новый пользователь {$userData['name']}. Вот ссылка на его профиль: <a href=\"http://readme.cloc/profile.php?id={$_SESSION['id']}\">{$userData['name']}</a>");
+
+    // Отправка сообщения
+    $mailer = new Mailer($transport);
+    $mailer->send($message);
 
     header("Location: /profile.php?id={$profileId}");
 
@@ -69,7 +89,6 @@ if ($action === 'subscribe' && $profileId !== $_SESSION['id']) {
     header("Location: /profile.php?id={$profileId}");
 }
 
-$profileData = getProfileData($db, $profileId);
 $userPosts = getUserPosts($db, $profileId);
 
 foreach ($userPosts as &$post) {
