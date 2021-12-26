@@ -345,5 +345,3 @@ function getPostVal($name)
 {
     return $_POST[$name] ?? "";
 }
-
-// todo запустить форматирование к PSR2 еще раз

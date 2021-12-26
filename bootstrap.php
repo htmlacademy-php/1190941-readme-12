@@ -1,6 +1,7 @@
 <?php
 
 use Symfony\Component\Mailer\Transport;
+
 require 'vendor/autoload.php';
 
 $dsn = 'smtp://2019d4305b6549:730b0e496bf4d8@smtp.mailtrap.io:2525?encryption=tls&auth_mode=login';

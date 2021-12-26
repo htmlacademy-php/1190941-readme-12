@@ -81,8 +81,6 @@ if ($action === 'subscribe' && $profileId !== $_SESSION['id']) {
 
     header("Location: /profile.php?id={$profileId}");
 
-    // TODO 3.5 отправить пользователю уведомление о подписке
-
 } elseif ($action === 'unsubscribe') {
     unsubscribe($db, $_SESSION['id'], $profileId);
 

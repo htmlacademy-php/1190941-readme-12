@@ -141,7 +141,6 @@ if (!empty($formData)) {
             $content = $fileName;
         } elseif (isset($formData['photo-url']) && $formDataPostType === 'photo') {
 
-            // fixme не безопасно, нужна проверка mime type перед загрузкой в директорию на сервере (требования в ТЗ нет, если будет время)
             $fileName = uniqid() . '.jpg';
             $filePath = 'uploads' . DIRECTORY_SEPARATOR . 'photos' . DIRECTORY_SEPARATOR;
             $fileContent = file_get_contents($formData['photo-url']);
