@@ -145,11 +145,11 @@ function extractYoutubeId(string $youtubeUrl)
     $parts['host'] = $parts['host'] ?? null;
 
     if ($parts) {
-        if ($parts['path'] == '/watch') {
+        if ($parts['path'] === '/watch') {
             parse_str($parts['query'], $vars);
             $id = $vars['v'] ?? null;
         } else {
-            if ($parts['host'] == 'youtu.be') {
+            if ($parts['host'] === 'youtu.be') {
                 $id = substr($parts['path'], 1);
             }
         }
@@ -256,7 +256,6 @@ function getRelativeDateFormat(string $postDate, string $stringEnd): string
 }
 
 /**
- * Выполняет подготовленное утверждение
  * @param mysqli $db
  * @param string $sql
  * @param array $params

@@ -17,7 +17,8 @@ $queryString = $_GET ?? null;
 require 'modules/filter.php';
 require 'modules/like.php';
 
-$pagesCount = getPagesCount($db, $queryString['type']);
+$pagesCount = (int) getPagesCount($db, $queryString['type']);
+$pagesCount = $pagesCount !== 0 ? $pagesCount : 1;
 $limit = 6;
 $totalPages = intval(ceil($pagesCount / $limit));
 $queryString['page'] = $queryString['page'] ?? 1;

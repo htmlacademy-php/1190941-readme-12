@@ -30,8 +30,8 @@ $postType = current(array_filter($postTypes, function ($element) use ($postType)
     return $element['class_name'] === $postType;
 }));
 
-if (!$postType) {
-    header('Location: /add.php?type=text');
+if ($postTypes && !$postType) {
+    header('Location: /add.php?type=text', true, 301);
 }
 
 $noValidateFields = [

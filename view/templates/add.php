@@ -9,6 +9,7 @@
 
 <div class="page__main-section">
 
+    <?php if ($postTypes): ?>
     <div class="container">
         <h1 class="page__title page__title--adding-post">Добавить публикацию</h1>
     </div>
@@ -31,6 +32,7 @@
                     <?php endforeach; ?>
 
                 </ul>
+
             </div>
 
             <div class="adding-post__tab-content">
@@ -86,4 +88,9 @@
             </div>
         </div>
     </div>
+    <?php else: ?>
+        <div class="container">
+            <h1 class="page__title page__title--adding-post">Нет типов постов</h1>
+        </div>
+    <?php endif; ?>
 </div>

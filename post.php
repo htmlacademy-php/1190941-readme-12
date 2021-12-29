@@ -42,7 +42,7 @@ incrementViewsCount($db, $id);
 
 $post = getPostById($db, $id);
 
-if ($action === 'repost' && $post) {
+if ($action === 'repost' && $post && $_SESSION['id'] !== $post['author_id']) {
     insertRepost($db, $_SESSION['id'], $id);
     header('Location: ' . '/profile.php?id=' . $_SESSION['id'] . '&show=posts');
 }

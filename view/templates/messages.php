@@ -13,16 +13,19 @@
 <section class="messages tabs">
     <h2 class="visually-hidden">Сообщения</h2>
 
+    <?php if ($openChats): ?>
     <div class="messages__contacts">
         <ul class="messages__contacts-list tabs__list">
             <?php foreach ($openChats as $openChat): ?>
                 <li class="messages__contacts-item">
-                    <a class="messages__contacts-tab<?= $openChat['recipient_id'] === $chatID ? ' messages__contacts-tab--active tabs__item tabs__item--active' : '' ?>"
-                       href="/messages.php?<?= esc(http_build_query(['chat' => $openChat['recipient_id']])); ?>">
+                    <a class="messages__contacts-tab<?= $openChat['user_id'] === $chatID ? ' messages__contacts-tab--active tabs__item tabs__item--active' : '' ?>"
+                       href="/messages.php?<?= esc(http_build_query(['chat' => $openChat['user_id']])); ?>">
                         <div class="messages__avatar-wrapper">
+                            <?php if ($openChat['avatar_name']): ?>
                             <img class="messages__avatar"
                                  src="../../uploads/avatars/<?= esc($openChat['avatar_name']) ?>"
                                  alt="Аватар пользователя">
+                            <?php endif; ?>
                         </div>
                         <div class="messages__info">
                               <span class="messages__contact-name">
@@ -86,7 +89,6 @@
                 </p>
             <?php endif; ?>
         </div>
-
         <div class="comments">
             <form class="comments__form form" action="/messages.php?<?= esc(http_build_query(['chat' => $chatID])) ?>" method="post">
                 <div class="comments__my-avatar">
@@ -112,4 +114,5 @@
             </form>
         </div>
     </div>
+    <?php endif; ?>
 </section>
