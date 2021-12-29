@@ -27,7 +27,7 @@ CREATE TABLE posts (
     content TEXT NOT NULL,
     cite_author VARCHAR(255) DEFAULT NULL,
     views_count INT DEFAULT 0,
-    original_author_id INT DEFAULT NULL,
+    original_post_id INT DEFAULT NULL,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE CASCADE
 );

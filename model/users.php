@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @param mysqli $db
+ * @param string $email
+ * @return array|false|null
+ */
 function selectUserByEmail(mysqli $db, string $email)
 {
     $sql = "SELECT * FROM users WHERE email = ?";
@@ -7,6 +12,13 @@ function selectUserByEmail(mysqli $db, string $email)
     return sqlGetSingle($db, $sql, [$email]);
 }
 
+/**
+ * @param mysqli $db
+ * @param string $where
+ * @param array $fields
+ * @param array $data
+ * @return array|false|null
+ */
 function selectUser(mysqli $db, string $where, array $fields, array $data)
 {
     $fields = implode(', ', $fields);
@@ -15,6 +27,11 @@ function selectUser(mysqli $db, string $where, array $fields, array $data)
     return sqlGetSingle($db, $sql, $data);
 }
 
+/**
+ * @param mysqli $db
+ * @param string $userID
+ * @return array|false|null
+ */
 function getProfileData(mysqli $db, string $userID)
 {
     $sql = "SELECT u.name,
@@ -24,7 +41,7 @@ function getProfileData(mysqli $db, string $userID)
                    COUNT(DISTINCT p.id) AS publications_count,
                    COUNT(DISTINCT s.id) AS subscriptions_count
             FROM users u
-                JOIN posts p ON p.author_id = u.id
+                LEFT JOIN posts p ON p.author_id = u.id
                 LEFT JOIN subscriptions s ON s.user_id = u.id
             WHERE u.id = ?
             GROUP BY u.id";
@@ -32,6 +49,14 @@ function getProfileData(mysqli $db, string $userID)
     return sqlGetSingle($db, $sql, [$userID]);
 }
 
+/**
+ * @param mysqli $db
+ * @param string $name
+ * @param string $email
+ * @param string $password
+ * @param string|null $avatarName
+ * @return false|mysqli_stmt
+ */
 function createUser(mysqli $db, string $name, string $email, string $password, ?string $avatarName)
 {
     $sql = "INSERT INTO users (name, email, password, avatar_name) VALUES (?, ?, ?, ?)";
@@ -39,6 +64,11 @@ function createUser(mysqli $db, string $name, string $email, string $password, ?
     return preparedQuery($db, $sql, [$name, $email, $password, $avatarName]);
 }
 
+/**
+ * @param mysqli $db
+ * @param int $userID
+ * @return array
+ */
 function getSubscribedUsers(mysqli $db, int $userID): array
 {
     $sql = "SELECT u.id,
@@ -58,6 +88,11 @@ function getSubscribedUsers(mysqli $db, int $userID): array
     return sqlGetMany($db, $sql, [$userID]);
 }
 
+/**
+ * @param mysqli $db
+ * @param int $userID
+ * @return array
+ */
 function getSubscribers(mysqli $db, int $userID): array
 {
     $sql = "SELECT u.email,

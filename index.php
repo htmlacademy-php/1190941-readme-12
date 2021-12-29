@@ -5,7 +5,7 @@
 
 require 'bootstrap.php';
 
-if ($_SERVER['REQUEST_URI'] == '/index.php') {
+if ($_SERVER['REQUEST_URI'] === '/index.php') {
     header('Location: /', true, 301);
 }
 

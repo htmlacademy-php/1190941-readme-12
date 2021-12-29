@@ -7,6 +7,9 @@
 *.sublime*
 Thumbs.db
 vendor
-uploads/*
+uploads/photos/*
+!uploads/photos/.gitkeep
+uploads/avatars/*
+!uploads/avatars/.gitkeep
 !uploads/.gitkeep
 config.php

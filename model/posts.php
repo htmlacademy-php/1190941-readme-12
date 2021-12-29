@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @param mysqli $db
+ * @param int $id
+ * @return array|false|null
+ */
 function getPostById(mysqli $db, int $id)
 {
     return sqlGetSingle($db, 'SELECT p.id,
@@ -28,6 +33,15 @@ function getPostById(mysqli $db, int $id)
         [$id]);
 }
 
+/**
+ * @param mysqli $db
+ * @param int $offset
+ * @param string|null $postType
+ * @param string|null $sort
+ * @param string|null $sortDirection
+ * @param int $limit
+ * @return array
+ */
 function getPosts(
     mysqli $db,
     int $offset,
@@ -35,7 +49,7 @@ function getPosts(
     ?string $sort = '',
     ?string $sortDirection = '',
     int $limit = 6
-) {
+): array {
     $direction = $sortDirection ?? 'desc';
 
     switch ($sort) {
@@ -73,7 +87,13 @@ function getPosts(
     return sqlGetMany($db, $sql, $data);
 }
 
-function getPostsForFeed(mysqli $db, int $id, ?string $postType = null)
+/**
+ * @param mysqli $db
+ * @param int $id
+ * @param string|null $postType
+ * @return array
+ */
+function getPostsForFeed(mysqli $db, int $id, ?string $postType = null): array
 {
     $sql = "SELECT p.id,
                    p.title,
@@ -104,7 +124,12 @@ function getPostsForFeed(mysqli $db, int $id, ?string $postType = null)
     return sqlGetMany($db, $sql, $data);
 }
 
-function getUserPosts(mysqli $db, int $authorID)
+/**
+ * @param mysqli $db
+ * @param int $authorID
+ * @return array
+ */
+function getUserPosts(mysqli $db, int $authorID): array
 {
     $sql = "SELECT p.*,
                    u.name AS author,
@@ -126,7 +151,12 @@ function getUserPosts(mysqli $db, int $authorID)
     return sqlGetMany($db, $sql, [$authorID]);
 }
 
-function getLikedPostsByAuthor(mysqli $db, int $authorID)
+/**
+ * @param mysqli $db
+ * @param int $authorID
+ * @return array
+ */
+function getLikedPostsByAuthor(mysqli $db, int $authorID): array
 {
     $sql = "SELECT p.id,
                    p.content,
@@ -145,6 +175,11 @@ function getLikedPostsByAuthor(mysqli $db, int $authorID)
     return sqlGetMany($db, $sql, [$authorID]);
 }
 
+/**
+ * @param mysqli $db
+ * @param string|null $postType
+ * @return false|mixed
+ */
 function getPagesCount(mysqli $db, ?string $postType = null)
 {
     return ($postType)
@@ -156,6 +191,15 @@ function getPagesCount(mysqli $db, ?string $postType = null)
         : current(sqlGetSingle($db, 'SELECT COUNT(*) FROM posts'));
 }
 
+/**
+ * @param mysqli $db
+ * @param string $title
+ * @param int $typeID
+ * @param int $authorID
+ * @param string $content
+ * @param string|null $citeAuthor
+ * @return false|mysqli_stmt
+ */
 function insertNewPost(
     mysqli $db,
     string $title,
@@ -169,6 +213,11 @@ function insertNewPost(
     return preparedQuery($db, $sql, [$title, $typeID, $authorID, $content, $citeAuthor]);
 }
 
+/**
+ * @param mysqli $db
+ * @param int $id
+ * @return false|mysqli_stmt
+ */
 function incrementViewsCount(mysqli $db, int $id)
 {
     $sql = 'UPDATE posts SET views_count = views_count + 1 WHERE id = ?';
@@ -176,6 +225,12 @@ function incrementViewsCount(mysqli $db, int $id)
     return preparedQuery($db, $sql, [$id]);
 }
 
+/**
+ * @param mysqli $db
+ * @param int $authorID
+ * @param int $id
+ * @return false|mysqli_stmt
+ */
 function insertRepost(mysqli $db, int $authorID, int $id)
 {
     $sql = 'INSERT INTO posts (title, type_id, author_id, content, cite_author, original_post_id)
@@ -186,7 +241,13 @@ function insertRepost(mysqli $db, int $authorID, int $id)
     return preparedQuery($db, $sql, [$authorID, $id]);
 }
 
-function searchPosts(mysqli $db, string $queryText, ?string $type = null)
+/**
+ * @param mysqli $db
+ * @param string $queryText
+ * @param string|null $type
+ * @return array
+ */
+function searchPosts(mysqli $db, string $queryText, ?string $type = null): array
 {
     $sql = 'SELECT p.id,
                    p.title,

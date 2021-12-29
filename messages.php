@@ -15,26 +15,22 @@ $message = $_POST['message'] ?? null;
 
 $openChats = getChats($db, $_SESSION['id'], $_SESSION['id']);
 
-if (!isset($queryString['chat'])) {
-    header('Location: /messages.php?chat=' . $openChats[0]['recipient_id']);
+if (!isset($queryString['chat']) && $openChats) {
+    header('Location: /messages.php?chat=' . $openChats[0]['user_id']);
 }
 
-$chatID = $queryString['chat'] ? (int)$queryString['chat'] : null;
+$chatID = isset($queryString['chat']) ? (int)$queryString['chat'] : null;
 $errors = [];
 
-$chat = getChat($db, $chatID, $_SESSION['id']);
+$chat = $chatID ? getChat($db, $chatID, $_SESSION['id']) : null;
 
-$isOpened = false;
+$isOpened = in_array($chatID, array_column($openChats, 'user_id'));
 
-if (in_array($chatID, array_column($openChats, 'recipient_id'))) {
-    $isOpened = true;
-}
-
-if (!$isOpened) {
+if (!$isOpened && $chatID) {
     $chatData = [];
     $usrData = selectUser($db, 'id', ['name', 'avatar_name'], [$chatID]);
 
-    $chatData['recipient_id'] = $chatID;
+    $chatData['user_id'] = $chatID;
     $chatData['date'] = null;
     $chatData['name'] = $usrData['name'];
     $chatData['avatar_name'] = $usrData['avatar_name'];

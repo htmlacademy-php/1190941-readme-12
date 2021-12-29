@@ -1,6 +1,11 @@
 <?php
 
-function getPostTags(mysqli $db, int $id)
+/**
+ * @param mysqli $db
+ * @param int $id
+ * @return array
+ */
+function getPostTags(mysqli $db, int $id): array
 {
     return sqlGetMany($db,
         'SELECT h.name
@@ -10,6 +15,11 @@ function getPostTags(mysqli $db, int $id)
         [$id]);
 }
 
+/**
+ * @param mysqli $db
+ * @param string $hashtag
+ * @return array|false|null
+ */
 function selectTag(mysqli $db, string $hashtag)
 {
     $sql = "SELECT id, name FROM hashtags WHERE name = ?";
@@ -17,6 +27,11 @@ function selectTag(mysqli $db, string $hashtag)
     return sqlGetSingle($db, $sql, [$hashtag]);
 }
 
+/**
+ * @param mysqli $db
+ * @param string $hashtag
+ * @return false|mysqli_stmt
+ */
 function insertTag(mysqli $db, string $hashtag)
 {
     $sql = "INSERT INTO hashtags (name) VALUES (?)";
@@ -24,6 +39,12 @@ function insertTag(mysqli $db, string $hashtag)
     return preparedQuery($db, $sql, [$hashtag]);
 }
 
+/**
+ * @param mysqli $db
+ * @param int $hashtagID
+ * @param int $postID
+ * @return array|false|null
+ */
 function selectTagToPost(mysqli $db, int $hashtagID, int $postID)
 {
     $sql = "SELECT hashtag_id, post_id FROM post_tags WHERE hashtag_id = ? && post_id = ?";
@@ -31,6 +52,12 @@ function selectTagToPost(mysqli $db, int $hashtagID, int $postID)
     return sqlGetSingle($db, $sql, [$hashtagID, $postID]);
 }
 
+/**
+ * @param mysqli $db
+ * @param int $hashtagID
+ * @param int $postID
+ * @return false|mysqli_stmt
+ */
 function setTagToPost(mysqli $db, int $hashtagID, int $postID)
 {
     $sql = "INSERT INTO post_tags (hashtag_id, post_id) VALUES (?, ?)";
